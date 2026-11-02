@@ -28,9 +28,10 @@ Tests: `tests/find-trains/travelers.spec.ts`
 **When** the user removes the only adult **Then** "Add at least one adult 18 years old or older." is shown, Adult "-" is disabled and FIND TRAINS stays disabled.
 Note: the panel labels Adult as 16+ but the message says 18 (finding).
 
-### TRAV-07 · Children alone can't search
+### TRAV-07 · Minors alone can't search (matrix)
 **Status:** automated · **Type:** negative
-**When** the user sets 2 children and 0 adults **Then** the adult-required message is shown and FIND TRAINS stays disabled.
+**Given** 0 adults and 0 seniors **When** the only travelers are 2 children, 1 youth, or 1 infant
+**Then** "Add at least one adult…" is shown, the panel's Done button is disabled and FIND TRAINS stays disabled.
 
 ### TRAV-08 · Counters can't go below zero
 **Status:** automated · **Type:** negative

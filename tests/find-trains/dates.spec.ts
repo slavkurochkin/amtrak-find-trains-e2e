@@ -1,7 +1,16 @@
 import { test, expect } from '@src/fixtures/test';
 import { TripType } from '@src/components/TripTypeMenu';
 import { Stations } from '@src/data/stations';
-import { addDays, daysFromToday, lastBookableDate, today, toAriaLabel, toInputFormat } from '@src/utils/dates';
+import {
+  addDays,
+  daysFromToday,
+  endOfMonth,
+  isAfter,
+  lastBookableDate,
+  today,
+  toAriaLabel,
+  toInputFormat,
+} from '@src/utils/dates';
 import { aSearch } from '@src/builders/SearchCriteriaBuilder';
 import { expectRequestToMatch } from '@src/utils/SearchRequestSpy';
 
@@ -179,5 +188,23 @@ test.describe('Find trains: booking horizon and typed dates', () => {
         await form.expectSearchDisabled();
       },
     );
+  }
+
+  // Matrix: date boundaries where off-by-one and format bugs usually hide.
+  const boundaries = [
+    { name: 'a month end into the 1st of the next month', depart: () => endOfMonth(today()) },
+    { name: 'New Year (Dec 31 into Jan 1)', depart: () => ({ year: today().year, month: 12, day: 31 }) },
+  ];
+  for (const { name, depart } of boundaries) {
+    test(`round trip across ${name} sends both dates`, { tag: '@DATE-13' }, async ({ homePage, searchSpy }) => {
+      const search = aSearch().departingOn(depart()).roundTrip(1).build();
+      test.skip(isAfter(search.returnDate!, lastBookableDate()), 'return date is beyond the 11-month booking horizon');
+      const form = homePage.fareFinder;
+
+      await form.fill(search);
+      await form.clickFindTrains();
+
+      expectRequestToMatch(await searchSpy.waitForSearch(), search);
+    });
   }
 });

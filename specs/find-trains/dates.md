@@ -44,6 +44,11 @@ Tests: `tests/find-trains/dates.spec.ts`
 **Status:** automated · **Type:** edge
 **When** the user navigates to the furthest month **Then** today + 11 months is the last enabled day, the next day is disabled, and "Next month" is disabled.
 
+### DATE-13 · Round trips across month and year boundaries (matrix)
+**Status:** automated · **Type:** edge
+**Given** a round trip from the last day of the current month to the 1st of the next, and from Dec 31 to Jan 1 **When** FIND TRAINS is clicked
+**Then** both legs carry the right dates (`YYYY-MM-DDT00:00:00`). The New Year case is skipped while Jan 1 is beyond the 11-month horizon.
+
 ### DATE-11 · A valid date can be typed into the depart field
 **Status:** automated · **Type:** positive
 **Given** stations are set **When** the user focuses Depart Date with the keyboard, types a valid future date (`M/D/YYYY`) and leaves the field

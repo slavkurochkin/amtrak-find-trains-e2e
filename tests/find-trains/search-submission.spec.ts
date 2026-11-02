@@ -1,5 +1,6 @@
 import { test, expect } from '@src/fixtures/test';
 import { aSearch } from '@src/builders/SearchCriteriaBuilder';
+import type { TravelerCounts } from '@src/components/TravelersPanel';
 import { Stations } from '@src/data/stations';
 import { expectRequestToMatch } from '@src/utils/SearchRequestSpy';
 
@@ -81,4 +82,23 @@ test.describe('Find trains: submitting a valid search', { tag: '@smoke' }, () =>
       expectRequestToMatch(await searchSpy.waitForSearch(), expected);
     },
   );
+
+  // Matrix: valid parties, including the less obvious ones found on the live site.
+  const validParties: Array<{ party: string; travelers: Partial<TravelerCounts> }> = [
+    { party: '1 senior alone (seniors count as adults)', travelers: { adult: 0, senior: 1 } },
+    { party: '1 senior with 1 child', travelers: { adult: 0, senior: 1, child: 1 } },
+    { party: '1 adult with 2 infants', travelers: { adult: 1, infant: 2 } },
+    { party: '1 adult with 7 children (8 total)', travelers: { adult: 1, child: 7 } },
+  ];
+  for (const { party, travelers } of validParties) {
+    test(`party of ${party} is sent as passengers`, { tag: '@SUB-07' }, async ({ homePage, searchSpy }) => {
+      const search = aSearch().withTravelers(travelers).build();
+      const form = homePage.fareFinder;
+
+      await form.fill(search);
+      await form.clickFindTrains();
+
+      expectRequestToMatch(await searchSpy.waitForSearch(), search);
+    });
+  }
 });

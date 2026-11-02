@@ -46,6 +46,16 @@ export function addMonths(d: CalendarDate, months: number): CalendarDate {
   return { year: first.getUTCFullYear(), month: first.getUTCMonth() + 1, day: Math.min(d.day, lastDay) };
 }
 
+/** Last day of the date's month. */
+export function endOfMonth(d: CalendarDate): CalendarDate {
+  return addDays(addMonths({ ...d, day: 1 }, 1), -1);
+}
+
+/** True if a is later than b. */
+export function isAfter(a: CalendarDate, b: CalendarDate): boolean {
+  return Date.UTC(a.year, a.month - 1, a.day) > Date.UTC(b.year, b.month - 1, b.day);
+}
+
 /** Last date Amtrak lets you book: 11 months from today (spec DATE-10). */
 export function lastBookableDate(): CalendarDate {
   return addMonths(today(), 11);

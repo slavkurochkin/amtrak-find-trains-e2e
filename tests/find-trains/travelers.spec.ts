@@ -1,6 +1,6 @@
 import { test, expect } from '@src/fixtures/test';
 import { Messages } from '@src/data/messages';
-import { TRAVELER_TYPES } from '@src/components/TravelersPanel';
+import { TRAVELER_TYPES, type TravelerType } from '@src/components/TravelersPanel';
 
 const MAX_ONLINE_TRAVELERS = 8;
 
@@ -79,16 +79,25 @@ test.describe('Find trains: travelers', () => {
       },
     );
 
-    test('children without an adult are not enough to search', { tag: '@TRAV-07' }, async ({ homePage }) => {
-      const form = homePage.fareFinder;
-      await form.travelers.open();
+    // Matrix: every "minors only" party is rejected the same way.
+    const minorsOnly: Array<{ party: string; type: TravelerType; count: number }> = [
+      { party: '2 children', type: 'child', count: 2 },
+      { party: '1 youth', type: 'youth', count: 1 },
+      { party: '1 infant', type: 'infant', count: 1 },
+    ];
+    for (const { party, type, count } of minorsOnly) {
+      test(`${party} without an adult can't search`, { tag: '@TRAV-07' }, async ({ homePage }) => {
+        const form = homePage.fareFinder;
+        await form.travelers.open();
 
-      await form.travelers.setCount('child', 2);
-      await form.travelers.setCount('adult', 0);
+        await form.travelers.setCount(type, count);
+        await form.travelers.setCount('adult', 0);
 
-      await expect(form.message(Messages.NEED_ADULT)).toBeVisible();
-      await form.expectSearchDisabled();
-    });
+        await expect(form.message(Messages.NEED_ADULT)).toBeVisible();
+        await expect(form.travelers.doneButton).toBeDisabled();
+        await form.expectSearchDisabled();
+      });
+    }
 
     test('the adult counter cannot go below zero', { tag: '@TRAV-08' }, async ({ homePage }) => {
       const { travelers } = homePage.fareFinder;
