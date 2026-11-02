@@ -6,8 +6,10 @@ import type { TimingOptions } from '../utils/timing';
 
 export type StationFieldKind = 'from' | 'to';
 
-/** The suggestion list for a query starts with one of these (not "Top depart stations"). */
-const QUERY_RESULTS = /^\s*(Stations|Locations|No stations found)/;
+/** The panel shown instead of query results when the input was wiped. */
+const POPULAR_STATIONS_PANEL = /Top (depart stations|destinations)/;
+
+const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 /**
  * The From / To station autocomplete.
@@ -25,6 +27,8 @@ export class StationField extends BaseComponent {
   readonly input: Locator;
   readonly listbox: Locator;
   readonly options: Locator;
+  /** "Loading" shown while the station lookup is in flight. */
+  readonly loading: Locator;
 
   constructor(
     page: Page,
@@ -38,6 +42,7 @@ export class StationField extends BaseComponent {
     this.input = this.root.locator('input[role="combobox"]');
     this.listbox = this.root.getByRole('listbox');
     this.options = this.listbox.getByRole('option');
+    this.loading = this.listbox.getByText('Loading', { exact: true });
   }
 
   async focus(): Promise<void> {
@@ -78,7 +83,9 @@ export class StationField extends BaseComponent {
     await expect(async () => {
       await this.enter(text);
       await expect(this.input).toHaveValue(text);
-      await expect(this.listbox).toContainText(QUERY_RESULTS);
+      // Results for this query (or the empty state), not the popular-stations panel.
+      await expect(this.listbox).toContainText(new RegExp(`${escapeRegExp(text)}|No stations found`, 'i'));
+      await expect(this.listbox).not.toContainText(POPULAR_STATIONS_PANEL);
     }).toPass();
   }
 

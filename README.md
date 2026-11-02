@@ -58,6 +58,12 @@ Tests wait on conditions: web-first assertions, `waitForResponse`, and the home 
 
 Station entry uses Playwright's `expect(...).toPass()` to re-enter text the site occasionally drops (finding 6). Its retry budget is `expect.toPass.timeout` in the config.
 
+### Mocked-backend tests
+
+Most tests run against the live site. Failure modes the live site can't produce on demand are tested by mocking **one** API while the rest of the page stays real (`@mocked`, `src/utils/StationLookupMock.ts`):
+- the station lookup returning 500 (fallback list, specs STN-13),
+- the lookup held back until the test releases it (deterministic "Loading" state, no timers, STN-14).
+
 ### Outputs
 
 - `reports/html/` – HTML report (every test has a screenshot; failures add trace + video)
@@ -115,7 +121,7 @@ The form's job is to turn user input into a correct search, and to refuse input 
 | Area | Spec | Positive / edge | Negative |
 |---|---|---|---|
 | Submission | [`SUB`](specs/find-trains/submission.md) | One-way, round-trip, all traveler types, today, swapped route. Each checks the exact request payload | – |
-| Stations | [`STN`](specs/find-trains/stations.md) | Suggestions, exact code, lowercase code, keyboard selection, swap | Unknown station, HTML injection, same From/To |
+| Stations | [`STN`](specs/find-trains/stations.md) | Suggestions, exact code, lowercase code, keyboard selection, swap, slow lookup shows "Loading" (mocked) | Unknown station, HTML injection, same From/To, lookup API failure falls back to a built-in list (mocked) |
 | Dates | [`DATE`](specs/find-trains/dates.md) | Today, months ahead, round-trip range, same-day return, 11-month horizon, typed date | Past dates, previous month, return before departure, closed calendar, invalid / past / too-far typed dates |
 | Travelers | [`TRAV`](specs/find-trains/travelers.md) | Default, total, Reset, 8 allowed | 9+, no adult, children alone, counter floor |
 | Trip type | [`TRIP`](specs/find-trains/trip-type.md) | One-way default, round-trip back to one-way | – |
@@ -143,6 +149,8 @@ Current coverage: **41 of 42 in-scope requirements automated or reproduced** (1 
    - a nested interactive Use Points switch.
 
    The station list nests group headers inside the listbox. In the travelers panel the **five count inputs have no labels** (critical: a screen reader can't tell Adult from Infant). The calendar is clean. These are baselined in `src/data/a11yBaseline.ts`, so tests fail only on new violations (specs `A11Y-*`).
+
+8. **Resilience (mocked backend).** When the station-lookup API fails, the app retries 3 times and then falls back to a built-in station list, so the search still works. In that fallback the best match isn't first (Back Bay before South Station for "Boston").
 
 ## Assumptions
 

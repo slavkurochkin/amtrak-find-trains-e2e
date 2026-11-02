@@ -61,6 +61,7 @@ Use the **`write-find-trains-test`** skill (`.claude/skills/write-find-trains-te
 - **Search request** `POST /dotcom/journey-solution-option` is aborted by the spy (it would get a bot-protection 403 anyway). Seniors are `"seniors"` in the payload.
 - **Overlays fade in:** wait for `waitForAnimations()` (BaseComponent) before scanning or screenshotting, or axe reports false colour-contrast hits.
 - **Accessibility:** `scanAccessibility(page, component.scanScope, A11Y_BASELINE.x)`. Known violations live in `src/data/a11yBaseline.ts`; never add to it without recording a finding.
+- **Mocking:** to test a backend failure or slow response, route only that endpoint (see `src/utils/StationLookupMock.ts`); hold responses with a promise the test releases instead of delaying with timers. Tag `@mocked`.
 - **Visual baselines are per OS:** after an intended UI change run `npm run test:visual:update` (macOS) and `npm run test:visual:update:linux` (Docker, matches CI).
 - **Travelers:** max 8 online (9 shows the 1-800-USA-RAIL message), at least 1 adult required.
 

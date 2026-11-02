@@ -55,6 +55,16 @@ Low priority: the list content is editorial and changes over time; test the pane
 **Status:** out-of-scope · **Type:** edge
 Observed: after a click the app sometimes moves focus to the suggestion header and the first keystrokes are lost (typing "BOS" searched "OS"). Nondeterministic, so not a reliable test; reported as a finding in README. The page objects work around it with `toPass`.
 
+### STN-13 · Station search keeps working when the location service fails (mocked)
+**Status:** automated · **Type:** negative
+**Given** the location lookup (`/AutoCompleterArcgis/`) returns 500 **When** the user searches "Boston"
+**Then** after its retries the app falls back to its built-in list: South Station (BOS), Back Bay (BBY), North Station (BON) and "Let me enter a station." are offered, and BOS can still be selected.
+Note: in the fallback Back Bay is listed before South Station, so the best match is no longer first (minor finding).
+
+### STN-14 · A slow location lookup shows "Loading" until results arrive (mocked)
+**Status:** automated · **Type:** edge
+**Given** the location lookup is held back **When** the user searches "Boston" **Then** the list shows "Loading"; once the response is released, the station results replace it.
+
 ### STN-12 · "Nearby" uses the browser location
 **Status:** out-of-scope · **Type:** positive
 Needs geolocation permission and a mocked location; not part of the core search.
