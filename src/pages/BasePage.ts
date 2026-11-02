@@ -1,5 +1,4 @@
 import { test, type Page } from '@playwright/test';
-import { step } from '../utils/step';
 
 /**
  * Behaviour every amtrak.com page shares.
@@ -18,7 +17,7 @@ export abstract class BasePage {
   constructor(readonly page: Page) {}
 
   async goto(): Promise<void> {
-    await step(`Open ${this.path}`, async () => {
+    await test.step(`Open ${this.path}`, async () => {
       // Start listening before navigating so fast responses aren't missed.
       // Same budget as the navigation itself (config `navigationTimeout`).
       const timeout = test.info().project.use.navigationTimeout ?? 0;

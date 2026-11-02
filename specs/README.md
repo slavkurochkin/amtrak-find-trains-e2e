@@ -10,7 +10,8 @@ specs/find-trains/
   travelers.md        TRAV-*  traveler counts and rules
   trip-type.md        TRIP-*  One-Way / Round-Trip / Multi-City / Group Travel
   coupons.md          CPN-*   coupon code field
-  accessibility.md    A11Y-*, VIS-*  WCAG scans, visual baseline
+  accessibility.md    A11Y-*  WCAG scans
+  visual.md           VIS-*   approved screenshots
   required-fields.md  REQ-*   what blocks a search
 ```
 

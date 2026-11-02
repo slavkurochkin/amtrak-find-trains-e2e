@@ -1,6 +1,5 @@
-import { expect, type Locator, type Page } from '@playwright/test';
+import { expect, test, type Locator, type Page } from '@playwright/test';
 import { BaseComponent } from './BaseComponent';
-import { step } from '../utils/step';
 
 export enum TripType {
   OneWay = 'One-Way',
@@ -26,7 +25,7 @@ export class TripTypeMenu extends BaseComponent {
   }
 
   async select(type: TripType): Promise<void> {
-    await step(`Select trip type: ${type}`, async () => {
+    await test.step(`Select trip type: ${type}`, async () => {
       await this.toggle.click();
       await this.byTestId(TAB_TEST_ID[type]).click();
       await this.expectSelected(type);
@@ -35,7 +34,7 @@ export class TripTypeMenu extends BaseComponent {
 
   /** Group Travel isn't a form mode: it opens the group request page. */
   async openGroupTravel(): Promise<void> {
-    await step('Open Group Travel', async () => {
+    await test.step('Open Group Travel', async () => {
       await this.toggle.click();
       await this.byTestId(TAB_TEST_ID[TripType.GroupTravel]).click();
     });

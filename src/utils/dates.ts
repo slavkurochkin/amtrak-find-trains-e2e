@@ -11,12 +11,13 @@ export interface CalendarDate {
   day: number;
 }
 
-const TZ = process.env.TEST_TZ ?? 'America/New_York';
+/** Time zone of the browser (playwright.config.ts) and of "today" in tests. */
+export const TEST_TIMEZONE = process.env.TEST_TZ ?? 'America/New_York';
 
 /** Today's date in the zone the browser runs in. */
 export function today(): CalendarDate {
   const parts = new Intl.DateTimeFormat('en-US', {
-    timeZone: TZ,
+    timeZone: TEST_TIMEZONE,
     year: 'numeric',
     month: 'numeric',
     day: 'numeric',

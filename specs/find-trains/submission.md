@@ -1,7 +1,7 @@
 # Submission – FIND TRAINS sends the right search
 
 Scope boundary: clicking FIND TRAINS sends `POST /dotcom/journey-solution-option`. The request body is the observable result; the results page is out of scope.
-Tests: `tests/find-trains/search-submission.spec.ts`
+Tests: `tests/find-trains/submission.spec.ts`
 
 ### SUB-01 · One-way search sends stations and date
 **Status:** automated · **Type:** positive

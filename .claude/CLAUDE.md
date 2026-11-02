@@ -1,4 +1,4 @@
-# CLAUDE.md – guide for AI assistants working on this repo
+# Guide for AI assistants working on this repo
 
 Playwright + TypeScript tests for the **"Find trains" form on amtrak.com/home** (live production site).
 Scope ends at the FIND TRAINS click: we assert the search **request** it sends, never the results page.
@@ -22,7 +22,7 @@ If another Playwright run may be active (e.g. the VS Code extension), isolate yo
 
 **Spec first:** every test verifies a requirement in `specs/find-trains/*.md` and is tagged with its ID (`{ tag: ['@negative', '@STN-08'] }`). Add or update the requirement before the test; `npm run spec:coverage` (also in CI) checks the links. Format and workflow: `specs/README.md`.
 
-Use the **`write-find-trains-test`** skill (`.claude/skills/write-find-trains-test/SKILL.md`): step-by-step workflow, spec template, and `scripts/inspect-form.mjs` to list real locators on the live form.
+Use the **`write-find-trains-test`** skill (`.claude/skills/write-find-trains-test/SKILL.md`): step-by-step workflow, spec template, and its `scripts/inspect-form.mjs` (inside the skill folder) to list real locators on the live form.
 
 ## Where things are
 
@@ -45,7 +45,7 @@ Use the **`write-find-trains-test`** skill (`.claude/skills/write-find-trains-te
 4. **Retrying assertions only:** `await expect(locator).toHaveText(...)`, not `expect(await locator.innerText())`.
 5. **Test data via the builder** (`aSearch()`), dates relative to today.
 6. Each test: one behaviour, Arrange / Act / Assert separated by blank lines, title says the expected behaviour. Tag negative tests `@negative`, core submission `@smoke`.
-7. Page-object actions that a reader should see in reports go in `step('…', …)` (`src/utils/step.ts`).
+7. Page-object actions that a reader should see in reports go in `test.step('…', …)`.
 8. Done = the new test passes **twice in a row** and `npm run typecheck` is clean.
 
 ## Amtrak quirks (learned the hard way)

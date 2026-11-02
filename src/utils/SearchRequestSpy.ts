@@ -4,6 +4,7 @@ import { expect, type Page, type Route, type TestInfo } from '@playwright/test';
 import type { SearchCriteria } from '../builders/SearchCriteriaBuilder';
 import type { TravelerType } from '../components/TravelersPanel';
 import { toApiFormat } from './dates';
+import { timing } from './timing';
 import { TripType } from '../components/TripTypeMenu';
 
 /** The parts of the search request body the tests check. */
@@ -38,16 +39,11 @@ export class SearchRequestSpy {
 
   private constructor(
     private readonly page: Page,
-    private readonly testInfo: TestInfo | undefined,
-    private readonly options: { noSearchWindowMs: number },
+    private readonly testInfo: TestInfo,
   ) {}
 
-  static async attach(
-    page: Page,
-    testInfo: TestInfo | undefined,
-    options: { noSearchWindowMs: number },
-  ): Promise<SearchRequestSpy> {
-    const spy = new SearchRequestSpy(page, testInfo, options);
+  static async attach(page: Page, testInfo: TestInfo): Promise<SearchRequestSpy> {
+    const spy = new SearchRequestSpy(page, testInfo);
     await page.route(SEARCH_ENDPOINT, (route) => spy.handle(route));
     return spy;
   }
@@ -57,13 +53,11 @@ export class SearchRequestSpy {
     if (request.method() !== 'POST') return route.continue();
     const body = request.postDataJSON() as JourneySearchRequest;
     this.requests.push(body);
-    if (this.testInfo) {
-      // Saved as a file next to the screenshot/trace, and linked in the report.
-      const file = this.testInfo.outputPath(`search-request-${this.requests.length}.json`);
-      fs.mkdirSync(path.dirname(file), { recursive: true });
-      fs.writeFileSync(file, JSON.stringify(body, null, 2));
-      await this.testInfo.attach(path.basename(file), { path: file, contentType: 'application/json' });
-    }
+    // Saved as a file next to the screenshot/trace, and linked in the report.
+    const file = this.testInfo.outputPath(`search-request-${this.requests.length}.json`);
+    fs.mkdirSync(path.dirname(file), { recursive: true });
+    fs.writeFileSync(file, JSON.stringify(body, null, 2));
+    await this.testInfo.attach(path.basename(file), { path: file, contentType: 'application/json' });
     return route.abort('aborted');
   }
 
@@ -83,16 +77,12 @@ export class SearchRequestSpy {
 
   /**
    * For negative tests: no search request may go out. Absence can't be
-   * awaited as a condition, so we watch for `noSearchWindowMs` (config option).
+   * awaited as a condition, so we watch for `noSearchWindowMs` (playwright.config.ts).
    */
   async expectNoSearch(): Promise<void> {
     // eslint-disable-next-line playwright/no-wait-for-timeout -- absence can only be observed over a window (config option)
-    await this.page.waitForTimeout(this.options.noSearchWindowMs);
+    await this.page.waitForTimeout(timing().noSearchWindowMs);
     expect(this.requests, 'no search request should be sent').toHaveLength(0);
-  }
-
-  get last(): JourneySearchRequest | undefined {
-    return this.requests[this.requests.length - 1];
   }
 }
 

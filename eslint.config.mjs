@@ -4,7 +4,7 @@ import playwright from 'eslint-plugin-playwright';
 import globals from 'globals';
 
 export default tseslint.config(
-  { ignores: ['node_modules/', 'reports/', 'test-results/', 'playwright-report/', '.auth/'] },
+  { ignores: ['node_modules/', 'reports/', 'test-results/', '.auth/'] },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {

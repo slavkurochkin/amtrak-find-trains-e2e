@@ -1,6 +1,5 @@
-import { expect, type Locator, type Page } from '@playwright/test';
+import { expect, test, type Locator, type Page } from '@playwright/test';
 import { BaseComponent } from './BaseComponent';
-import { step } from '../utils/step';
 
 export const TRAVELER_TYPES = ['adult', 'senior', 'youth', 'child', 'infant'] as const;
 export type TravelerType = (typeof TRAVELER_TYPES)[number];
@@ -83,19 +82,20 @@ export class TravelersPanel extends BaseComponent {
       .filter(([, n]) => n)
       .map(([t, n]) => `${n} ${t}`)
       .join(', ');
-    await step(`Set travelers: ${label || 'none'}`, () => this.applyCounts(counts));
+    await test.step(`Set travelers: ${label || 'none'}`, () => this.applyCounts(counts));
   }
 
   private async applyCounts(counts: Partial<TravelerCounts>): Promise<void> {
     await this.open();
-    // Raise adults first and lower them last so the "at least one adult" rule
-    // never blocks a change part way through.
-    const order: TravelerType[] = ['adult', 'senior', 'youth', 'child', 'infant'];
-    for (const type of order) {
-      if (type === 'adult' && (counts.adult ?? 0) < 1) continue;
+    // Order matters because of the "at least one adult" rule. For
+    // { senior: 1 } the panel starts at 1 adult: add the senior first, then
+    // remove the adult. Removing the adult first would be refused.
+    const adults = counts.adult ?? 0;
+    if (adults > 0) await this.setCount('adult', adults);
+    for (const type of TRAVELER_TYPES.filter((t) => t !== 'adult')) {
       await this.setCount(type, counts[type] ?? 0);
     }
-    if ((counts.adult ?? 0) < 1) await this.setCount('adult', counts.adult ?? 0);
+    if (adults === 0) await this.setCount('adult', 0);
     await this.done();
   }
 }

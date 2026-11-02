@@ -1,8 +1,7 @@
-import { expect, type Locator, type Page } from '@playwright/test';
+import { expect, test, type Locator, type Page } from '@playwright/test';
 import { BaseComponent } from './BaseComponent';
 import type { Station } from '../data/stations';
-import { step } from '../utils/step';
-import type { TimingOptions } from '../utils/timing';
+import { timing } from '../utils/timing';
 
 export type StationFieldKind = 'from' | 'to';
 
@@ -33,7 +32,6 @@ export class StationField extends BaseComponent {
   constructor(
     page: Page,
     readonly kind: StationFieldKind,
-    private readonly timing: Pick<TimingOptions, 'typingDelayMs'>,
     /** Multi-City: which leg (0 = first). Every leg reuses the same test ids. */
     leg = 0,
   ) {
@@ -70,7 +68,7 @@ export class StationField extends BaseComponent {
     await expect(async () => {
       if (await this.input.isVisible()) await this.input.fill('');
       await this.focus();
-      await this.input.pressSequentially(text, { delay: this.timing.typingDelayMs });
+      await this.input.pressSequentially(text, { delay: timing().typingDelayMs });
       if (await this.input.isVisible()) await expect(this.input).toHaveValue(text);
     }).toPass();
   }
@@ -97,7 +95,7 @@ export class StationField extends BaseComponent {
 
   /** Search by city name and click the matching station option. */
   async select(station: Station): Promise<void> {
-    await step(`Select ${this.kind} station: ${station.code} (search "${station.name}")`, async () => {
+    await test.step(`Select ${this.kind} station: ${station.code} (search "${station.name}")`, async () => {
       await this.search(station.name);
       await this.chooseOption(station.optionText);
       await this.expectSelected(station);
@@ -106,7 +104,7 @@ export class StationField extends BaseComponent {
 
   /** Enter the exact station code, which the site auto-selects. */
   async selectByCode(station: Station): Promise<void> {
-    await step(`Select ${this.kind} station by code: ${station.code}`, async () => {
+    await test.step(`Select ${this.kind} station by code: ${station.code}`, async () => {
       // Retried like search() in case the input gets wiped before it's matched.
       await expect(async () => {
         if (await this.input.isVisible()) await this.enter(station.code);

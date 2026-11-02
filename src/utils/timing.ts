@@ -1,11 +1,12 @@
+import { test } from '@playwright/test';
+
 /**
- * Suite-specific timings: things that can't be expressed as "wait until X".
- * Values live in playwright.config.ts under `use` (fixture options), and can
- * be overridden per project or per file with `test.use({ stationSettleMs: 2_000 })`.
- * Everything else waits on conditions, bounded by `actionTimeout` / `expect.timeout`.
+ * Suite-specific timings: the few waits that can't be expressed as "wait until X".
+ * The values are set in ONE place, playwright.config.ts under `use`; everything
+ * else waits on conditions, bounded by `actionTimeout` / `expect.timeout`.
  */
 export interface TimingOptions {
-  /** Idle time before clicking Swap (works around Amtrak's swap race bug). */
+  /** Idle time before clicking Swap (works around Amtrak's swap race bug, F-01). */
   stationSettleMs: number;
   /** How long a negative test watches to prove no search request is sent. */
   noSearchWindowMs: number;
@@ -13,8 +14,11 @@ export interface TimingOptions {
   typingDelayMs: number;
 }
 
-export const DEFAULT_TIMING: TimingOptions = {
-  stationSettleMs: 1_000,
-  noSearchWindowMs: 2_000,
-  typingDelayMs: 80,
-};
+/** Reads the timing values of the running test's project from the config. */
+export function timing(): TimingOptions {
+  const { stationSettleMs, noSearchWindowMs, typingDelayMs } = test.info().project.use as Partial<TimingOptions>;
+  if (stationSettleMs === undefined || noSearchWindowMs === undefined || typingDelayMs === undefined) {
+    throw new Error('Timing options are missing from `use` in playwright.config.ts');
+  }
+  return { stationSettleMs, noSearchWindowMs, typingDelayMs };
+}

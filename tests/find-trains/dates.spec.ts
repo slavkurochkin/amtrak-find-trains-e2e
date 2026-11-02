@@ -158,7 +158,7 @@ test.describe('Find trains: booking horizon and typed dates', () => {
       test.skip(isMobile, 'on mobile the date field is read-only: dates are picked from the calendar only');
       const search = aSearch().departingInDays(20).build();
       const form = homePage.fareFinder;
-      // Date first: typing right after picking a station can leak keys into it (finding STN-11).
+      // Date first: typing right after picking a station can leak keys into it (finding F-02, spec STN-11).
       await form.typeDepartDate(toInputFormat(search.departDate));
       await form.from.selectByCode(search.from);
       await form.to.selectByCode(search.to);

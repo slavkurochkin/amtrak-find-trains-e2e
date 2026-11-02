@@ -5,7 +5,7 @@ description: Write or extend Playwright tests for the amtrak.com "Find trains" f
 
 # Writing a Find-trains test
 
-Goal: a test that reads like the user journey, talks only to page objects, waits only on conditions, and passes twice in a row against live amtrak.com. `CLAUDE.md` has the full rules and Amtrak quirks; read it first if you haven't this session.
+Goal: a test that reads like the user journey, talks only to page objects, waits only on conditions, and passes twice in a row against live amtrak.com. `.claude/CLAUDE.md` has the full rules and Amtrak quirks; read it first if you haven't this session (Claude Code loads it automatically).
 
 ## 1. Spec first
 
@@ -20,11 +20,14 @@ Decide the area and file:
 
 | Area | File | Tag |
 |---|---|---|
-| Valid search → request payload | `tests/find-trains/search-submission.spec.ts` | `@smoke` |
-| From/To, swap, autocomplete | `tests/find-trains/stations.spec.ts` | `@negative` for invalid input |
-| Calendar, depart/return | `tests/find-trains/dates.spec.ts` | `@negative` for invalid dates |
-| Traveler counts and rules | `tests/find-trains/travelers.spec.ts` | `@negative` for rule violations |
-| Trip type, form-wide required fields | `tests/find-trains/form-validation.spec.ts` (or a new `trip-type.spec.ts`) | `@negative` |
+| Rule: one spec file per test file | `specs/find-trains/<area>.md` ↔ `tests/find-trains/<area>.spec.ts` | |
+| Valid search → request payload | `submission.spec.ts` | `@smoke` |
+| From/To, swap, autocomplete (incl. mocked lookup) | `stations.spec.ts` | `@negative` for invalid input, `@mocked` |
+| Calendar, depart/return, typed dates | `dates.spec.ts` | `@negative` for invalid dates |
+| Traveler counts and rules | `travelers.spec.ts` | `@negative` for rule violations |
+| Trip type (One-Way, Round-Trip, Multi-City, Group) | `trip-type.spec.ts` | |
+| What blocks a search | `required-fields.spec.ts` | `@negative` |
+| Coupons / accessibility / visual | `coupons.spec.ts` / `accessibility.spec.ts` / `visual.spec.ts` | `@a11y`, `@visual` |
 | Amtrak bug repro | where the area fits | `@known-bug` (excluded by default) |
 
 Check the file first: if a test already covers it, extend that test instead of adding a near-duplicate.
@@ -48,7 +51,7 @@ It prints visible elements with their `amt-auto-test-id`, role, accessible name,
 
 Then add the locator or method to the **component**, not the spec:
 - Locator priority: `this.byTestId('<amt-auto-test-id>')` → `getByRole(role, { name })` → `this.visible('[data-julie=…]')`. Everything must be visible-filtered (the site renders the form twice).
-- Actions a report reader should see go in `step('Verb object: detail', async () => { … })`.
+- Actions a report reader should see go in `test.step('Verb object: detail', async () => { … })`.
 - A method that changes state ends with an assertion that the change happened (e.g. `expectSelected`).
 - New user-facing copy goes in `src/data/messages.ts`; new stations in `src/data/stations.ts`.
 
@@ -104,5 +107,5 @@ If it fails, read `reports/failures.md` (error, steps, page snapshot) before cha
 ## 7. Finish
 
 - Set the requirement's status to `automated` (or `known-bug`) and make sure `npm run spec:coverage` is clean.
-- If you learned a new site quirk, add it to the "Amtrak quirks" section of `CLAUDE.md`.
+- If you learned a new site quirk, add it to the "Amtrak quirks" section of `.claude/CLAUDE.md`.
 - Report to the user: the test title(s), file, the pass result, and any finding.

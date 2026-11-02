@@ -1,7 +1,7 @@
 # Required fields – what blocks a search
 
 FIND TRAINS is `aria-disabled` until the form is valid, and clicking it then sends nothing.
-Tests: `tests/find-trains/form-validation.spec.ts`
+Tests: `tests/find-trains/required-fields.spec.ts`
 
 ### REQ-01 · Empty form can't be submitted
 **Status:** automated · **Type:** negative

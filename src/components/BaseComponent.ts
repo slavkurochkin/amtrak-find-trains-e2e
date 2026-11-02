@@ -20,12 +20,7 @@ export abstract class BaseComponent {
   }
 
   /**
-   * Waits until CSS transitions/animations inside the element have finished.
-   * Panels fade in; scanning or screenshotting mid-fade gives false
-   * colour-contrast hits and flaky images.
-   */
-  /**
-   * Taps a Done button inside a mobile panel the way a finger would.
+   * Presses a button pinned over a scrolling panel (Done, FIND TRAINS) the way a finger would.
    * On touch devices Playwright's click first scrolls the button "into view",
    * which in these pinned/scrolling layouts moves other content under it, and
    * the click lands there (seen: a date row, the disability checkbox). So:
@@ -51,6 +46,11 @@ export abstract class BaseComponent {
     await this.page.touchscreen.tap(box.x + box.width / 2, box.y + box.height / 2);
   }
 
+  /**
+   * Waits until CSS transitions/animations inside the element have finished.
+   * Panels fade in; scanning or screenshotting mid-fade gives false
+   * colour-contrast hits and flaky images.
+   */
   protected async waitForAnimations(element: Locator): Promise<void> {
     await element.evaluate((el) => Promise.all(el.getAnimations({ subtree: true }).map((a) => a.finished)));
   }

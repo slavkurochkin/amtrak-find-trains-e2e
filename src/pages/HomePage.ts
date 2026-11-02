@@ -1,6 +1,6 @@
 import { expect, type Page } from '@playwright/test';
 import { BasePage } from './BasePage';
-import { FareFinderForm, type FareFinderOptions } from '../components/FareFinderForm';
+import { FareFinderForm } from '../components/FareFinderForm';
 
 /** amtrak.com/home. Only the booking form is modelled; other sections can be added as components. */
 export class HomePage extends BasePage {
@@ -9,9 +9,9 @@ export class HomePage extends BasePage {
   protected readonly requiredData = [/\/services\/data\.stations\.json/, /\/services\/data\.popularstations\.json/];
   readonly fareFinder: FareFinderForm;
 
-  constructor(page: Page, options: FareFinderOptions) {
+  constructor(page: Page) {
     super(page);
-    this.fareFinder = new FareFinderForm(page, options);
+    this.fareFinder = new FareFinderForm(page);
   }
 
   protected async waitUntilReady(): Promise<void> {

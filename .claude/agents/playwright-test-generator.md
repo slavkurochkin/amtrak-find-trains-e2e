@@ -58,7 +58,7 @@ application behavior.
    ```
    </example-generation>
 # Project rules (amtrak-find-trains-e2e)
-Read `CLAUDE.md` at the repo root before writing or changing code. In short:
+Read `.claude/CLAUDE.md` (also `AGENTS.md` in the repo root) before writing or changing code. In short:
 - Tests import `test`/`expect` from `@src/fixtures/test` and use the `homePage` / `searchSpy` fixtures, never raw `page.goto`.
 - Interact through page objects in `src/components/` (e.g. `homePage.fareFinder.from.select(Stations.BOSTON)`). If a locator you need isn't there, add it to the right component instead of writing it in the spec.
 - Build search data with `aSearch()` from `src/builders/SearchCriteriaBuilder.ts`; dates are relative (`daysFromToday`).

@@ -1,6 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 import { CONSENT_STATE_FILE } from './src/utils/consentState';
 import type { TimingOptions } from './src/utils/timing';
+import { TEST_TIMEZONE } from './src/utils/dates';
 
 const isCI = !!process.env.CI;
 // Both are overridable so parallel runs (IDE extension + terminal) don't clobber each other.
@@ -40,11 +41,11 @@ export default defineConfig<TimingOptions>({
     locale: 'en-US',
     // The calendar decides which dates are "past" from the browser clock, so the
     // browser and our date helpers must agree on a time zone.
-    timezoneId: process.env.TEST_TZ ?? 'America/New_York',
+    timezoneId: TEST_TIMEZONE,
     viewport: { width: 1440, height: 900 },
     actionTimeout: 15_000,
     navigationTimeout: 45_000,
-    // Suite-specific timings (fixture options, see src/utils/timing.ts).
+    // The only time-based waits in the suite (read via timing() in src/utils/timing.ts).
     // Everything else waits on conditions, bounded by the timeouts above.
     stationSettleMs: 1_000, // pause before Swap; avoids Amtrak's swap race bug (README "Findings")
     noSearchWindowMs: 2_000, // how long negative tests watch for a search request that must not happen

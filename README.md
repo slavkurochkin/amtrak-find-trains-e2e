@@ -1,216 +1,91 @@
 # Amtrak "Find trains" – automated test suite
 
-Playwright + TypeScript end-to-end tests for the **"Find trains" search form on [amtrak.com/home](https://www.amtrak.com/home)**, built with the Page Object pattern.
+Playwright + TypeScript tests for the **"Find trains" search form on [amtrak.com/home](https://www.amtrak.com/home)**, from the form's inputs **up to the FIND TRAINS click** (results and booking are out of scope).
 
-Scope: the homepage search form and its inputs, **up to the FIND TRAINS click**. Results and booking pages are out of scope.
-
-**Status:** 63 requirement tests plus a seed test and a one-time setup step (65 in a run), all passing on desktop Chromium against production on 2026-11-02. The `@smoke` subset passes on Firefox, WebKit and mobile Chrome (2 of 40 needed a retry: live-site flakiness, reported as flaky). The station tests also passed 4 repeats under parallel load. A known-bug repro runs on demand with `npm run test:known-bugs`. Evidence is in [`docs/evidence/`](docs/evidence/README.md).
-
-AI assistants: start with [`CLAUDE.md`](CLAUDE.md) (also linked as `AGENTS.md`).
-
----
+**Status (2026-11-02, against production):** 63 tests pass on desktop Chromium. The `@smoke` subset also runs on Firefox, WebKit and mobile Chrome. Evidence: [`docs/evidence/`](docs/evidence/README.md).
 
 ## Quick start
 
-Requirements: **Node.js 18+** (developed on Node 25) and an internet connection (tests run against live amtrak.com).
+Requires **Node.js 18+** and an internet connection (the tests run against the live site).
 
 ```bash
-npm ci                                  # install dependencies
-npx playwright install chromium         # download the test browser (add --with-deps on Linux CI)
-npm test                                # full suite on desktop Chromium (headless)
+npm ci                            # install the exact dependency versions from package-lock.json
+npx playwright install chromium   # download the test browser
+npm test                          # run the full suite (desktop Chromium, headless)
 ```
 
-Other ways to run:
-
-| Command | What it does |
+| Also useful | |
 |---|---|
-| `npm run test:smoke` | Happy-path searches only (`@smoke`) |
-| `npm run test:cross-browser` | `@smoke` on Firefox, WebKit and mobile Chrome (nightly in CI) |
-| `npm run test:all` | Every project |
-| `npm run test:negative` | Validation / negative tests only (`@negative`) |
-| `npm run test:known-bugs` | Repro of the Amtrak swap bug (fails while the bug exists; not part of the default run) |
 | `npm run test:headed` | Watch the browser while tests run |
-| `npm run test:ui` | Playwright UI mode (time-travel debugging) |
-| `npx playwright test -g "swap"` | Run tests whose title matches |
-| `npm run report` | Open the last HTML report |
-| `npm run typecheck` | TypeScript check |
-| `npm run lint` / `npm run format` | ESLint (incl. Playwright rules: no fixed waits, no missing `await`) / Prettier |
-| `npm run check` | Lint + format check + typecheck + spec coverage (the pre-commit hook runs this) |
-| `npm run spec:coverage` | Check tests ↔ requirements in `specs/`; list open gaps |
-| `npm run test:visual:update` / `:linux` | Re-approve visual baselines on macOS / in the Linux Docker image CI uses |
 | `npx playwright test --grep @STN-08` | Run the tests for one requirement |
+| `npm run report` | Open the HTML report of the last run |
+| `npm run spec:coverage` | Show which requirements are tested, and the open gaps |
 
-### Environment (all optional, see `.env.example`)
+No environment setup is needed. Optional variables (`BASE_URL`, `TEST_TZ`), every command, outputs and CI are described in **[`docs/FRAMEWORK.md`](docs/FRAMEWORK.md)**.
 
-| Variable | Default | Purpose |
+## Approach
+
+**Test the request, not the results page.** Clicking FIND TRAINS sends `POST /dotcom/journey-solution-option` with the search as JSON: trip type, legs with station codes and dates, and one passenger per traveler. That request is the exact outcome of the click and the edge of the scope. A spy captures it, compares it with what the test entered, and aborts it, so no automated searches reach Amtrak's backend (it answers bots with 403 anyway).
+
+**Design**
+- **Page objects split into components.** `HomePage` → `FareFinderForm` → `StationField`, `DatePicker`, `TravelersPanel`, `TripTypeMenu` (in `src/components/`). Widgets like the station search recur across amtrak.com, so they're reusable on their own.
+- **Builder for test data.** `aSearch().roundTrip(3).from(Stations.BOSTON).build()`: valid defaults, dates relative to today, so each test states only what matters.
+- **Fixtures.** Tests receive a ready `homePage` and the `searchSpy`, and contain no setup code.
+- **Stable locators.** Amtrak's own `amt-auto-test-id` attributes first, then ARIA roles. Always filtered to visible, because the form is rendered twice (desktop and mobile layouts).
+
+**Reliability against a live site**
+- The page counts as ready once its station data has loaded, not just when it's visible.
+- The cookie banner is dismissed once, in a setup step.
+- There are no fixed waits: the three unavoidable timings are named in `playwright.config.ts`, and lint forbids any others.
+
+**Spec-driven.** Every behaviour is a requirement with an ID in [`specs/find-trains/`](specs/README.md), and every test is tagged with the ID it verifies. `npm run spec:coverage` (run in CI and before each commit) fails when tests and specs drift apart.
+
+## What is tested and why
+
+The form's job is to turn input into a correct search and to refuse input that can't be searched. The tests cover both, plus the edge cases most likely to break. Spec files and test files match one-to-one (`specs/find-trains/stations.md` ↔ `tests/find-trains/stations.spec.ts`).
+
+| Area | Positive / edge cases | Negative cases |
 |---|---|---|
-| `BASE_URL` | `https://www.amtrak.com` | Point at another environment (e.g. staging) |
-| `TEST_TZ` | `America/New_York` | Time zone for the browser **and** for computing "today" in tests (the calendar disables past dates by browser clock) |
-| `PW_OUTPUT_DIR` / `PW_REPORTS_DIR` | `test-results` / `reports` | Separate output folders, e.g. when an IDE runner and a terminal run at the same time |
+| [Submission](specs/find-trains/submission.md) | One-way, round-trip, all traveler types, departing today, swapped route, traveler-party matrix, Use Points. Each checks the exact request | – |
+| [Stations](specs/find-trains/stations.md) | Suggestions, exact code, lowercase, keyboard, swap; slow lookup shows "Loading" (mocked) | Unknown station, HTML injection, same From and To; lookup failure falls back to a built-in list (mocked) |
+| [Dates](specs/find-trains/dates.md) | Today, months ahead, round-trip range, same-day return, 11-month horizon, typed date, month and year boundaries | Past dates, previous month, return before departure, closed calendar, invalid / past / too-far typed dates |
+| [Travelers](specs/find-trains/travelers.md) | Default, total, Reset, 8 allowed, "Traveling Alone?" policy | 9+ travelers, no adult, minors alone, counter floor |
+| [Trip type](specs/find-trains/trip-type.md) | One-way default, round-trip back to one-way, Multi-City legs, Group Travel page | – |
+| [Required fields](specs/find-trains/required-fields.md) | Assistance needed opens the accessibility dialog first | Empty form, From only, missing To, missing date, round trip without return; each also checks no request is sent |
+| [Coupons](specs/find-trains/coupons.md) | – | Letters and digits only, max 14 |
+| [Accessibility](specs/find-trains/accessibility.md), [Visual](specs/find-trains/visual.md) | Travelers panel matches its approved screenshot | No new WCAG violations in the form, suggestions, calendar and travelers panel |
 
-### Timing options (no hardcoded waits)
-
-Tests wait on conditions: web-first assertions, `waitForResponse`, and the home page counting as ready only once its station data has loaded. They're bounded by `actionTimeout` / `expect.timeout` in `playwright.config.ts`. The few time-based values that can't be expressed as a condition are typed **fixture options** in the config's `use` block (defined in `src/utils/timing.ts`). Override them per project, or per file with `test.use({...})`:
-
-| Option | Default | Why it's time-based |
-|---|---|---|
-| `stationSettleMs` | 1000 | Pause before Swap. There's no DOM signal for "settled", and swapping sooner hits Amtrak's swap bug |
-| `noSearchWindowMs` | 2000 | Negative tests prove a request is *not* sent; absence can only be observed over a window |
-| `typingDelayMs` | 80 | Keystroke cadence for key-by-key typing tests |
-
-Station entry uses Playwright's `expect(...).toPass()` to re-enter text the site occasionally drops (finding 6). Its retry budget is `expect.toPass.timeout` in the config.
-
-### Mocked-backend tests
-
-Most tests run against the live site. Failure modes the live site can't produce on demand are tested by mocking **one** API while the rest of the page stays real (`@mocked`, `src/utils/StationLookupMock.ts`):
-- the station lookup returning 500 (fallback list, specs STN-13),
-- the lookup held back until the test releases it (deterministic "Loading" state, no timers, STN-14).
-
-### Outputs
-
-- `reports/html/` – HTML report (every test has a screenshot; failures add trace + video)
-- `reports/junit.xml` – for CI dashboards
-- `reports/failures.md` – **AI-ready failure summary** (see [CI and AI debugging](#ci-and-ai-assisted-debugging))
-- `test-results/<test>/` – per-test screenshot, trace, video, captured `search-request-N.json`
-
----
-
-## Project structure
-
-```
-specs/find-trains/  requirements: ID, Given/When/Then, status (the source of truth)
-src/
-  pages/            BasePage (navigation, readiness by data), HomePage
-  components/       One class per form widget, composed by FareFinderForm
-    BaseComponent.ts    visible-only locators, animation wait, finger-like taps on mobile
-    FareFinderForm.ts   the whole form: legs, dates, coupon, assistance, FIND TRAINS
-    StationField.ts     From / To autocomplete (per Multi-City leg)
-    DatePicker.ts       calendar
-    TravelersPanel.ts   traveler-type steppers
-    TripTypeMenu.ts     One-Way / Round-Trip / Multi-City / Group Travel
-  builders/         SearchCriteriaBuilder: fluent test data with defaults
-  data/             stations, user-facing messages, accessibility baseline
-  fixtures/         Playwright fixtures: homePage, searchSpy, timing options
-  utils/            SearchRequestSpy, StationLookupMock, a11y scan, dates, timing, step()
-  reporters/        ai-failure-reporter.ts (reports/failures.md)
-tests/
-  find-trains/      specs by area, each test tagged with its requirement ID
-  setup/            one-time cookie-consent setup (saved browser state)
-  seed.spec.ts      starting point for Playwright's AI test agents
-scripts/            spec-coverage.mjs (tests <-> requirements check)
-docs/
-  findings.md       bug reports for Amtrak
-  evidence/         run log, JUnit, screenshots, captured requests, bug evidence
-CLAUDE.md           rules and quirks for AI assistants (AGENTS.md links to it)
-.claude/            write-find-trains-test skill; Playwright planner / generator / healer agents
-.githooks/          pre-commit: lint, format, typecheck, spec coverage
-.github/workflows/  CI (PR gate on Chromium in the Playwright Docker image; nightly all browsers)
-```
-
-### Design patterns and why
-
-- **Page Object Model with components.** `HomePage` owns a `FareFinderForm`, which composes `StationField` ×2, `DatePicker`, `TravelersPanel` and `TripTypeMenu`. Widgets are separate classes because they recur across amtrak.com (Schedules and Train Status reuse the station search), so a new page reuses them instead of copying selectors.
-- **Builder** (`aSearch().roundTrip(4).from(Stations.BOSTON).build()`). Every test starts from a valid default (one-way NYP→WAS, 14 days out, 1 adult) and states only what it cares about. Dates are relative to "today", so tests never go stale.
-- **Fixtures.** `homePage` (loaded and ready) and `searchSpy` (attached before navigation), plus timing options. Tests declare what they need and contain no setup code.
-- **Setup project for the cookie banner.** It runs once, clicks "Reject All", and saves only the consent cookies; every test starts from that state, so the banner never appears. Bot-protection cookies are deliberately not reused.
-- **Readiness by data, not time.** The form renders before its station data arrives, so `HomePage` waits for `data.stations.json` and `data.popularstations.json` before a test starts.
-- **Network contract check at the scope boundary.** FIND TRAINS sends `POST /dotcom/journey-solution-option` with JSON (`type: OW|RT`, legs with origin/destination codes and dates, one passenger per traveler). `SearchRequestSpy` captures it, `expectRequestToMatch()` compares it with the builder's criteria, and the request is **aborted**. That proves the click does the right thing without depending on the results page, and without sending automated search load to Amtrak's backend.
-- **Locators.** Amtrak's own `amt-auto-test-id` attributes first, then ARIA roles and names (`role=option`, calendar `gridcell` named "Monday, November 16, 2026"). Every lookup is filtered to `visible`, because the site renders each form twice (desktop and mobile layouts).
-- **Named steps** (`step('Select to station: WAS', …)`) in page objects, so reports and traces read like a user journey.
-
----
-
-## What is tested and why (spec-driven)
-
-The form's job is to turn user input into a correct search, and to refuse input that can't be searched. Tests cover both, plus the edge cases most likely to break.
-
-**Requirements live in [`specs/find-trains/`](specs/README.md)**, one file per area. Each behaviour has an ID, a Given/When/Then and a status (`automated`, `gap`, `known-bug`, `out-of-scope`). Every test is tagged with the ID(s) it verifies, so `npx playwright test --grep @DATE-12` runs one requirement. `npm run spec:coverage` (also run in CI) fails if a test has no requirement, uses an unknown ID, or a status doesn't match the tests.
-
-| Area | Spec | Positive / edge | Negative |
-|---|---|---|---|
-| Submission | [`SUB`](specs/find-trains/submission.md) | One-way, round-trip, all traveler types, today, swapped route, traveler-party matrix, Use Points (`pricingUnit: POINTS`). Each checks the exact request payload | – |
-| Stations | [`STN`](specs/find-trains/stations.md) | Suggestions, exact code, lowercase code, keyboard selection, swap, slow lookup shows "Loading" (mocked) | Unknown station, HTML injection, same From/To, lookup API failure falls back to a built-in list (mocked) |
-| Dates | [`DATE`](specs/find-trains/dates.md) | Today, months ahead, round-trip range, same-day return, 11-month horizon, typed date | Past dates, previous month, return before departure, closed calendar, invalid / past / too-far typed dates |
-| Travelers | [`TRAV`](specs/find-trains/travelers.md) | Default, total, Reset, 8 allowed, "Traveling Alone?" policy | 9+, no adult, children alone, counter floor |
-| Trip type | [`TRIP`](specs/find-trains/trip-type.md) | One-way default, round-trip back to one-way, Multi-City legs (`type: MC`), Group Travel page | – |
-| Coupons | [`CPN`](specs/find-trains/coupons.md) | – | Only letters and digits, max 14 |
-| Accessibility / visual | [`A11Y`, `VIS`](specs/find-trains/accessibility.md) | Travelers panel matches its approved screenshot | No new WCAG violations: form, suggestions, calendar, travelers panel |
-| Required fields | [`REQ`](specs/find-trains/required-fields.md) | Assistance needed opens the Accessible Travel Services dialog first | Empty form, From only, missing To, missing date, round trip without return. Each also checks no request is sent |
-
-Current coverage is printed by `npm run spec:coverage`: 56 of 58 in-scope requirements have tests (1 is a known-bug repro). The two open gaps are listed on purpose: STN-10 (popular stations on focus) and CPN-02 (invalid-coupon feedback).
+**Coverage:** 56 of 58 in-scope requirements have tests, one of them a known-bug repro. Two gaps are left open on purpose: STN-10 (popular stations on focus) and CPN-02 (invalid-coupon feedback). Out-of-scope items are listed with reasons in the spec files.
 
 ## Findings on amtrak.com
 
-Full bug reports with steps, expected vs actual, frequency and evidence: **[`docs/findings.md`](docs/findings.md)**.
+Writing the tests surfaced real issues. Full bug reports, with steps and evidence, are in **[`docs/findings.md`](docs/findings.md)**.
 
 | # | Finding | Severity |
 |---|---|---|
-| F-01 | Swap clicked quickly shows the same station in both fields, while a different route is searched | Medium |
-| F-02 | Focus jumps back to a station field after it's picked: a typed date landed in To ("WAS/2026") | Medium |
+| F-01 | Clicking Swap quickly shows the same station in both fields, while a different route is searched | Medium |
+| F-02 | Focus jumps back to a station field after it's picked, so a typed date landed in To ("WAS/2026") | Medium |
 | F-03 | Travelers panel: the five count inputs have no labels (critical WCAG) | High (a11y) |
 | F-04 | Booking form: 2 critical and 3 serious WCAG violation types at rest | High (a11y) |
-| F-05 | Adult labelled 16+, but the error says 18 or older | Low |
-| F-06 | Date hint says MM/DD/YYYY, values show as M/D/YYYY | Low |
-| F-07 | Invalid station, date or coupon rejected silently, with no message | Low |
-| F-08 | Station-lookup failure fallback lists Back Bay before South Station | Low |
-| F-09 | Enter right after typing in a station field triggers "Nearby" geolocation | Low |
+| F-05 – F-09 | Copy and UX issues: adult age 16+ vs 18, date format hint, silent rejection of invalid input, fallback station order, Enter triggering "Nearby" | Low |
 
 ## Assumptions
 
-- **Production is the target.** No staging access, so the suite runs read-only against amtrak.com and never completes a search.
-- **The search request is the observable result of FIND TRAINS.** Under automation Amtrak's bot protection (Akamai) answers it with **403**, and the page shows "We've experienced an unknown error". So "the click worked" means "the correct request was sent".
-- **Browsers:** the full suite runs on desktop Chromium (1440×900), which is the PR gate. Firefox, WebKit (Safari engine) and mobile Chrome (Pixel 7) run the `@smoke` subset nightly (`npm run test:cross-browser`). On mobile the date field is read-only (calendar only), and Done/FIND TRAINS are tapped like a finger (Playwright's scroll-before-click lands on the content under pinned buttons; see `BaseComponent.pressPinnedButton`).
-- **Station data is stable** (NYP, WAS, BOS, CHI, PHL and their labels).
-- **Time zone:** "today" follows `America/New_York` for both the browser and the tests.
-- The cookie banner is dismissed once with **Reject All**, as a privacy-preferring user would, and that consent is reused by all tests.
-
----
-
-## Working with AI
-
-The repo is set up for AI assistants both to **write** tests and to **debug** them:
-
-- **Spec-driven workflow**: requirement in `specs/` first, then a test tagged with its ID, then `npm run spec:coverage`. An AI (or a person) always knows what to test next: the gaps list.
-- **`write-find-trains-test` skill** (`.claude/skills/`): Claude Code loads it automatically when asked to add a test. It walks through writing the spec, choosing the file and tag, reusing page objects, finding real locators on the live page (`scripts/inspect-form.mjs` lists the form's test ids, roles and states), a spec template, and verification (pass twice, typecheck). `trip-type.spec.ts` was written by following it.
-- **[`CLAUDE.md`](CLAUDE.md)** (`AGENTS.md` links to it): commands, where things live, rules (page objects only, no fixed waits, retrying assertions, builder data), a recipe for adding a test, and the Amtrak quirks behind most past failures.
-- **Playwright test agents** (`npx playwright init-agents --loop=claude`, in `.claude/agents/` + `.mcp.json`):
-  - **planner** explores the live page in a real browser and writes a test plan to `specs/`
-  - **generator** turns a plan into a test
-  - **healer** runs failing tests and fixes them
-
-  They all start from `tests/seed.spec.ts`, which uses our fixtures, so the browser opens on a ready home page with the cookie banner handled. Each agent file ends with a short project-rules section, because the stock generator writes raw locators. Its output is treated as a draft and moved onto the page objects.
-- **Named steps and typed page objects** give an AI a small vocabulary that reads like the UI ("Select to station: WAS").
-- **`reports/failures.md`** gives an AI everything needed to debug a failure in one file (next section).
-
-Example: *"Add a test that the Add Coupon dropdown opens"* triggers the skill. Or: *"Use the playwright-test-planner agent to plan tests for the Add Coupon dropdown, then implement them following CLAUDE.md."*
-
----
-
-## CI and AI-assisted debugging
-
-`.github/workflows/e2e.yml` runs on push to `main`, on every PR, nightly (Amtrak changes even when this repo doesn't), and on demand with an optional `grep` input (e.g. `@smoke`).
-
-When a test fails you get, in increasing depth:
-
-1. **Inline annotations** on the PR diff (Playwright `github` reporter).
-2. **AI failure summary** (`reports/failures.md`) in the **job summary** and as a **sticky PR comment**. Per failed test it has the spec `file:line`, the clean error with expected vs received, the code frame, the named steps leading to the failure, the **page's accessibility snapshot at the moment of failure**, and artifact paths. Paste it into an AI assistant or point one at the PR comment. A real example: [`docs/evidence/example-ai-failure-summary.md`](docs/evidence/example-ai-failure-summary.md).
-3. **Artifacts:** `reports-*` (HTML report, JUnit, failures.md) and `test-results-*` (trace, video, screenshot, captured request JSON). Open a trace with `npx playwright show-trace trace.zip` or at trace.playwright.dev.
-
-The same `failures.md` is written on local runs.
-
-CI uses 2 workers and 2 retries. Flaky-then-passing tests show up as **flaky** in the report rather than hiding.
-
-> Caveat: GitHub-hosted runners use datacenter IPs, which Amtrak's bot protection may challenge more often than a home connection. If the page itself gets blocked in CI, the options are a self-hosted runner or an allow-listed test environment from Amtrak.
-
----
+- **Production is the target.** There's no staging access, so the suite runs read-only and never completes a search.
+- **The search request is the observable result of FIND TRAINS.** Under automation the API answers 403 (bot protection) and the page shows an error banner, which is expected.
+- **Browsers:** desktop Chromium (1440×900) runs everything and gates PRs. Firefox, WebKit and mobile Chrome run the `@smoke` subset nightly.
+- **Data:** station codes and labels (NYP, WAS, BOS, CHI, PHL) are stable; "today" follows `America/New_York`.
+- **Cookies:** the banner is dismissed with "Reject All", as a privacy-minded user would.
 
 ## With more time
 
-Most of the original list is now done: lint/format, data-driven matrices, accessibility and visual checks, mocked-backend tests, cross-browser and mobile, and the remaining form features. What's left:
-
-- **A staging environment and test accounts.** That would allow end-to-end searches past the 403, signed-in "Use Points" with a real balance, and a real coupon to pin down CPN-02.
-- **Schema contract for the search request** (e.g. zod), validated on every captured payload, so an API change fails with a precise diff.
-- **Close the open gaps:** STN-10 (popular stations on focus) and CPN-02 (coupon feedback).
+- **Staging and test accounts:** end-to-end searches past the 403, signed-in "Use Points", and a real coupon to pin down CPN-02.
+- **Schema contract for the search request** (e.g. zod), so an API change fails with a precise diff.
+- **Close the open gaps** STN-10 and CPN-02.
 - **Performance budget:** Web Vitals / Lighthouse on `/home`, tracked over time.
-- **Scale-out:** sharding across CI machines, and running only the tests affected by a change, once the suite covers more pages.
-- **Report the findings:** `docs/findings.md` is ready to send to Amtrak.
+- **Scale-out:** sharding, and running only the tests affected by a change, once more pages are covered.
+- **Report the findings** to Amtrak ([`docs/findings.md`](docs/findings.md) is ready).
+
+---
+
+More: [`docs/FRAMEWORK.md`](docs/FRAMEWORK.md) (commands, CI, AI debugging, structure) · [`.claude/CLAUDE.md`](.claude/CLAUDE.md) (guide for AI assistants; `AGENTS.md` links to it)

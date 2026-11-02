@@ -10,7 +10,7 @@
     "test:negative": "playwright test --project=chromium-desktop --grep @negative",
     "test:known-bugs": "KNOWN_BUGS=1 playwright test --grep @known-bug",
     "test:ui": "playwright test --ui",
-    "report": "playwright show-report",
+    "report": "playwright show-report reports/html",
     "typecheck": "tsc --noEmit",
     "spec:coverage": "node scripts/spec-coverage.mjs",
     "lint": "eslint .",
