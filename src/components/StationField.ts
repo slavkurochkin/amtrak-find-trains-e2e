@@ -20,6 +20,7 @@ const QUERY_RESULTS = /^\s*(Stations|Locations|No stations found)/;
  *  - a query with no match shows "No stations found." and clears on blur
  */
 export class StationField extends BaseComponent {
+  readonly scanScope: string;
   readonly root: Locator;
   readonly input: Locator;
   readonly listbox: Locator;
@@ -31,6 +32,7 @@ export class StationField extends BaseComponent {
     private readonly timing: Pick<TimingOptions, 'typingDelayMs'>,
   ) {
     super(page);
+    this.scanScope = `[amt-auto-test-id="fare-finder-${kind}-station-field-page"]`;
     this.root = this.byTestId(`fare-finder-${kind}-station-field-page`);
     // Not filtered by visibility: the input is hidden once a station is chosen.
     this.input = this.root.locator('input[role="combobox"]');

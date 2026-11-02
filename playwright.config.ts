@@ -23,7 +23,12 @@ export default defineConfig<TimingOptions>({
   // (`npm run test:known-bugs`), never as a gate.
   grepInvert: process.env.KNOWN_BUGS ? undefined : /@known-bug/,
   // toPass: retry budget for actions the site occasionally drops under load (StationField).
-  expect: { timeout: 10_000, toPass: { timeout: 30_000 } },
+  expect: {
+    timeout: 10_000,
+    toPass: { timeout: 30_000 },
+    // Visual baselines (VIS-*): tolerate anti-aliasing noise, not layout changes.
+    toHaveScreenshot: { maxDiffPixelRatio: 0.01, animations: 'disabled' },
+  },
   reporter: [
     [isCI ? 'github' : 'list'], // 'github' adds inline failure annotations on PRs
     ['html', { open: 'never', outputFolder: `${reportsDir}/html` }],

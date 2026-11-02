@@ -17,12 +17,16 @@ const TEST_ID_KEY: Record<TravelerType, string> = {
 
 /** The "N Traveler(s)" dropdown with +/- steppers per traveler type. */
 export class TravelersPanel extends BaseComponent {
+  readonly scanScope = 'app-traveler';
+  /** The open panel (Adult…Infant steppers, discounts, Done). */
+  readonly panel: Locator;
   readonly toggle: Locator;
   readonly resetButton: Locator;
   readonly doneButton: Locator;
 
   constructor(page: Page) {
     super(page);
+    this.panel = this.visible('#traveler-menu');
     this.toggle = this.byTestId('traveler-dropdown-button');
     this.resetButton = this.byTestId('traveler-clear');
     this.doneButton = this.byTestId('traveler-component-discount-done-button');
@@ -44,6 +48,7 @@ export class TravelersPanel extends BaseComponent {
   async open(): Promise<void> {
     if (!(await this.doneButton.isVisible())) await this.toggle.click();
     await expect(this.doneButton).toBeVisible();
+    await this.waitForAnimations(this.panel);
   }
 
   async done(): Promise<void> {

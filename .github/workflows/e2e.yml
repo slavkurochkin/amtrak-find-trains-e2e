@@ -27,16 +27,17 @@ jobs:
     name: Playwright (chromium)
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    # Official Playwright image: browsers and OS deps preinstalled, and the same
+    # rendering as `npm run test:visual:update:linux` (visual baselines).
+    # Keep the tag in sync with @playwright/test in package.json.
+    container:
+      image: mcr.microsoft.com/playwright:v1.64.1-noble
+      options: --user 1001
     env:
       CI: 'true'
       TEST_TZ: America/New_York
     steps:
       - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
 
       - name: Install dependencies
         run: npm ci
@@ -46,9 +47,6 @@ jobs:
 
       - name: Spec coverage (every test maps to a requirement in specs/)
         run: npm run spec:coverage
-
-      - name: Install Playwright browser
-        run: npx playwright install --with-deps chromium
 
       - name: Run tests
         run: npx playwright test ${{ inputs.grep && format('--grep "{0}"', inputs.grep) || '' }}

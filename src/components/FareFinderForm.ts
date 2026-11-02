@@ -17,6 +17,8 @@ export type FareFinderOptions = Pick<TimingOptions, 'stationSettleMs' | 'typingD
  * similar station search) and tested on its own.
  */
 export class FareFinderForm extends BaseComponent {
+  /** CSS scope for accessibility scans (axe takes selectors, not locators). */
+  readonly scanScope = '[amt-auto-test-id="fare-finder-cmp"]';
   readonly root: Locator;
   readonly tripType: TripTypeMenu;
   readonly from: StationField;

@@ -17,12 +17,15 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "check": "npm run lint && npm run format:check && npm run typecheck && npm run spec:coverage",
-    "prepare": "git config core.hooksPath .githooks || true"
+    "prepare": "git config core.hooksPath .githooks || true",
+    "test:visual:update": "playwright test --grep @visual --update-snapshots",
+    "test:visual:update:linux": "docker run --rm --ipc=host -v \"$PWD\":/work -w /work -e PW_OUTPUT_DIR=/tmp/pw/results -e PW_REPORTS_DIR=/tmp/pw/reports mcr.microsoft.com/playwright:v1.64.1-noble npx playwright test --grep @visual --update-snapshots"
   },
   "engines": {
     "node": ">=18"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.64.1",
     "@types/node": "^24.0.0",

@@ -18,7 +18,7 @@ import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 
 const SPECS_DIR = 'specs';
-const ID_RE = /^@([A-Z]+-\d{2,})$/;
+const ID_RE = /^@([A-Z][A-Z0-9]*-\d{2,})$/;
 
 // 1. Requirements from specs/**/*.md: "### ID · Title" followed by "**Status:** x"
 const requirements = new Map();
@@ -34,7 +34,7 @@ for (const file of walk(SPECS_DIR)) {
   lines.forEach((line, i) => {
     if (line.startsWith('```')) inCode = !inCode;
     if (inCode) return;
-    const m = line.match(/^###\s+([A-Z]+-\d{2,})\s+·\s+(.+)$/);
+    const m = line.match(/^###\s+([A-Z][A-Z0-9]*-\d{2,})\s+·\s+(.+)$/);
     if (!m) return;
     const statusLine = lines.slice(i + 1, i + 4).find((l) => l.includes('**Status:**')) ?? '';
     const status = statusLine.match(/\*\*Status:\*\*\s*([a-z-]+)/)?.[1] ?? 'missing';

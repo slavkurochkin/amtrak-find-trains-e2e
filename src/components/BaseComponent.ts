@@ -18,4 +18,13 @@ export abstract class BaseComponent {
   protected visible(selector: string): Locator {
     return this.page.locator(selector).filter({ visible: true });
   }
+
+  /**
+   * Waits until CSS transitions/animations inside the element have finished.
+   * Panels fade in; scanning or screenshotting mid-fade gives false
+   * colour-contrast hits and flaky images.
+   */
+  protected async waitForAnimations(element: Locator): Promise<void> {
+    await element.evaluate((el) => Promise.all(el.getAnimations({ subtree: true }).map((a) => a.finished)));
+  }
 }

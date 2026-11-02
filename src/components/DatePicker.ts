@@ -8,6 +8,7 @@ import { type CalendarDate, toAriaLabel, toMonthHeader } from '../utils/dates';
  * carry `aria-disabled="true"` when they can't be booked.
  */
 export class DatePicker extends BaseComponent {
+  readonly scanScope = 'ngb-datepicker';
   readonly root: Locator;
   readonly previousMonth: Locator;
   readonly nextMonth: Locator;
@@ -33,6 +34,7 @@ export class DatePicker extends BaseComponent {
 
   async expectOpen(): Promise<void> {
     await expect(this.root).toBeVisible();
+    await this.waitForAnimations(this.root);
   }
 
   /** Clicks "Next month" until the target month is on screen. */

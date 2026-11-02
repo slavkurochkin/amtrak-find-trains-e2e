@@ -35,6 +35,7 @@ Other ways to run:
 | `npm run lint` / `npm run format` | ESLint (incl. Playwright rules: no fixed waits, no missing `await`) / Prettier |
 | `npm run check` | Lint + format check + typecheck + spec coverage (the pre-commit hook runs this) |
 | `npm run spec:coverage` | Check tests ↔ requirements in `specs/`; list open gaps |
+| `npm run test:visual:update` / `:linux` | Re-approve visual baselines on macOS / in the Linux Docker image CI uses |
 | `npx playwright test --grep @STN-08` | Run the tests for one requirement |
 
 ### Environment (all optional, see `.env.example`)
@@ -118,6 +119,7 @@ The form's job is to turn user input into a correct search, and to refuse input 
 | Dates | [`DATE`](specs/find-trains/dates.md) | Today, months ahead, round-trip range, same-day return, 11-month horizon, typed date | Past dates, previous month, return before departure, closed calendar, invalid / past / too-far typed dates |
 | Travelers | [`TRAV`](specs/find-trains/travelers.md) | Default, total, Reset, 8 allowed | 9+, no adult, children alone, counter floor |
 | Trip type | [`TRIP`](specs/find-trains/trip-type.md) | One-way default, round-trip back to one-way | – |
+| Accessibility / visual | [`A11Y`, `VIS`](specs/find-trains/accessibility.md) | Travelers panel matches its approved screenshot | No new WCAG violations: form, suggestions, calendar, travelers panel |
 | Required fields | [`REQ`](specs/find-trains/required-fields.md) | – | Empty form, From only, missing To, missing date, round trip without return. Each also checks no request is sent |
 
 Current coverage: **41 of 42 in-scope requirements automated or reproduced** (1 known bug). One open gap is listed on purpose: STN-10, popular stations on focus. Seven requirements are marked out of scope with reasons (results page, Multi-City, Group Travel, Nearby/geolocation, unaccompanied youth, discounts, keystroke-loss race).
@@ -132,6 +134,15 @@ Current coverage: **41 of 42 in-scope requirements automated or reproduced** (1 
 6. **UX/accessibility – keystrokes lost after clicking a station field.** Clicking From/To sometimes moves keyboard focus from the input to the suggestion panel header ("Top depart stations" / "Top destinations"), within ~150 ms and not every time. A user who clicks and types straight away can lose their first characters: typing `BOS` searched `OS`. Under heavy load the app can also wipe freshly entered text. The page objects confirm each station entry actually landed and retry it via `expect(...).toPass()` (limits in `playwright.config.ts`).
 
 ---
+
+7. **Accessibility (WCAG 2.1 A/AA, axe-core).** The form at rest has 2 critical and 3 serious violation types:
+   - unsupported ARIA attributes on the dropdown buttons,
+   - incomplete trip-type tabs,
+   - low-contrast field labels,
+   - the "1 Traveler" button's name not matching its text,
+   - a nested interactive Use Points switch.
+
+   The station list nests group headers inside the listbox. In the travelers panel the **five count inputs have no labels** (critical: a screen reader can't tell Adult from Infant). The calendar is clean. These are baselined in `src/data/a11yBaseline.ts`, so tests fail only on new violations (specs `A11Y-*`).
 
 ## Assumptions
 
