@@ -9,6 +9,13 @@ import { type CalendarDate, toInputFormat } from '../utils/dates';
 import { step } from '../utils/step';
 import type { TimingOptions } from '../utils/timing';
 
+/** One leg of a Multi-City trip. Leg 0 is also the normal One-Way / Round-Trip leg. */
+export interface TripLeg {
+  from: StationField;
+  to: StationField;
+  departInput: Locator;
+}
+
 export type FareFinderOptions = Pick<TimingOptions, 'stationSettleMs' | 'typingDelayMs'>;
 
 /**
@@ -29,6 +36,13 @@ export class FareFinderForm extends BaseComponent {
   readonly departInput: Locator;
   readonly returnInput: Locator;
   readonly findTrainsButton: Locator;
+  readonly usePointsSwitch: Locator;
+  readonly assistanceCheckbox: Locator;
+  /** Opens when FIND TRAINS is clicked with "Passenger with Disability or Assistance Needed?" checked. */
+  readonly assistanceDialog: Locator;
+  readonly couponToggle: Locator;
+  readonly couponInput: Locator;
+  readonly addTripButton: Locator;
 
   constructor(
     page: Page,
@@ -46,6 +60,14 @@ export class FareFinderForm extends BaseComponent {
     this.departInput = this.visible('input[data-julie^="departdisplay_booking"]');
     this.returnInput = this.visible('input[data-julie^="returndisplay_booking"]');
     this.findTrainsButton = this.byTestId('fare-finder-findtrains-button');
+    this.usePointsSwitch = this.byTestId('fare-finder-redeem-points');
+    this.assistanceCheckbox = this.byTestId('assistance-checkbox');
+    this.assistanceDialog = this.visible('[role="dialog"], .modal.show').filter({
+      hasText: 'Accessible Travel Services',
+    });
+    this.couponToggle = this.byTestId('fare-finder-coupondropdown-button');
+    this.couponInput = this.byTestId('fare-finder-rewards-coupon');
+    this.addTripButton = this.byTestId('multi-city-add-trip');
   }
 
   /**
@@ -55,6 +77,34 @@ export class FareFinderForm extends BaseComponent {
    */
   message(text: string | RegExp): Locator {
     return this.page.getByText(text).filter({ visible: true }).first();
+  }
+
+  /** Multi-City leg by position (0-based). */
+  leg(index: number): TripLeg {
+    return {
+      from: new StationField(this.page, 'from', this.options, index),
+      to: new StationField(this.page, 'to', this.options, index),
+      departInput: this.departInput.nth(index),
+    };
+  }
+
+  /** Picks the depart date of a Multi-City leg in that leg's calendar. */
+  async pickLegDate(index: number, date: CalendarDate): Promise<void> {
+    await step(`Pick leg ${index + 1} date ${toInputFormat(date)}`, async () => {
+      const input = this.leg(index).departInput;
+      await input.click({ force: true }); // floating label covers the input
+      await this.calendar.expectOpen();
+      await this.calendar.pick(date);
+      await this.calendar.done();
+      await expect(input).toHaveValue(toInputFormat(date));
+    });
+  }
+
+  async enterCoupon(code: string): Promise<void> {
+    await step(`Enter coupon "${code}"`, async () => {
+      if (!(await this.couponInput.isVisible())) await this.couponToggle.click();
+      await this.couponInput.pressSequentially(code, { delay: this.options.typingDelayMs });
+    });
   }
 
   async openDepartCalendar(): Promise<void> {

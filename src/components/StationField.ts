@@ -34,10 +34,12 @@ export class StationField extends BaseComponent {
     page: Page,
     readonly kind: StationFieldKind,
     private readonly timing: Pick<TimingOptions, 'typingDelayMs'>,
+    /** Multi-City: which leg (0 = first). Every leg reuses the same test ids. */
+    leg = 0,
   ) {
     super(page);
     this.scanScope = `[amt-auto-test-id="fare-finder-${kind}-station-field-page"]`;
-    this.root = this.byTestId(`fare-finder-${kind}-station-field-page`);
+    this.root = this.byTestId(`fare-finder-${kind}-station-field-page`).nth(leg);
     // Not filtered by visibility: the input is hidden once a station is chosen.
     this.input = this.root.locator('input[role="combobox"]');
     this.listbox = this.root.getByRole('listbox');

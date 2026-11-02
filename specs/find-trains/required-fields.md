@@ -19,6 +19,11 @@ Tests: `tests/find-trains/form-validation.spec.ts`
 **Status:** automated · **Type:** negative
 **Given** From and To, no date **Then** FIND TRAINS is disabled and clicking it sends no search.
 
+### REQ-06 · Assistance needed: FIND TRAINS asks for accessibility details first
+**Status:** automated · **Type:** edge
+**Given** a valid search with "Passenger with Disability or Assistance Needed?" checked **When** FIND TRAINS is clicked
+**Then** the "Accessible Travel Services" dialog opens (traveler name, disability or assistance type) and no search is sent yet.
+
 ### REQ-05 · Round trip without a return date blocks the search
 **Status:** automated · **Type:** negative
 **Given** Round-Trip with stations and a depart date only **Then** the calendar's Done is disabled; after closing it the return is empty, FIND TRAINS is disabled and clicking it sends no search.

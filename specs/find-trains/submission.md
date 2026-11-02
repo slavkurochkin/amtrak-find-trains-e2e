@@ -33,6 +33,10 @@ Tests: `tests/find-trains/search-submission.spec.ts`
 **Given** each valid mix: 1 senior alone (seniors count as adults), 1 senior + 1 child, 1 adult + 2 infants, 1 adult + 7 children (8 total) **When** FIND TRAINS is clicked
 **Then** the request has exactly those passengers by type.
 
+### SUB-08 · "Use Points" searches in points
+**Status:** automated · **Type:** positive
+**Given** a valid search **When** the user turns on Use Points and clicks FIND TRAINS **Then** the request asks for `pricingUnit: "POINTS"` instead of `"DOLLARS"`.
+
 ### SUB-06 · Results page and booking flow
 **Status:** out-of-scope · **Type:** positive
 Out of scope (the suite stops at the FIND TRAINS click); also blocked by bot protection (403) under automation.

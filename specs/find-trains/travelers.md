@@ -37,9 +37,9 @@ Note: the panel labels Adult as 16+ but the message says 18 (finding).
 **Status:** automated · **Type:** negative
 **Given** Adult is 0 **When** the user clicks "-" **Then** Adult stays 0.
 
-### TRAV-09 · Unaccompanied youth ("Traveling Alone?")
-**Status:** out-of-scope · **Type:** edge
-Separate policy flow behind a link in the Youth row; candidate for the next iteration.
+### TRAV-09 · "Traveling Alone?" explains the unaccompanied-youth policy
+**Status:** automated · **Type:** edge
+**When** the user clicks "Traveling Alone?" in the Youth row **Then** a "Traveling Alone" dialog opens with the policy. (Booking an unaccompanied minor is a separate flow, out of scope.)
 
 ### TRAV-10 · Per-traveler discounts and promo code
 **Status:** out-of-scope · **Type:** positive

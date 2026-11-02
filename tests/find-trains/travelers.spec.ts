@@ -109,4 +109,13 @@ test.describe('Find trains: travelers', () => {
       await expect(travelers.countLabel('adult')).toHaveText('0');
     });
   });
+
+  test('"Traveling Alone?" opens the unaccompanied-youth policy', { tag: '@TRAV-09' }, async ({ homePage }) => {
+    const { travelers } = homePage.fareFinder;
+    await travelers.open();
+
+    await travelers.travelingAloneLink.click();
+
+    await expect(travelers.travelingAloneDialog).toBeVisible();
+  });
 });

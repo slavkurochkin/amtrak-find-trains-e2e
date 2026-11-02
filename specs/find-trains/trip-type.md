@@ -12,10 +12,11 @@ Tests: `tests/find-trains/trip-type.spec.ts`
 **Given** a filled round trip **When** the user switches to One-Way and clicks FIND TRAINS
 **Then** the Return Date input disappears and a one-way search (`type: "OW"`, one leg, original depart date) is sent.
 
-### TRIP-03 · Multi-City search
-**Status:** out-of-scope · **Type:** positive
-Repeatable legs ("Add Trip"); a good next component (`TripLeg`), not needed to show the approach.
+### TRIP-03 · Multi-City search sends each leg in order
+**Status:** automated · **Type:** positive
+**Given** Multi-City with leg 1 NYP → PHL and leg 2 PHL → WAS on later dates **When** FIND TRAINS is clicked
+**Then** the request has `type: "MC"` and two legs in that order with their dates.
 
-### TRIP-04 · Group Travel
-**Status:** out-of-scope · **Type:** positive
-Leads to the group-request flow (15+ travelers), outside the Find trains form.
+### TRIP-04 · Group Travel opens the group request page
+**Status:** automated · **Type:** positive
+**When** the user picks Group Travel in the trip-type menu **Then** the browser goes to `/tickets/grouptravel` (the group request flow itself is out of scope).

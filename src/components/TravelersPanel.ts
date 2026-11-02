@@ -20,6 +20,9 @@ export class TravelersPanel extends BaseComponent {
   readonly scanScope = 'app-traveler';
   /** The open panel (Adult…Infant steppers, discounts, Done). */
   readonly panel: Locator;
+  /** Youth row link to the unaccompanied-minor policy. */
+  readonly travelingAloneLink: Locator;
+  readonly travelingAloneDialog: Locator;
   readonly toggle: Locator;
   readonly resetButton: Locator;
   readonly doneButton: Locator;
@@ -27,6 +30,8 @@ export class TravelersPanel extends BaseComponent {
   constructor(page: Page) {
     super(page);
     this.panel = this.visible('#traveler-menu');
+    this.travelingAloneLink = this.panel.getByText('Traveling Alone?');
+    this.travelingAloneDialog = this.visible('[role="dialog"], .modal.show').filter({ hasText: 'Traveling Alone' });
     this.toggle = this.byTestId('traveler-dropdown-button');
     this.resetButton = this.byTestId('traveler-clear');
     this.doneButton = this.byTestId('traveler-component-discount-done-button');

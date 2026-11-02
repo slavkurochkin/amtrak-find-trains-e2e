@@ -101,4 +101,17 @@ test.describe('Find trains: submitting a valid search', { tag: '@smoke' }, () =>
       expectRequestToMatch(await searchSpy.waitForSearch(), search);
     });
   }
+
+  test('"Use Points" searches in points instead of dollars', { tag: '@SUB-08' }, async ({ homePage, searchSpy }) => {
+    const search = aSearch().build();
+    const form = homePage.fareFinder;
+    await form.fill(search);
+
+    await form.usePointsSwitch.click();
+    await form.clickFindTrains();
+
+    const request = await searchSpy.waitForSearch();
+    expect(request.journeyRequest.fare?.pricingUnit).toBe('POINTS');
+    expectRequestToMatch(request, search);
+  });
 });

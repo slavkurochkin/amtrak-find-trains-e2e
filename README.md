@@ -122,15 +122,16 @@ The form's job is to turn user input into a correct search, and to refuse input 
 
 | Area | Spec | Positive / edge | Negative |
 |---|---|---|---|
-| Submission | [`SUB`](specs/find-trains/submission.md) | One-way, round-trip, all traveler types, today, swapped route. Each checks the exact request payload | – |
+| Submission | [`SUB`](specs/find-trains/submission.md) | One-way, round-trip, all traveler types, today, swapped route, traveler-party matrix, Use Points (`pricingUnit: POINTS`). Each checks the exact request payload | – |
 | Stations | [`STN`](specs/find-trains/stations.md) | Suggestions, exact code, lowercase code, keyboard selection, swap, slow lookup shows "Loading" (mocked) | Unknown station, HTML injection, same From/To, lookup API failure falls back to a built-in list (mocked) |
 | Dates | [`DATE`](specs/find-trains/dates.md) | Today, months ahead, round-trip range, same-day return, 11-month horizon, typed date | Past dates, previous month, return before departure, closed calendar, invalid / past / too-far typed dates |
-| Travelers | [`TRAV`](specs/find-trains/travelers.md) | Default, total, Reset, 8 allowed | 9+, no adult, children alone, counter floor |
-| Trip type | [`TRIP`](specs/find-trains/trip-type.md) | One-way default, round-trip back to one-way | – |
+| Travelers | [`TRAV`](specs/find-trains/travelers.md) | Default, total, Reset, 8 allowed, "Traveling Alone?" policy | 9+, no adult, children alone, counter floor |
+| Trip type | [`TRIP`](specs/find-trains/trip-type.md) | One-way default, round-trip back to one-way, Multi-City legs (`type: MC`), Group Travel page | – |
+| Coupons | [`CPN`](specs/find-trains/coupons.md) | – | Only letters and digits, max 14 |
 | Accessibility / visual | [`A11Y`, `VIS`](specs/find-trains/accessibility.md) | Travelers panel matches its approved screenshot | No new WCAG violations: form, suggestions, calendar, travelers panel |
-| Required fields | [`REQ`](specs/find-trains/required-fields.md) | – | Empty form, From only, missing To, missing date, round trip without return. Each also checks no request is sent |
+| Required fields | [`REQ`](specs/find-trains/required-fields.md) | Assistance needed opens the Accessible Travel Services dialog first | Empty form, From only, missing To, missing date, round trip without return. Each also checks no request is sent |
 
-Current coverage: **41 of 42 in-scope requirements automated or reproduced** (1 known bug). One open gap is listed on purpose: STN-10, popular stations on focus. Seven requirements are marked out of scope with reasons (results page, Multi-City, Group Travel, Nearby/geolocation, unaccompanied youth, discounts, keystroke-loss race).
+Current coverage is printed by `npm run spec:coverage`: 56 of 58 in-scope requirements have tests (1 is a known-bug repro). The two open gaps are listed on purpose: STN-10 (popular stations on focus) and CPN-02 (invalid-coupon feedback).
 
 ## Findings on amtrak.com
 
@@ -153,6 +154,8 @@ Current coverage: **41 of 42 in-scope requirements automated or reproduced** (1 
    The station list nests group headers inside the listbox. In the travelers panel the **five count inputs have no labels** (critical: a screen reader can't tell Adult from Infant). The calendar is clean. These are baselined in `src/data/a11yBaseline.ts`, so tests fail only on new violations (specs `A11Y-*`).
 
 8. **Resilience (mocked backend).** When the station-lookup API fails, the app retries 3 times and then falls back to a built-in station list, so the search still works. In that fallback the best match isn't first (Back Bay before South Station for "Boston").
+
+9. **UX – coupon rejected silently.** With coupon `X000` entered, FIND TRAINS stays disabled and nothing says why (spec CPN-02, a gap until a real coupon is available to pin down the valid format).
 
 ## Assumptions
 

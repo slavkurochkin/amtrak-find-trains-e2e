@@ -1,6 +1,7 @@
 import { test, expect } from '@src/fixtures/test';
 import { TripType } from '@src/components/TripTypeMenu';
 import { Stations } from '@src/data/stations';
+import { aSearch } from '@src/builders/SearchCriteriaBuilder';
 import { daysFromToday } from '@src/utils/dates';
 
 /**
@@ -68,4 +69,19 @@ test.describe('Find trains: required fields', { tag: '@negative' }, () => {
 
     await searchSpy.expectNoSearch();
   });
+
+  test(
+    'with assistance needed, FIND TRAINS asks for accessibility details before searching',
+    { tag: '@REQ-06' },
+    async ({ homePage, searchSpy }) => {
+      const form = homePage.fareFinder;
+      await form.fill(aSearch().build());
+      await form.assistanceCheckbox.click();
+
+      await form.clickFindTrains();
+
+      await expect(form.assistanceDialog).toBeVisible();
+      await searchSpy.expectNoSearch();
+    },
+  );
 });

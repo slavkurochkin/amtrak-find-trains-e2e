@@ -6,12 +6,14 @@ export enum TripType {
   OneWay = 'One-Way',
   RoundTrip = 'Round-Trip',
   MultiCity = 'Multi-City',
+  GroupTravel = 'Group Travel',
 }
 
 const TAB_TEST_ID: Record<TripType, string> = {
   [TripType.OneWay]: 'fare-finder-oneway-trip-tab',
   [TripType.RoundTrip]: 'fare-finder-round-trip-tab',
   [TripType.MultiCity]: 'fare-finder-multi-city-tab',
+  [TripType.GroupTravel]: 'fare-finder-group-travel-tab',
 };
 
 /** The "One-Way ▾" trip type dropdown above the form. */
@@ -28,6 +30,14 @@ export class TripTypeMenu extends BaseComponent {
       await this.toggle.click();
       await this.byTestId(TAB_TEST_ID[type]).click();
       await this.expectSelected(type);
+    });
+  }
+
+  /** Group Travel isn't a form mode: it opens the group request page. */
+  async openGroupTravel(): Promise<void> {
+    await step('Open Group Travel', async () => {
+      await this.toggle.click();
+      await this.byTestId(TAB_TEST_ID[TripType.GroupTravel]).click();
     });
   }
 

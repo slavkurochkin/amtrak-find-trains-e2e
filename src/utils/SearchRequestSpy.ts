@@ -9,6 +9,7 @@ import { TripType } from '../components/TripTypeMenu';
 /** The parts of the search request body the tests check. */
 export interface JourneySearchRequest {
   journeyRequest: {
+    fare?: { pricingUnit: string };
     type: 'OW' | 'RT' | string;
     journeyLegRequests: Array<{
       origin: { code: string; schedule: { departureDateTime: string } };

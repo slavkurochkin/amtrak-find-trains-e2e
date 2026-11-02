@@ -8,7 +8,9 @@ specs/find-trains/
   stations.md         STN-*   From / To autocomplete, swap
   dates.md            DATE-*  calendar, typed dates, booking horizon
   travelers.md        TRAV-*  traveler counts and rules
-  trip-type.md        TRIP-*  One-Way / Round-Trip / Multi-City
+  trip-type.md        TRIP-*  One-Way / Round-Trip / Multi-City / Group Travel
+  coupons.md          CPN-*   coupon code field
+  accessibility.md    A11Y-*, VIS-*  WCAG scans, visual baseline
   required-fields.md  REQ-*   what blocks a search
 ```
 
