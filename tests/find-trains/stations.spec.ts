@@ -15,13 +15,17 @@ test.describe('Find trains: From / To station fields', () => {
     expect(options.filter((o) => /washington/i.test(o)).length, 'several Washington matches').toBeGreaterThan(1);
   });
 
-  test('typing an exact station code selects it without picking from the list', { tag: '@STN-02' }, async ({ homePage }) => {
-    const { to } = homePage.fareFinder;
+  test(
+    'typing an exact station code selects it without picking from the list',
+    { tag: '@STN-02' },
+    async ({ homePage }) => {
+      const { to } = homePage.fareFinder;
 
-    await to.type(Stations.BOSTON.code);
+      await to.type(Stations.BOSTON.code);
 
-    await to.expectSelected(Stations.BOSTON);
-  });
+      await to.expectSelected(Stations.BOSTON);
+    },
+  );
 
   test('station codes are matched case-insensitively', { tag: '@STN-03' }, async ({ homePage }) => {
     const { from } = homePage.fareFinder;
@@ -51,41 +55,50 @@ test.describe('Find trains: From / To station fields', () => {
     await form.to.expectSelected(Stations.NEW_YORK);
   });
 
-  test('KNOWN BUG: swapping right after picking To shows the same station in both fields', {
-    tag: ['@known-bug', '@STN-09'],
-    annotation: {
-      type: 'issue',
-      description: 'Swap clicked <300ms after choosing To: UI shows CHI -> CHI, search sends CHI -> NYP. ' +
-        'Evidence: docs/evidence/bug-swap-race-ui-shows-CHI-CHI.png',
+  test(
+    'KNOWN BUG: swapping right after picking To shows the same station in both fields',
+    {
+      tag: ['@known-bug', '@STN-09'],
+      annotation: {
+        type: 'issue',
+        description:
+          'Swap clicked <300ms after choosing To: UI shows CHI -> CHI, search sends CHI -> NYP. ' +
+          'Evidence: docs/evidence/bug-swap-race-ui-shows-CHI-CHI.png',
+      },
     },
-  }, async ({ homePage }) => {
-    // Asserts the correct behaviour, so it FAILS while the bug exists. It's a
-    // timing race, so it can't gate CI either way: excluded from the default
-    // run (see playwright.config.ts) and run on demand with `npm run test:known-bugs`.
-    const form = homePage.fareFinder;
-    await form.from.select(Stations.NEW_YORK);
-    await form.to.select(Stations.CHICAGO);
+    async ({ homePage }) => {
+      // Asserts the correct behaviour, so it FAILS while the bug exists. It's a
+      // timing race, so it can't gate CI either way: excluded from the default
+      // run (see playwright.config.ts) and run on demand with `npm run test:known-bugs`.
+      const form = homePage.fareFinder;
+      await form.from.select(Stations.NEW_YORK);
+      await form.to.select(Stations.CHICAGO);
 
-    await form.swapStations(); // no pause
+      await form.swapStations(); // no pause
 
-    await form.from.expectSelected(Stations.CHICAGO);
-    await expect(form.to.root, 'To should show the old From station').toContainText(Stations.NEW_YORK.code);
-  });
+      await form.from.expectSelected(Stations.CHICAGO);
+      await expect(form.to.root, 'To should show the old From station').toContainText(Stations.NEW_YORK.code);
+    },
+  );
 
   test.describe('invalid input', { tag: '@negative' }, () => {
-    test('an unknown station shows "No stations found." and is not accepted', { tag: '@STN-06' }, async ({ homePage }) => {
-      const form = homePage.fareFinder;
+    test(
+      'an unknown station shows "No stations found." and is not accepted',
+      { tag: '@STN-06' },
+      async ({ homePage }) => {
+        const form = homePage.fareFinder;
 
-      await form.from.search('Zzqxj');
+        await form.from.search('Zzqxj');
 
-      await expect(form.from.listbox).toContainText(Messages.NO_STATIONS_FOUND);
-      await expect(form.from.options).toHaveCount(0);
+        await expect(form.from.listbox).toContainText(Messages.NO_STATIONS_FOUND);
+        await expect(form.from.options).toHaveCount(0);
 
-      await form.from.input.press('Tab');
-      await expect(form.message(Messages.INVALID_STATION)).toBeVisible();
-      await expect(form.from.input, 'free text is not turned into a station').toBeVisible();
-      await form.expectSearchDisabled();
-    });
+        await form.from.input.press('Tab');
+        await expect(form.message(Messages.INVALID_STATION)).toBeVisible();
+        await expect(form.from.input, 'free text is not turned into a station').toBeVisible();
+        await form.expectSearchDisabled();
+      },
+    );
 
     test('HTML/script-like input is not executed or rendered', { tag: '@STN-07' }, async ({ homePage, page }) => {
       const payload = '<img src=x id=injected onerror=alert(1)>';

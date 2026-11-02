@@ -28,7 +28,10 @@ export class FareFinderForm extends BaseComponent {
   readonly returnInput: Locator;
   readonly findTrainsButton: Locator;
 
-  constructor(page: Page, private readonly options: FareFinderOptions) {
+  constructor(
+    page: Page,
+    private readonly options: FareFinderOptions,
+  ) {
     super(page);
     this.root = this.byTestId('fare-finder-cmp');
     this.tripType = new TripTypeMenu(page);
@@ -122,6 +125,7 @@ export class FareFinderForm extends BaseComponent {
    * like a user would. See the "KNOWN BUG" test and README "Findings".
    */
   async waitForStationsToSettle(): Promise<void> {
+    // eslint-disable-next-line playwright/no-wait-for-timeout -- named config option, no DOM signal exists
     await this.page.waitForTimeout(this.options.stationSettleMs);
   }
 

@@ -50,7 +50,10 @@ test.describe('Find trains: depart and return dates', () => {
     test('past dates are disabled in the calendar', { tag: '@DATE-05' }, async ({ homePage }) => {
       const form = homePage.fareFinder;
       const yesterday = daysFromToday(-1);
-      test.skip(yesterday.month !== today().month, 'yesterday is in the previous month, which the calendar does not render');
+      test.skip(
+        yesterday.month !== today().month,
+        'yesterday is in the previous month, which the calendar does not render',
+      );
 
       await form.openDepartCalendar();
 
@@ -60,7 +63,10 @@ test.describe('Find trains: depart and return dates', () => {
     test('clicking a past date does not select it', { tag: '@DATE-06' }, async ({ homePage }) => {
       const form = homePage.fareFinder;
       const yesterday = daysFromToday(-1);
-      test.skip(yesterday.month !== today().month, 'yesterday is in the previous month, which the calendar does not render');
+      test.skip(
+        yesterday.month !== today().month,
+        'yesterday is in the previous month, which the calendar does not render',
+      );
 
       await form.openDepartCalendar();
       await form.calendar.day(yesterday).click({ force: true });
@@ -78,38 +84,46 @@ test.describe('Find trains: depart and return dates', () => {
       await expect(form.calendar.previousMonth).toBeDisabled();
     });
 
-    test('round trip: a return date before departure is not accepted as the return', { tag: '@DATE-08' }, async ({ homePage }) => {
-      const form = homePage.fareFinder;
-      const depart = daysFromToday(12);
-      const earlier = addDays(depart, -3);
-      const later = addDays(earlier, 2);
-      await form.tripType.select(TripType.RoundTrip);
-      await form.openDepartCalendar();
-      await form.calendar.pick(depart);
+    test(
+      'round trip: a return date before departure is not accepted as the return',
+      { tag: '@DATE-08' },
+      async ({ homePage }) => {
+        const form = homePage.fareFinder;
+        const depart = daysFromToday(12);
+        const earlier = addDays(depart, -3);
+        const later = addDays(earlier, 2);
+        await form.tripType.select(TripType.RoundTrip);
+        await form.openDepartCalendar();
+        await form.calendar.pick(depart);
 
-      await form.calendar.pick(earlier);
+        await form.calendar.pick(earlier);
 
-      // The earlier click restarts the range, so there is no return date yet
-      // and the range can't be confirmed.
-      await expect(form.calendar.doneButton).toBeDisabled();
+        // The earlier click restarts the range, so there is no return date yet
+        // and the range can't be confirmed.
+        await expect(form.calendar.doneButton).toBeDisabled();
 
-      await form.calendar.pick(later);
-      await form.calendar.done();
-      await expect(form.departInput).toHaveValue(toInputFormat(earlier));
-      await expect(form.returnInput).toHaveValue(toInputFormat(later));
-    });
+        await form.calendar.pick(later);
+        await form.calendar.done();
+        await expect(form.departInput).toHaveValue(toInputFormat(earlier));
+        await expect(form.returnInput).toHaveValue(toInputFormat(later));
+      },
+    );
 
-    test('closing the calendar without choosing leaves the date empty and search disabled', { tag: '@DATE-09' }, async ({ homePage }) => {
-      const form = homePage.fareFinder;
-      await form.from.selectByCode(Stations.NEW_YORK);
-      await form.to.selectByCode(Stations.WASHINGTON);
+    test(
+      'closing the calendar without choosing leaves the date empty and search disabled',
+      { tag: '@DATE-09' },
+      async ({ homePage }) => {
+        const form = homePage.fareFinder;
+        await form.from.selectByCode(Stations.NEW_YORK);
+        await form.to.selectByCode(Stations.WASHINGTON);
 
-      await form.openDepartCalendar();
-      await form.calendar.close();
+        await form.openDepartCalendar();
+        await form.calendar.close();
 
-      await expect(form.departInput).toHaveValue('');
-      await form.expectSearchDisabled();
-    });
+        await expect(form.departInput).toHaveValue('');
+        await form.expectSearchDisabled();
+      },
+    );
   });
 });
 
@@ -122,23 +136,28 @@ test.describe('Find trains: booking horizon and typed dates', () => {
     await form.calendar.showMonth(lastBookable);
 
     await expect(form.calendar.day(lastBookable)).toHaveAttribute('aria-disabled', 'false');
-    await expect.poll(() => form.calendar.lastEnabledDay(), 'no day after the horizon is bookable')
+    await expect
+      .poll(() => form.calendar.lastEnabledDay(), 'no day after the horizon is bookable')
       .toBe(toAriaLabel(lastBookable));
     await expect(form.calendar.nextMonth).toBeDisabled();
   });
 
-  test('a valid date can be typed into the depart field and is used in the search', { tag: ['@smoke', '@DATE-11'] }, async ({ homePage, searchSpy }) => {
-    const search = aSearch().departingInDays(20).build();
-    const form = homePage.fareFinder;
-    await form.from.selectByCode(search.from);
-    await form.to.selectByCode(search.to);
+  test(
+    'a valid date can be typed into the depart field and is used in the search',
+    { tag: ['@smoke', '@DATE-11'] },
+    async ({ homePage, searchSpy }) => {
+      const search = aSearch().departingInDays(20).build();
+      const form = homePage.fareFinder;
+      await form.from.selectByCode(search.from);
+      await form.to.selectByCode(search.to);
 
-    await form.typeDepartDate(toInputFormat(search.departDate));
-    await form.clickFindTrains();
+      await form.typeDepartDate(toInputFormat(search.departDate));
+      await form.clickFindTrains();
 
-    await expect(form.departInput).toHaveValue(toInputFormat(search.departDate));
-    expectRequestToMatch(await searchSpy.waitForSearch(), search);
-  });
+      await expect(form.departInput).toHaveValue(toInputFormat(search.departDate));
+      expectRequestToMatch(await searchSpy.waitForSearch(), search);
+    },
+  );
 
   const invalidTypedDates = [
     { kind: 'an impossible date', value: () => `13/45/${today().year}` },
@@ -146,15 +165,19 @@ test.describe('Find trains: booking horizon and typed dates', () => {
     { kind: 'a date beyond the 11-month horizon', value: () => toInputFormat(addDays(lastBookableDate(), 1)) },
   ];
   for (const { kind, value } of invalidTypedDates) {
-    test(`typing ${kind} clears the field and keeps search disabled`, { tag: ['@negative', '@DATE-12'] }, async ({ homePage }) => {
-      const form = homePage.fareFinder;
-      await form.from.selectByCode(Stations.NEW_YORK);
-      await form.to.selectByCode(Stations.WASHINGTON);
+    test(
+      `typing ${kind} clears the field and keeps search disabled`,
+      { tag: ['@negative', '@DATE-12'] },
+      async ({ homePage }) => {
+        const form = homePage.fareFinder;
+        await form.from.selectByCode(Stations.NEW_YORK);
+        await form.to.selectByCode(Stations.WASHINGTON);
 
-      await form.typeDepartDate(value());
+        await form.typeDepartDate(value());
 
-      await expect(form.departInput).toHaveValue('');
-      await form.expectSearchDisabled();
-    });
+        await expect(form.departInput).toHaveValue('');
+        await form.expectSearchDisabled();
+      },
+    );
   }
 });

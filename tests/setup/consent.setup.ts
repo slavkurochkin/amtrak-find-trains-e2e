@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { test as setup } from '@playwright/test';
+import { test as setup, expect } from '@playwright/test';
 import { CONSENT_STATE_FILE } from '../../src/utils/consentState';
 
 /**
@@ -19,6 +19,7 @@ setup('save cookie-consent state', async ({ page, context }) => {
   } catch {
     // No banner (e.g. a region without one): save an empty state.
   }
+  await expect(page.locator('#onetrust-banner-sdk')).toBeHidden();
   const cookies = (await context.cookies()).filter((c) => c.name.startsWith('Optanon'));
   fs.mkdirSync(path.dirname(CONSENT_STATE_FILE), { recursive: true });
   fs.writeFileSync(CONSENT_STATE_FILE, JSON.stringify({ cookies, origins: [] }, null, 2));

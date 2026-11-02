@@ -39,7 +39,10 @@ const ready = Promise.all(
 );
 await page.goto(`${baseURL}/home`, { waitUntil: 'domcontentloaded' });
 await ready;
-await page.locator('#onetrust-reject-all-handler').click({ timeout: 3_000 }).catch(() => {});
+await page
+  .locator('#onetrust-reject-all-handler')
+  .click({ timeout: 3_000 })
+  .catch(() => {});
 
 for (const id of clicks) {
   console.log(`> click [amt-auto-test-id="${id}"]`);
@@ -49,29 +52,43 @@ for (const id of clicks) {
 }
 
 const rows = await page.evaluate((all) => {
-  const scope = all ? document.body : (document.querySelector('[amt-auto-test-id="fare-finder-cmp"]')?.closest('section, form, div[class*="container"]') ?? document.body);
+  const scope = all
+    ? document.body
+    : (document
+        .querySelector('[amt-auto-test-id="fare-finder-cmp"]')
+        ?.closest('section, form, div[class*="container"]') ?? document.body);
   const interactive = 'input, button, select, textarea, a, [role], [amt-auto-test-id], [data-julie]';
-  const isVisible = (e) => !!(e.offsetParent || e.getClientRects().length) && getComputedStyle(e).visibility !== 'hidden';
+  const isVisible = (e) =>
+    !!(e.offsetParent || e.getClientRects().length) && getComputedStyle(e).visibility !== 'hidden';
   // Overlays (calendar, dropdown panels) can render outside the form container.
-  const nodes = new Set([...scope.querySelectorAll(interactive), ...document.querySelectorAll('[role="dialog"] *, [role="listbox"] *, [cdktrapfocus] *')]);
-  return [...nodes].filter((e) => isVisible(e) && e.matches(interactive)).map((e) => ({
-    tag: e.tagName.toLowerCase(),
-    testId: e.getAttribute('amt-auto-test-id') ?? '',
-    role: e.getAttribute('role') ?? '',
-    name: (e.getAttribute('aria-label') ?? '').slice(0, 40),
-    julie: e.getAttribute('data-julie') ?? '',
-    disabled: e.getAttribute('aria-disabled') ?? (e.disabled ? 'true' : ''),
-    text: (e.innerText ?? e.value ?? '').replace(/\s+/g, ' ').trim().slice(0, 40),
-  }));
+  const nodes = new Set([
+    ...scope.querySelectorAll(interactive),
+    ...document.querySelectorAll('[role="dialog"] *, [role="listbox"] *, [cdktrapfocus] *'),
+  ]);
+  return [...nodes]
+    .filter((e) => isVisible(e) && e.matches(interactive))
+    .map((e) => ({
+      tag: e.tagName.toLowerCase(),
+      testId: e.getAttribute('amt-auto-test-id') ?? '',
+      role: e.getAttribute('role') ?? '',
+      name: (e.getAttribute('aria-label') ?? '').slice(0, 40),
+      julie: e.getAttribute('data-julie') ?? '',
+      disabled: e.getAttribute('aria-disabled') ?? (e.disabled ? 'true' : ''),
+      text: (e.innerText ?? e.value ?? '').replace(/\s+/g, ' ').trim().slice(0, 40),
+    }));
 }, all);
 
 const seen = new Set();
-console.log(`\n${'testId'.padEnd(42)} ${'role'.padEnd(10)} ${'aria-label'.padEnd(30)} ${'data-julie'.padEnd(26)} dis  text`);
+console.log(
+  `\n${'testId'.padEnd(42)} ${'role'.padEnd(10)} ${'aria-label'.padEnd(30)} ${'data-julie'.padEnd(26)} dis  text`,
+);
 for (const r of rows) {
   const key = JSON.stringify(r);
   if (seen.has(key) || (!r.testId && !r.role && !r.name && !r.julie && !r.text)) continue;
   seen.add(key);
-  console.log(`${(r.testId || `<${r.tag}>`).padEnd(42)} ${r.role.padEnd(10)} ${r.name.padEnd(30)} ${r.julie.padEnd(26)} ${(r.disabled || '').padEnd(4)} ${r.text}`);
+  console.log(
+    `${(r.testId || `<${r.tag}>`).padEnd(42)} ${r.role.padEnd(10)} ${r.name.padEnd(30)} ${r.julie.padEnd(26)} ${(r.disabled || '').padEnd(4)} ${r.text}`,
+  );
 }
 console.log(`\n${seen.size} elements. Prefer amt-auto-test-id, then role + name, then data-julie.`);
 await browser.close();

@@ -1,8 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import type {
-  FullResult, Reporter, TestCase, TestResult, TestStep,
-} from '@playwright/test/reporter';
+import type { FullResult, Reporter, TestCase, TestResult, TestStep } from '@playwright/test/reporter';
 
 /**
  * Writes `reports/failures.md`: one compact,
@@ -30,6 +28,7 @@ interface FailureRecord {
   attachments: Record<string, string>;
 }
 
+// eslint-disable-next-line no-control-regex -- strips terminal colour codes from error messages
 const ANSI = /\u001b\[[0-9;]*m/g;
 const clean = (s = '') => s.replace(ANSI, '').trim();
 const MAX_SNAPSHOT_LINES = 120;
@@ -75,7 +74,9 @@ export default class AiFailureReporter implements Reporter {
       fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, md);
     }
     if (this.failures.length) {
-      console.log(`\n🧩 AI debug summary: ${path.join(this.outDir, 'failures.md')} (${this.failures.length} failure(s))`);
+      console.log(
+        `\n🧩 AI debug summary: ${path.join(this.outDir, 'failures.md')} (${this.failures.length} failure(s))`,
+      );
     }
   }
 
@@ -84,7 +85,10 @@ export default class AiFailureReporter implements Reporter {
     const flat: string[] = [];
     const walk = (list: TestStep[], depth: number) => {
       for (const s of list) {
-        if (s.category === 'hook' || s.category === 'fixture') { walk(s.steps, depth); continue; }
+        if (s.category === 'hook' || s.category === 'fixture') {
+          walk(s.steps, depth);
+          continue;
+        }
         if (s.title === 'Close context') continue;
         if (s.category === 'test.step' || s.category === 'expect' || s.category === 'pw:api') {
           const loc = s.location ? ` (${path.basename(s.location.file)}:${s.location.line})` : '';
@@ -119,7 +123,10 @@ export default class AiFailureReporter implements Reporter {
       if (!match) return undefined;
       const lines = match[1].split('\n');
       return lines.length > MAX_SNAPSHOT_LINES
-        ? [...lines.slice(0, MAX_SNAPSHOT_LINES), `… (${lines.length - MAX_SNAPSHOT_LINES} more lines in ${errorContextPath})`].join('\n')
+        ? [
+            ...lines.slice(0, MAX_SNAPSHOT_LINES),
+            `… (${lines.length - MAX_SNAPSHOT_LINES} more lines in ${errorContextPath})`,
+          ].join('\n')
         : match[1];
     } catch {
       return undefined;
@@ -150,7 +157,15 @@ export default class AiFailureReporter implements Reporter {
       if (f.codeFrame) out.push('**Code frame**', '```ts', f.codeFrame, '```');
       if (f.lastSteps.length) out.push('**Last steps**', '```', ...f.lastSteps, '```');
       if (f.pageSnapshot) {
-        out.push('<details><summary><b>Page accessibility snapshot at failure</b></summary>', '', '```yaml', f.pageSnapshot, '```', '</details>', '');
+        out.push(
+          '<details><summary><b>Page accessibility snapshot at failure</b></summary>',
+          '',
+          '```yaml',
+          f.pageSnapshot,
+          '```',
+          '</details>',
+          '',
+        );
       }
       const files = Object.entries(f.attachments).map(([k, v]) => `  - ${k}: \`${v}\``);
       if (files.length) {

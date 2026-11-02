@@ -32,6 +32,8 @@ Other ways to run:
 | `npx playwright test -g "swap"` | Run tests whose title matches |
 | `npm run report` | Open the last HTML report |
 | `npm run typecheck` | TypeScript check |
+| `npm run lint` / `npm run format` | ESLint (incl. Playwright rules: no fixed waits, no missing `await`) / Prettier |
+| `npm run check` | Lint + format check + typecheck + spec coverage (the pre-commit hook runs this) |
 | `npm run spec:coverage` | Check tests ↔ requirements in `specs/`; list open gaps |
 | `npx playwright test --grep @STN-08` | Run the tests for one requirement |
 

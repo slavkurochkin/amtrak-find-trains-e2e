@@ -1,0 +1,7 @@
+#!/bin/sh
+# Fast checks before every commit (no browser needed). Skip once with: git commit --no-verify
+set -e
+npm run -s lint
+npm run -s format:check
+npm run -s typecheck
+npm run -s spec:coverage > /dev/null || { echo "spec:coverage failed - run 'npm run spec:coverage' for details"; exit 1; }

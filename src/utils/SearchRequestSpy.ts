@@ -41,7 +41,11 @@ export class SearchRequestSpy {
     private readonly options: { noSearchWindowMs: number },
   ) {}
 
-  static async attach(page: Page, testInfo: TestInfo | undefined, options: { noSearchWindowMs: number }): Promise<SearchRequestSpy> {
+  static async attach(
+    page: Page,
+    testInfo: TestInfo | undefined,
+    options: { noSearchWindowMs: number },
+  ): Promise<SearchRequestSpy> {
     const spy = new SearchRequestSpy(page, testInfo, options);
     await page.route(SEARCH_ENDPOINT, (route) => spy.handle(route));
     return spy;
@@ -69,7 +73,8 @@ export class SearchRequestSpy {
    */
   async waitForSearch(): Promise<JourneySearchRequest> {
     const index = this.consumed;
-    await expect.poll(() => this.requests.length, { message: 'FIND TRAINS should send a search request' })
+    await expect
+      .poll(() => this.requests.length, { message: 'FIND TRAINS should send a search request' })
       .toBeGreaterThan(index);
     this.consumed = index + 1;
     return this.requests[index];
@@ -80,6 +85,7 @@ export class SearchRequestSpy {
    * awaited as a condition, so we watch for `noSearchWindowMs` (config option).
    */
   async expectNoSearch(): Promise<void> {
+    // eslint-disable-next-line playwright/no-wait-for-timeout -- absence can only be observed over a window (config option)
     await this.page.waitForTimeout(this.options.noSearchWindowMs);
     expect(this.requests, 'no search request should be sent').toHaveLength(0);
   }

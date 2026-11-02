@@ -12,6 +12,7 @@ npm run test:smoke | test:negative    # by tag
 npm run test:known-bugs               # Amtrak bug repros (expected to fail; not a gate)
 npm run typecheck                     # must pass before you're done
 npm run spec:coverage                 # tests <-> specs/ requirements
+npm run check                         # lint + format + typecheck + spec coverage (pre-commit hook)
 ```
 
 If another Playwright run may be active (e.g. the VS Code extension), isolate yours:

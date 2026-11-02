@@ -48,28 +48,36 @@ test.describe('Find trains: travelers', () => {
   });
 
   test.describe('invalid traveler combinations', { tag: '@negative' }, () => {
-    test(`more than ${MAX_ONLINE_TRAVELERS} travelers points to phone booking and blocks adding more`, { tag: '@TRAV-05' }, async ({ homePage }) => {
-      const form = homePage.fareFinder;
-      await form.travelers.open();
+    test(
+      `more than ${MAX_ONLINE_TRAVELERS} travelers points to phone booking and blocks adding more`,
+      { tag: '@TRAV-05' },
+      async ({ homePage }) => {
+        const form = homePage.fareFinder;
+        await form.travelers.open();
 
-      await form.travelers.setCount('adult', MAX_ONLINE_TRAVELERS + 1);
+        await form.travelers.setCount('adult', MAX_ONLINE_TRAVELERS + 1);
 
-      await expect(form.message(Messages.TOO_MANY_TRAVELERS)).toBeVisible();
-      for (const type of TRAVELER_TYPES) {
-        await expect(form.travelers.increment(type), `"+" for ${type}`).toBeDisabled();
-      }
-    });
+        await expect(form.message(Messages.TOO_MANY_TRAVELERS)).toBeVisible();
+        for (const type of TRAVELER_TYPES) {
+          await expect(form.travelers.increment(type), `"+" for ${type}`).toBeDisabled();
+        }
+      },
+    );
 
-    test('removing the only adult asks for at least one adult and disables search', { tag: '@TRAV-06' }, async ({ homePage }) => {
-      const form = homePage.fareFinder;
-      await form.travelers.open();
+    test(
+      'removing the only adult asks for at least one adult and disables search',
+      { tag: '@TRAV-06' },
+      async ({ homePage }) => {
+        const form = homePage.fareFinder;
+        await form.travelers.open();
 
-      await form.travelers.setCount('adult', 0);
+        await form.travelers.setCount('adult', 0);
 
-      await expect(form.message(Messages.NEED_ADULT)).toBeVisible();
-      await expect(form.travelers.decrement('adult')).toBeDisabled();
-      await form.expectSearchDisabled();
-    });
+        await expect(form.message(Messages.NEED_ADULT)).toBeVisible();
+        await expect(form.travelers.decrement('adult')).toBeDisabled();
+        await form.expectSearchDisabled();
+      },
+    );
 
     test('children without an adult are not enough to search', { tag: '@TRAV-07' }, async ({ homePage }) => {
       const form = homePage.fareFinder;

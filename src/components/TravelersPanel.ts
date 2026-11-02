@@ -69,7 +69,10 @@ export class TravelersPanel extends BaseComponent {
 
   /** Sets every traveler type; types not given are set to 0. */
   async setTravelers(counts: Partial<TravelerCounts>): Promise<void> {
-    const label = Object.entries(counts).filter(([, n]) => n).map(([t, n]) => `${n} ${t}`).join(', ');
+    const label = Object.entries(counts)
+      .filter(([, n]) => n)
+      .map(([t, n]) => `${n} ${t}`)
+      .join(', ');
     await step(`Set travelers: ${label || 'none'}`, () => this.applyCounts(counts));
   }
 
@@ -85,5 +88,4 @@ export class TravelersPanel extends BaseComponent {
     if ((counts.adult ?? 0) < 1) await this.setCount('adult', counts.adult ?? 0);
     await this.done();
   }
-
 }

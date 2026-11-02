@@ -132,5 +132,4 @@ export class StationField extends BaseComponent {
     await expect(this.root).toContainText(station.cityLabel);
     await expect(this.input).toBeHidden();
   }
-
 }
