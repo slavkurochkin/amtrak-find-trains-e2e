@@ -60,7 +60,7 @@ export class DatePicker extends BaseComponent {
   }
 
   async done(): Promise<void> {
-    await this.doneButton.click();
+    await this.pressPinnedButton(this.doneButton);
     await expect(this.root).toBeHidden();
   }
 

@@ -51,9 +51,11 @@ Note: the autocomplete API answers such queries with 403 (firewall) and the list
 **When** the user focuses an empty From field **Then** "Top depart stations" with a "Nearby" option and popular stations (NYP, WAS, CHI, PHL…) is shown; after From is set, focusing To shows "Top destinations from <From>".
 Low priority: the list content is editorial and changes over time; test the panel and heading, not the stations.
 
-### STN-11 · Keystrokes typed right after clicking a field are not lost
+### STN-11 · Keystrokes go to the field the user is typing in
 **Status:** out-of-scope · **Type:** edge
-Observed: after a click the app sometimes moves focus to the suggestion header and the first keystrokes are lost (typing "BOS" searched "OS"). Nondeterministic, so not a reliable test; reported as a finding in README. The page objects work around it with `toPass`.
+**Expected:** typed characters always land in the focused field.
+**Observed (finding):** focus jumps around the station fields asynchronously. After a click it sometimes moves to the suggestion header, so the first keys are lost (typing "BOS" searched "OS"). Shortly after a station is picked it moves back to that station field, so keys typed next land there: a date typed into Depart Date ended up as "WAS/2026" in To (`docs/evidence/bug-focus-jump-date-typed-into-to-field.png`). Earlier "NYPshington" in From was the same bug.
+Timing-dependent (more frequent under load), so not a reliable regression test; the page objects verify every entry and tests type dates before picking stations.
 
 ### STN-13 · Station search keeps working when the location service fails (mocked)
 **Status:** automated · **Type:** negative

@@ -48,8 +48,15 @@ jobs:
       - name: Spec coverage (every test maps to a requirement in specs/)
         run: npm run spec:coverage
 
+      # PRs / pushes: full suite on desktop Chromium (the gate).
       - name: Run tests
-        run: npx playwright test ${{ inputs.grep && format('--grep "{0}"', inputs.grep) || '' }}
+        if: ${{ github.event_name != 'schedule' }}
+        run: npx playwright test --project=chromium-desktop ${{ inputs.grep && format('--grep "{0}"', inputs.grep) || '' }}
+
+      # Nightly: everything, including Firefox, WebKit and mobile (@smoke subset).
+      - name: Run tests (all browsers)
+        if: ${{ github.event_name == 'schedule' }}
+        run: npx playwright test --workers=2
 
       # Everything below runs even when tests fail.
 

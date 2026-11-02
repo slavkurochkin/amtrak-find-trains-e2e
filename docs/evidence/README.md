@@ -4,11 +4,12 @@ Captured on **2026-11-02** against production amtrak.com, Chromium headless, 144
 
 | File | What it shows |
 |---|---|
-| [`test-run.log`](test-run.log) | Full run: **44 passed** (42 requirement tests + seed + setup), 4 workers, ~2 min |
+| [`test-run.log`](test-run.log) | Full PR-gate run on desktop Chromium: **59 passed** (57 requirement tests + seed + setup), ~2 min. Cross-browser `@smoke` (Firefox, WebKit, mobile Chrome): 36 passed, 1 skipped by design |
 | [`junit.xml`](junit.xml) | Same run in JUnit format |
 | [`search-requests/`](search-requests/) | Request bodies captured when FIND TRAINS was clicked (one-way, round-trip, all traveler types, swapped route) |
 | [`screenshots/`](screenshots/) | End-of-test screenshots of key happy and negative states (below) |
 | [`bug-swap-race-ui-shows-CHI-CHI.png`](bug-swap-race-ui-shows-CHI-CHI.png) | Swap bug: both fields show CHI after swapping NYP → CHI quickly |
+| [`bug-focus-jump-date-typed-into-to-field.png`](bug-focus-jump-date-typed-into-to-field.png) | Focus bug: a date typed right after picking To landed in the To field ("WAS/2026") |
 | [`example-ai-failure-summary.md`](example-ai-failure-summary.md) | What the AI failure summary looks like, from a deliberately broken test (expected BOS, form sent WAS) |
 
 ## Screenshots

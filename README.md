@@ -4,7 +4,7 @@ Playwright + TypeScript end-to-end tests for the **"Find trains" search form on 
 
 Scope: the homepage search form and its inputs, **up to the FIND TRAINS click**. Results and booking pages are out of scope.
 
-**Status:** 42 requirement tests plus a seed test and a one-time setup step (44 in a run), all passing against production on 2026-11-02. The station tests also passed 4 repeats under parallel load. A known-bug repro runs on demand with `npm run test:known-bugs`. Evidence is in [`docs/evidence/`](docs/evidence/README.md).
+**Status:** 57 requirement tests plus a seed test and a one-time setup step (59 in a run), all passing on desktop Chromium against production on 2026-11-02; the `@smoke` subset also passes on Firefox, WebKit and mobile Chrome. The station tests also passed 4 repeats under parallel load. A known-bug repro runs on demand with `npm run test:known-bugs`. Evidence is in [`docs/evidence/`](docs/evidence/README.md).
 
 AI assistants: start with [`CLAUDE.md`](CLAUDE.md) (also linked as `AGENTS.md`).
 
@@ -17,7 +17,7 @@ Requirements: **Node.js 18+** (developed on Node 25) and an internet connection 
 ```bash
 npm ci                                  # install dependencies
 npx playwright install chromium         # download the test browser (add --with-deps on Linux CI)
-npm test                                # run the whole suite (headless)
+npm test                                # full suite on desktop Chromium (headless)
 ```
 
 Other ways to run:
@@ -25,6 +25,8 @@ Other ways to run:
 | Command | What it does |
 |---|---|
 | `npm run test:smoke` | Happy-path searches only (`@smoke`) |
+| `npm run test:cross-browser` | `@smoke` on Firefox, WebKit and mobile Chrome (nightly in CI) |
+| `npm run test:all` | Every project |
 | `npm run test:negative` | Validation / negative tests only (`@negative`) |
 | `npm run test:known-bugs` | Repro of the Amtrak swap bug (fails while the bug exists; not part of the default run) |
 | `npm run test:headed` | Watch the browser while tests run |
@@ -137,7 +139,7 @@ Current coverage: **41 of 42 in-scope requirements automated or reproduced** (1 
 3. **Copy inconsistency – date format.** The date field hint says `MM/DD/YYYY`, but values display without leading zeros (`11/6/2026`).
 4. **UX – firewall-blocked queries fail silently.** HTML-like station queries get **403** from the autocomplete API. The dropdown shows "Loading", then goes blank with no message. That's safe, since nothing executes, but the user gets no feedback.
 5. **Accessibility note – keyboard.** In the station dropdown the first ArrowDown keeps focus on the input, and focus enters the list only on the second press. Enter on the input triggers the "Nearby" geolocation lookup ("Location blocked…" when location access is denied).
-6. **UX/accessibility – keystrokes lost after clicking a station field.** Clicking From/To sometimes moves keyboard focus from the input to the suggestion panel header ("Top depart stations" / "Top destinations"), within ~150 ms and not every time. A user who clicks and types straight away can lose their first characters: typing `BOS` searched `OS`. Under heavy load the app can also wipe freshly entered text. The page objects confirm each station entry actually landed and retry it via `expect(...).toPass()` (limits in `playwright.config.ts`).
+6. **Bug – typed keys land in the wrong field.** Focus jumps between the station fields on its own. After clicking From/To it sometimes moves to the suggestion header, so the first keys are lost (typing `BOS` searched `OS`). Shortly after a station is picked it moves back to that station field, so a date typed next ends up there: **"WAS/2026" in To** ([evidence](docs/evidence/bug-focus-jump-date-typed-into-to-field.png)). It's timing-dependent and more frequent under load, so it's documented (spec STN-11) rather than gated. Page objects verify every entry and retry with `expect(...).toPass()`, and tests type dates before picking stations.
 
 ---
 
@@ -156,7 +158,7 @@ Current coverage: **41 of 42 in-scope requirements automated or reproduced** (1 
 
 - **Production is the target.** No staging access, so the suite runs read-only against amtrak.com and never completes a search.
 - **The search request is the observable result of FIND TRAINS.** Under automation Amtrak's bot protection (Akamai) answers it with **403**, and the page shows "We've experienced an unknown error". So "the click worked" means "the correct request was sent".
-- **Desktop Chromium at 1440×900.** Mobile layout and other browsers aren't covered yet.
+- **Browsers:** the full suite runs on desktop Chromium (1440×900), which is the PR gate. Firefox, WebKit (Safari engine) and mobile Chrome (Pixel 7) run the `@smoke` subset nightly (`npm run test:cross-browser`). On mobile the date field is read-only (calendar only), and Done/FIND TRAINS are tapped like a finger (Playwright's scroll-before-click lands on the content under pinned buttons; see `BaseComponent.pressPinnedButton`).
 - **Station data is stable** (NYP, WAS, BOS, CHI, PHL and their labels).
 - **Time zone:** "today" follows `America/New_York` for both the browser and the tests.
 - The cookie banner is dismissed once with **Reject All**, as a privacy-preferring user would, and that consent is reused by all tests.

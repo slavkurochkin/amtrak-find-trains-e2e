@@ -77,11 +77,18 @@ export class FareFinderForm extends BaseComponent {
    * Types a date into Depart Date with the keyboard, then leaves the field so
    * the site validates it. Focus is set without a click: clicking opens the
    * calendar, which takes the keystrokes instead of the input.
+   * Right after a station is picked the app can briefly move focus away, so
+   * keystrokes may be lost (and even land in the station field, finding STN-11):
+   * type dates before picking stations, and we retype (toPass) until every key landed.
    */
   async typeDepartDate(text: string): Promise<void> {
     await step(`Type depart date "${text}"`, async () => {
-      await this.departInput.focus();
-      await this.departInput.pressSequentially(text, { delay: this.options.typingDelayMs });
+      await expect(async () => {
+        await this.departInput.fill('');
+        await this.departInput.focus();
+        await this.departInput.pressSequentially(text, { delay: this.options.typingDelayMs });
+        await expect(this.departInput).toHaveValue(text);
+      }).toPass();
       await this.departInput.blur();
     });
   }
@@ -134,7 +141,8 @@ export class FareFinderForm extends BaseComponent {
   async clickFindTrains(): Promise<void> {
     // force: the button is aria-disabled (not HTML-disabled) when the form is
     // invalid, so negative tests also need to be able to click it.
-    await step('Click FIND TRAINS', () => this.findTrainsButton.click({ force: true }));
+    // On touch devices this taps like a finger (see BaseComponent.pressPinnedButton).
+    await step('Click FIND TRAINS', () => this.pressPinnedButton(this.findTrainsButton, { force: true }));
   }
 
   async expectSearchEnabled(): Promise<void> {

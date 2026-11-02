@@ -154,13 +154,15 @@ test.describe('Find trains: booking horizon and typed dates', () => {
   test(
     'a valid date can be typed into the depart field and is used in the search',
     { tag: ['@smoke', '@DATE-11'] },
-    async ({ homePage, searchSpy }) => {
+    async ({ homePage, searchSpy, isMobile }) => {
+      test.skip(isMobile, 'on mobile the date field is read-only: dates are picked from the calendar only');
       const search = aSearch().departingInDays(20).build();
       const form = homePage.fareFinder;
+      // Date first: typing right after picking a station can leak keys into it (finding STN-11).
+      await form.typeDepartDate(toInputFormat(search.departDate));
       await form.from.selectByCode(search.from);
       await form.to.selectByCode(search.to);
 
-      await form.typeDepartDate(toInputFormat(search.departDate));
       await form.clickFindTrains();
 
       await expect(form.departInput).toHaveValue(toInputFormat(search.departDate));
@@ -179,10 +181,11 @@ test.describe('Find trains: booking horizon and typed dates', () => {
       { tag: ['@negative', '@DATE-12'] },
       async ({ homePage }) => {
         const form = homePage.fareFinder;
-        await form.from.selectByCode(Stations.NEW_YORK);
-        await form.to.selectByCode(Stations.WASHINGTON);
 
         await form.typeDepartDate(value());
+        // Stations after the date (see DATE-11), so only the date can block the search.
+        await form.from.selectByCode(Stations.NEW_YORK);
+        await form.to.selectByCode(Stations.WASHINGTON);
 
         await expect(form.departInput).toHaveValue('');
         await form.expectSearchDisabled();

@@ -53,6 +53,7 @@ Tests: `tests/find-trains/dates.spec.ts`
 **Status:** automated · **Type:** positive
 **Given** stations are set **When** the user focuses Depart Date with the keyboard, types a valid future date (`M/D/YYYY`) and leaves the field
 **Then** the date is kept and used in the search request.
+Desktop only: on mobile the field is read-only (`aria-readonly`) and opens the calendar. The test types the date before picking stations (see STN-11).
 
 ### DATE-12 · Invalid typed dates are rejected
 **Status:** automated · **Type:** negative

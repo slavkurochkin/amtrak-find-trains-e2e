@@ -4,10 +4,10 @@
   "description": "Playwright + Page Object test suite for the amtrak.com 'Find trains' search form",
   "private": true,
   "scripts": {
-    "test": "playwright test",
-    "test:headed": "playwright test --headed",
-    "test:smoke": "playwright test --grep @smoke",
-    "test:negative": "playwright test --grep @negative",
+    "test": "playwright test --project=chromium-desktop",
+    "test:headed": "playwright test --project=chromium-desktop --headed",
+    "test:smoke": "playwright test --project=chromium-desktop --grep @smoke",
+    "test:negative": "playwright test --project=chromium-desktop --grep @negative",
     "test:known-bugs": "KNOWN_BUGS=1 playwright test --grep @known-bug",
     "test:ui": "playwright test --ui",
     "report": "playwright show-report",
@@ -19,7 +19,9 @@
     "check": "npm run lint && npm run format:check && npm run typecheck && npm run spec:coverage",
     "prepare": "git config core.hooksPath .githooks || true",
     "test:visual:update": "playwright test --grep @visual --update-snapshots",
-    "test:visual:update:linux": "docker run --rm --ipc=host -v \"$PWD\":/work -w /work -e PW_OUTPUT_DIR=/tmp/pw/results -e PW_REPORTS_DIR=/tmp/pw/reports mcr.microsoft.com/playwright:v1.64.1-noble npx playwright test --grep @visual --update-snapshots"
+    "test:visual:update:linux": "docker run --rm --ipc=host -v \"$PWD\":/work -w /work -e PW_OUTPUT_DIR=/tmp/pw/results -e PW_REPORTS_DIR=/tmp/pw/reports mcr.microsoft.com/playwright:v1.64.1-noble npx playwright test --grep @visual --update-snapshots",
+    "test:cross-browser": "playwright test --project=firefox-desktop --project=webkit-desktop --project=mobile-chrome --workers=2 --retries=1",
+    "test:all": "playwright test"
   },
   "engines": {
     "node": ">=18"

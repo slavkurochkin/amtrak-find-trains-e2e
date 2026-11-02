@@ -61,9 +61,21 @@ export default defineConfig<TimingOptions>({
       dependencies: ['setup'],
       use: {
         ...devices['Desktop Chrome'],
-        viewport: { width: 1440, height: 900 },
+        viewport: { width: 1440, height: 900 }, // other projects use their device's viewport
         storageState: CONSENT_STATE_FILE,
       },
     },
+    // Cross-browser and mobile: the @smoke subset only. Visual and a11y checks
+    // stay on desktop Chromium (baselines are per browser, the DOM is the same).
+    ...[
+      { name: 'firefox-desktop', device: devices['Desktop Firefox'] },
+      { name: 'webkit-desktop', device: devices['Desktop Safari'] },
+      { name: 'mobile-chrome', device: devices['Pixel 7'] },
+    ].map(({ name, device }) => ({
+      name,
+      dependencies: ['setup'],
+      grep: /@smoke/,
+      use: { ...device, storageState: CONSENT_STATE_FILE },
+    })),
   ],
 });
