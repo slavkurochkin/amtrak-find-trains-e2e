@@ -5,7 +5,7 @@ import type {
 } from '@playwright/test/reporter';
 
 /**
- * Writes `test-results/failures.md` (and `failures.json`): one compact,
+ * Writes `reports/failures.md`: one compact,
  * self-contained section per failed test, built to be pasted into an AI
  * assistant (or read by one) to debug the failure quickly.
  *
@@ -71,7 +71,6 @@ export default class AiFailureReporter implements Reporter {
     fs.mkdirSync(this.outDir, { recursive: true });
     const md = this.toMarkdown(result);
     fs.writeFileSync(path.join(this.outDir, 'failures.md'), md);
-    fs.writeFileSync(path.join(this.outDir, 'failures.json'), JSON.stringify(this.failures, null, 2));
     if (process.env.GITHUB_STEP_SUMMARY && this.failures.length) {
       fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, md);
     }

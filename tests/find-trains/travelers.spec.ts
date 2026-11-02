@@ -8,11 +8,11 @@ test.describe('Find trains: travelers', () => {
   test('defaults to one adult', async ({ homePage }) => {
     const { travelers } = homePage.fareFinder;
 
-    expect(await travelers.summary()).toBe('1 Traveler');
+    await expect(travelers.toggle).toHaveText('1 Traveler', { useInnerText: true });
     await travelers.open();
-    expect(await travelers.count('adult')).toBe(1);
+    await expect(travelers.countLabel('adult')).toHaveText('1');
     for (const type of TRAVELER_TYPES.filter((t) => t !== 'adult')) {
-      expect(await travelers.count(type), `${type} count`).toBe(0);
+      await expect(travelers.countLabel(type), `${type} count`).toHaveText('0');
       await expect(travelers.decrement(type), `${type} "-" at zero`).toBeDisabled();
     }
   });
@@ -22,7 +22,7 @@ test.describe('Find trains: travelers', () => {
 
     await travelers.setTravelers({ adult: 2, child: 1, infant: 1 });
 
-    expect(await travelers.summary()).toBe('4 Travelers');
+    await expect(travelers.toggle).toHaveText('4 Travelers', { useInnerText: true });
   });
 
   test('Reset returns to one adult', async ({ homePage }) => {
@@ -33,8 +33,8 @@ test.describe('Find trains: travelers', () => {
 
     await travelers.resetButton.click();
 
-    expect(await travelers.count('adult')).toBe(1);
-    expect(await travelers.count('senior')).toBe(0);
+    await expect(travelers.countLabel('adult')).toHaveText('1');
+    await expect(travelers.countLabel('senior')).toHaveText('0');
   });
 
   test(`up to ${MAX_ONLINE_TRAVELERS} travelers can book online`, async ({ homePage }) => {
@@ -89,7 +89,7 @@ test.describe('Find trains: travelers', () => {
 
       await travelers.decrement('adult').click({ force: true });
 
-      expect(await travelers.count('adult')).toBe(0);
+      await expect(travelers.countLabel('adult')).toHaveText('0');
     });
   });
 });

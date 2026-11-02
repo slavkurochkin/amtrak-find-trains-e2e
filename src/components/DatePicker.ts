@@ -51,10 +51,6 @@ export class DatePicker extends BaseComponent {
     await this.day(date).click();
   }
 
-  async isDayDisabled(date: CalendarDate): Promise<boolean> {
-    return (await this.day(date).getAttribute('aria-disabled')) === 'true';
-  }
-
   async done(): Promise<void> {
     await this.doneButton.click();
     await expect(this.root).toBeHidden();

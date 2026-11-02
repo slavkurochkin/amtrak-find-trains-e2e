@@ -7,6 +7,9 @@ import { TripType, TripTypeMenu } from './TripTypeMenu';
 import type { SearchCriteria } from '../builders/SearchCriteriaBuilder';
 import { type CalendarDate, toInputFormat } from '../utils/dates';
 import { step } from '../utils/step';
+import type { TimingOptions } from '../utils/timing';
+
+export type FareFinderOptions = Pick<TimingOptions, 'stationSettleMs' | 'typingDelayMs'>;
 
 /**
  * The homepage "Find trains" booking form. It composes one component per
@@ -25,12 +28,12 @@ export class FareFinderForm extends BaseComponent {
   readonly returnInput: Locator;
   readonly findTrainsButton: Locator;
 
-  constructor(page: Page) {
+  constructor(page: Page, private readonly options: FareFinderOptions) {
     super(page);
     this.root = this.byTestId('fare-finder-cmp');
     this.tripType = new TripTypeMenu(page);
-    this.from = new StationField(page, 'from');
-    this.to = new StationField(page, 'to');
+    this.from = new StationField(page, 'from', options);
+    this.to = new StationField(page, 'to', options);
     this.calendar = new DatePicker(page);
     this.travelers = new TravelersPanel(page);
     this.swapButton = this.root.getByRole('button', { name: 'Switch departure and arrival stations.' });
@@ -56,11 +59,6 @@ export class FareFinderForm extends BaseComponent {
     await this.calendar.expectOpen();
   }
 
-  async openReturnCalendar(): Promise<void> {
-    await this.returnInput.click({ force: true });
-    await this.calendar.expectOpen();
-  }
-
   async pickDepartDate(date: CalendarDate): Promise<void> {
     await step(`Pick depart date ${toInputFormat(date)}`, async () => {
       await this.openDepartCalendar();
@@ -72,36 +70,31 @@ export class FareFinderForm extends BaseComponent {
 
   /** Round trip: both dates are chosen in one calendar session (depart, then return). */
   async pickDateRange(depart: CalendarDate, ret: CalendarDate): Promise<void> {
-    await step(`Pick dates ${toInputFormat(depart)} - ${toInputFormat(ret)}`, () => this.pickDateRangeSteps(depart, ret));
-  }
-
-  private async pickDateRangeSteps(depart: CalendarDate, ret: CalendarDate): Promise<void> {
-    await this.openDepartCalendar();
-    await this.calendar.pick(depart);
-    await this.calendar.pick(ret);
-    await this.calendar.done();
-    await expect(this.departInput).toHaveValue(toInputFormat(depart));
-    await expect(this.returnInput).toHaveValue(toInputFormat(ret));
+    await step(`Pick dates ${toInputFormat(depart)} - ${toInputFormat(ret)}`, async () => {
+      await this.openDepartCalendar();
+      await this.calendar.pick(depart);
+      await this.calendar.pick(ret);
+      await this.calendar.done();
+      await expect(this.departInput).toHaveValue(toInputFormat(depart));
+      await expect(this.returnInput).toHaveValue(toInputFormat(ret));
+    });
   }
 
   /** Fills the whole form from a SearchCriteria object (see SearchCriteriaBuilder). */
   async fill(criteria: SearchCriteria): Promise<void> {
-    await step(`Fill search form: ${criteria.tripType} ${criteria.from.code} -> ${criteria.to.code}`, () => this.fillSteps(criteria));
-  }
-
-  private async fillSteps(criteria: SearchCriteria): Promise<void> {
-    if (criteria.tripType !== TripType.OneWay) await this.tripType.select(criteria.tripType);
-    await this.from.select(criteria.from);
-    await this.to.select(criteria.to);
-    if (criteria.tripType === TripType.RoundTrip && criteria.returnDate) {
-      await this.pickDateRange(criteria.departDate, criteria.returnDate);
-    } else {
-      await this.pickDepartDate(criteria.departDate);
-    }
-    const { travelers } = criteria;
-    const isDefault = travelers.adult === 1 &&
-      travelers.senior + travelers.youth + travelers.child + travelers.infant === 0;
-    if (!isDefault) await this.travelers.setTravelers(travelers);
+    await step(`Fill search form: ${criteria.tripType} ${criteria.from.code} -> ${criteria.to.code}`, async () => {
+      if (criteria.tripType !== TripType.OneWay) await this.tripType.select(criteria.tripType);
+      await this.from.select(criteria.from);
+      await this.to.select(criteria.to);
+      if (criteria.returnDate) {
+        await this.pickDateRange(criteria.departDate, criteria.returnDate);
+      } else {
+        await this.pickDepartDate(criteria.departDate);
+      }
+      const { adult, ...others } = criteria.travelers;
+      const isDefault = adult === 1 && Object.values(others).every((n) => n === 0);
+      if (!isDefault) await this.travelers.setTravelers(criteria.travelers);
+    });
   }
 
   async swapStations(): Promise<void> {
@@ -111,12 +104,12 @@ export class FareFinderForm extends BaseComponent {
   /**
    * Known Amtrak bug: clicking Swap within ~300ms of picking the To station
    * leaves both fields showing the old To station, while the search request
-   * uses the swapped route. Tests that are not about that bug call this
-   * first, like a user pausing for a moment. See stations.spec.ts
-   * "KNOWN BUG" test and README "Findings".
+   * uses the swapped route. There is no DOM signal for "settled", so tests
+   * that are not about that bug pause for `stationSettleMs` (config option),
+   * like a user would. See the "KNOWN BUG" test and README "Findings".
    */
   async waitForStationsToSettle(): Promise<void> {
-    await this.page.waitForTimeout(1_000);
+    await this.page.waitForTimeout(this.options.stationSettleMs);
   }
 
   async clickFindTrains(): Promise<void> {

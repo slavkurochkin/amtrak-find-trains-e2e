@@ -29,15 +29,20 @@ export const SEARCH_ENDPOINT = '**/dotcom/journey-solution-option';
  *  - tests stay within scope and don't depend on the results page
  *  - no search load reaches Amtrak's production backend
  *  - from automated browsers the endpoint returns 403 (bot protection) anyway
- * Set LIVE_SEARCH=1 to let the request through.
  */
 export class SearchRequestSpy {
   readonly requests: JourneySearchRequest[] = [];
 
-  private constructor(private readonly page: Page, private readonly testInfo?: TestInfo) {}
+  private consumed = 0;
 
-  static async attach(page: Page, testInfo?: TestInfo): Promise<SearchRequestSpy> {
-    const spy = new SearchRequestSpy(page, testInfo);
+  private constructor(
+    private readonly page: Page,
+    private readonly testInfo: TestInfo | undefined,
+    private readonly options: { noSearchWindowMs: number },
+  ) {}
+
+  static async attach(page: Page, testInfo: TestInfo | undefined, options: { noSearchWindowMs: number }): Promise<SearchRequestSpy> {
+    const spy = new SearchRequestSpy(page, testInfo, options);
     await page.route(SEARCH_ENDPOINT, (route) => spy.handle(route));
     return spy;
   }
@@ -54,28 +59,28 @@ export class SearchRequestSpy {
       fs.writeFileSync(file, JSON.stringify(body, null, 2));
       await this.testInfo.attach(path.basename(file), { path: file, contentType: 'application/json' });
     }
-    if (process.env.LIVE_SEARCH === '1') return route.continue();
     return route.abort('aborted');
   }
 
   /**
    * Returns the next search request not yet returned, waiting if needed.
    * A read cursor (not a "count before" snapshot) is used because the request
-   * often arrives before this method is even called.
+   * often arrives before this method is even called. Uses the config's expect timeout.
    */
-  async waitForSearch(timeout = 15_000): Promise<JourneySearchRequest> {
+  async waitForSearch(): Promise<JourneySearchRequest> {
     const index = this.consumed;
-    await expect.poll(() => this.requests.length, { timeout, message: 'FIND TRAINS should send a search request' })
+    await expect.poll(() => this.requests.length, { message: 'FIND TRAINS should send a search request' })
       .toBeGreaterThan(index);
     this.consumed = index + 1;
     return this.requests[index];
   }
 
-  private consumed = 0;
-
-  /** For negative tests: no search request may go out within `ms`. */
-  async expectNoSearch(ms = 3_000): Promise<void> {
-    await this.page.waitForTimeout(ms);
+  /**
+   * For negative tests: no search request may go out. Absence can't be
+   * awaited as a condition, so we watch for `noSearchWindowMs` (config option).
+   */
+  async expectNoSearch(): Promise<void> {
+    await this.page.waitForTimeout(this.options.noSearchWindowMs);
     expect(this.requests, 'no search request should be sent').toHaveLength(0);
   }
 

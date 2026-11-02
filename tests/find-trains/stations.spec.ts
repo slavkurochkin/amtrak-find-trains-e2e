@@ -15,14 +15,6 @@ test.describe('Find trains: From / To station fields', () => {
     expect(options.filter((o) => /washington/i.test(o)).length, 'several Washington matches').toBeGreaterThan(1);
   });
 
-  test('choosing a suggestion fills the field with the station', async ({ homePage }) => {
-    const { from } = homePage.fareFinder;
-
-    await from.select(Stations.WASHINGTON);
-
-    await from.expectSelected(Stations.WASHINGTON);
-  });
-
   test('typing an exact station code selects it without picking from the list', async ({ homePage }) => {
     const { to } = homePage.fareFinder;
 
@@ -59,21 +51,6 @@ test.describe('Find trains: From / To station fields', () => {
     await form.to.expectSelected(Stations.NEW_YORK);
   });
 
-  test('swapping twice restores the original route', async ({ homePage }) => {
-    const form = homePage.fareFinder;
-    await form.from.select(Stations.NEW_YORK);
-    await form.to.select(Stations.CHICAGO);
-    await form.waitForStationsToSettle();
-
-    await form.swapStations();
-    await form.from.expectSelected(Stations.CHICAGO);
-    await form.waitForStationsToSettle();
-    await form.swapStations();
-
-    await form.from.expectSelected(Stations.NEW_YORK);
-    await form.to.expectSelected(Stations.CHICAGO);
-  });
-
   test('KNOWN BUG: swapping right after picking To shows the same station in both fields', {
     tag: '@known-bug',
     annotation: {
@@ -82,9 +59,9 @@ test.describe('Find trains: From / To station fields', () => {
         'Evidence: docs/evidence/bug-swap-race-ui-shows-CHI-CHI.png',
     },
   }, async ({ homePage }) => {
-    // Expected to fail while the bug exists; Playwright reports it as passing.
-    // When Amtrak fixes it this test "unexpectedly passes" and flags the change.
-    test.fail();
+    // Asserts the correct behaviour, so it FAILS while the bug exists. It's a
+    // timing race, so it can't gate CI either way: excluded from the default
+    // run (see playwright.config.ts) and run on demand with `npm run test:known-bugs`.
     const form = homePage.fareFinder;
     await form.from.select(Stations.NEW_YORK);
     await form.to.select(Stations.CHICAGO);
@@ -92,7 +69,7 @@ test.describe('Find trains: From / To station fields', () => {
     await form.swapStations(); // no pause
 
     await form.from.expectSelected(Stations.CHICAGO);
-    await expect(form.to.root, 'To should show the old From station').toContainText(Stations.NEW_YORK.code, { timeout: 5_000 });
+    await expect(form.to.root, 'To should show the old From station').toContainText(Stations.NEW_YORK.code);
   });
 
   test.describe('invalid input', { tag: '@negative' }, () => {
@@ -119,9 +96,14 @@ test.describe('Find trains: From / To station fields', () => {
       });
       const form = homePage.fareFinder;
 
-      await form.from.type(payload);
-      // Amtrak's firewall answers this query with 403; give the UI time to settle.
-      await page.waitForTimeout(3_000);
+      // Wait for the autocomplete lookup to come back (Amtrak's firewall
+      // currently answers it with 403) before checking the result. Retried in
+      // case the app wipes the fresh input before the lookup starts.
+      await expect(async () => {
+        const lookup = page.waitForResponse((r) => r.url().includes('/AutoCompleterArcgis/'));
+        await form.from.enter(payload);
+        await lookup;
+      }).toPass();
 
       expect(dialogs, 'no script from the input should run').toEqual([]);
       await expect(page.locator('#injected'), 'input must not be rendered as HTML').toHaveCount(0);

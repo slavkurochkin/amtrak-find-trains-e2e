@@ -70,10 +70,10 @@ export class TravelersPanel extends BaseComponent {
   /** Sets every traveler type; types not given are set to 0. */
   async setTravelers(counts: Partial<TravelerCounts>): Promise<void> {
     const label = Object.entries(counts).filter(([, n]) => n).map(([t, n]) => `${n} ${t}`).join(', ');
-    await step(`Set travelers: ${label || 'none'}`, () => this.setTravelersSteps(counts));
+    await step(`Set travelers: ${label || 'none'}`, () => this.applyCounts(counts));
   }
 
-  private async setTravelersSteps(counts: Partial<TravelerCounts>): Promise<void> {
+  private async applyCounts(counts: Partial<TravelerCounts>): Promise<void> {
     await this.open();
     // Raise adults first and lower them last so the "at least one adult" rule
     // never blocks a change part way through.
@@ -86,8 +86,4 @@ export class TravelersPanel extends BaseComponent {
     await this.done();
   }
 
-  /** Text of the dropdown button, e.g. "3 Travelers". */
-  async summary(): Promise<string> {
-    return (await this.toggle.innerText()).replace(/\s+/g, ' ').trim();
-  }
 }

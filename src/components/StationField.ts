@@ -2,8 +2,12 @@ import { expect, type Locator, type Page } from '@playwright/test';
 import { BaseComponent } from './BaseComponent';
 import type { Station } from '../data/stations';
 import { step } from '../utils/step';
+import type { TimingOptions } from '../utils/timing';
 
 export type StationFieldKind = 'from' | 'to';
+
+/** The suggestion list for a query starts with one of these (not "Top depart stations"). */
+const QUERY_RESULTS = /^\s*(Stations|Locations|No stations found)/;
 
 /**
  * The From / To station autocomplete.
@@ -21,7 +25,11 @@ export class StationField extends BaseComponent {
   readonly listbox: Locator;
   readonly options: Locator;
 
-  constructor(page: Page, readonly kind: StationFieldKind) {
+  constructor(
+    page: Page,
+    readonly kind: StationFieldKind,
+    private readonly timing: Pick<TimingOptions, 'typingDelayMs'>,
+  ) {
     super(page);
     this.root = this.byTestId(`fare-finder-${kind}-station-field-page`);
     // Not filtered by visibility: the input is hidden once a station is chosen.
@@ -43,16 +51,33 @@ export class StationField extends BaseComponent {
     await this.input.fill(text);
   }
 
-  /** Types one key at a time, for tests about real keyboard behaviour. */
-  async type(text: string, delayMs = 80): Promise<void> {
-    await this.focus();
-    await this.input.pressSequentially(text, { delay: delayMs });
+  /**
+   * Types one key at a time, for tests about real keyboard behaviour.
+   * Amtrak quirk: right after a click the app sometimes moves focus to the
+   * suggestion panel header, so early keystrokes are lost. We retype (toPass)
+   * until every key landed, or the typed code auto-selected a station.
+   */
+  async type(text: string): Promise<void> {
+    await expect(async () => {
+      if (await this.input.isVisible()) await this.input.fill('');
+      await this.focus();
+      await this.input.pressSequentially(text, { delay: this.timing.typingDelayMs });
+      if (await this.input.isVisible()) await expect(this.input).toHaveValue(text);
+    }).toPass();
   }
 
-  /** Enters a query and returns once suggestions (or the empty state) render. */
+  /**
+   * Enters a query and returns once its results (or "No stations found.")
+   * render. Under heavy load the app's focus handler can occasionally wipe
+   * fresh input and show "Top depart stations" instead; `toPass` (limits in
+   * playwright.config.ts `expect.toPass`) re-enters the query when that happens.
+   */
   async search(text: string): Promise<void> {
-    await this.enter(text);
-    await expect(this.listbox).toBeVisible();
+    await expect(async () => {
+      await this.enter(text);
+      await expect(this.input).toHaveValue(text);
+      await expect(this.listbox).toContainText(QUERY_RESULTS);
+    }).toPass();
   }
 
   async chooseOption(option: string | RegExp): Promise<void> {
@@ -71,8 +96,11 @@ export class StationField extends BaseComponent {
   /** Enter the exact station code, which the site auto-selects. */
   async selectByCode(station: Station): Promise<void> {
     await step(`Select ${this.kind} station by code: ${station.code}`, async () => {
-      await this.enter(station.code);
-      await this.expectSelected(station);
+      // Retried like search() in case the input gets wiped before it's matched.
+      await expect(async () => {
+        if (await this.input.isVisible()) await this.enter(station.code);
+        await this.expectSelected(station);
+      }).toPass();
     });
   }
 

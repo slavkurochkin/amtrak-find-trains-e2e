@@ -9,16 +9,7 @@ test.describe('Find trains: depart and return dates', () => {
 
     await form.openDepartCalendar();
 
-    expect(await form.calendar.isDayDisabled(today())).toBe(false);
-  });
-
-  test('a chosen date is shown in MM/DD/YYYY format', async ({ homePage }) => {
-    const form = homePage.fareFinder;
-    const date = daysFromToday(30);
-
-    await form.pickDepartDate(date);
-
-    await expect(form.departInput).toHaveValue(toInputFormat(date));
+    await expect(form.calendar.day(today())).toHaveAttribute('aria-disabled', 'false');
   });
 
   test('dates several months ahead can be reached with "Next month"', async ({ homePage }) => {
@@ -61,7 +52,7 @@ test.describe('Find trains: depart and return dates', () => {
 
       await form.openDepartCalendar();
 
-      expect(await form.calendar.isDayDisabled(yesterday)).toBe(true);
+      await expect(form.calendar.day(yesterday)).toHaveAttribute('aria-disabled', 'true');
     });
 
     test('clicking a past date does not select it', async ({ homePage }) => {

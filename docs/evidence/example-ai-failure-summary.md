@@ -29,7 +29,7 @@ at ../src/utils/SearchRequestSpy.ts:96
 ```
 **Last steps**
 ```
-✓ Open /home and dismiss cookie banner (BasePage.ts:11)
+✓ Open /home (BasePage.ts:21)
 ✓ Fill search form: One-Way NYP -> WAS (FareFinderForm.ts:89)
 ✓ Click FIND TRAINS (FareFinderForm.ts:125)
 ✓ FIND TRAINS should send a search request (SearchRequestSpy.ts:64)

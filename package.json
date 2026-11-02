@@ -8,6 +8,7 @@
     "test:headed": "playwright test --headed",
     "test:smoke": "playwright test --grep @smoke",
     "test:negative": "playwright test --grep @negative",
+    "test:known-bugs": "KNOWN_BUGS=1 playwright test --grep @known-bug",
     "test:ui": "playwright test --ui",
     "report": "playwright show-report",
     "typecheck": "tsc --noEmit"
