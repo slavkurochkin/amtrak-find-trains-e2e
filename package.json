@@ -1,0 +1,21 @@
+{
+  "name": "amtrak-find-trains-e2e",
+  "version": "1.0.0",
+  "description": "Playwright + Page Object test suite for the amtrak.com 'Find trains' search form",
+  "private": true,
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:smoke": "playwright test --grep @smoke",
+    "test:negative": "playwright test --grep @negative",
+    "test:ui": "playwright test --ui",
+    "report": "playwright show-report",
+    "typecheck": "tsc --noEmit"
+  },
+  "engines": { "node": ">=18" },
+  "devDependencies": {
+    "@playwright/test": "^1.64.1",
+    "@types/node": "^24.0.0",
+    "typescript": "^5.9.0"
+  }
+}

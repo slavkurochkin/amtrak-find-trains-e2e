@@ -1,0 +1,14 @@
+node_modules/
+test-results/
+playwright-report/
+reports/
+blob-report/
+playwright/.cache/
+.env
+.DS_Store
+
+# Local reference documents (not part of the repo)
+*.pdf
+
+# Local notes
+notes/

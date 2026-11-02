@@ -1,0 +1,39 @@
+{
+  "journeyRequest": {
+    "fare": {
+      "pricingUnit": "DOLLARS"
+    },
+    "type": "OW",
+    "journeyLegRequests": [
+      {
+        "origin": {
+          "code": "BOS",
+          "schedule": {
+            "departureDateTime": "2026-11-16T00:00:00"
+          }
+        },
+        "destination": {
+          "code": "NYP"
+        },
+        "passengers": [
+          {
+            "id": "P1",
+            "type": "F",
+            "initialType": "adult"
+          }
+        ]
+      }
+    ],
+    "customer": {
+      "tierStatus": "MEMBER"
+    },
+    "isPassRider": false,
+    "isCorporateTraveller": false,
+    "tripTags": true,
+    "singleAdultFare": true,
+    "cascadesWSDOTFilter": false,
+    "xDelay": "60"
+  },
+  "initialJourneyLegOnly": false,
+  "reservableAccomodationOptions": "ALL"
+}
