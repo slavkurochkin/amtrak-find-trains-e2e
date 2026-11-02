@@ -11,9 +11,12 @@
     "test:known-bugs": "KNOWN_BUGS=1 playwright test --grep @known-bug",
     "test:ui": "playwright test --ui",
     "report": "playwright show-report",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "spec:coverage": "node scripts/spec-coverage.mjs"
   },
-  "engines": { "node": ">=18" },
+  "engines": {
+    "node": ">=18"
+  },
   "devDependencies": {
     "@playwright/test": "^1.64.1",
     "@types/node": "^24.0.0",

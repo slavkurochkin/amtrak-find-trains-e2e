@@ -3,7 +3,7 @@ import { Stations } from '@src/data/stations';
 import { Messages } from '@src/data/messages';
 
 test.describe('Find trains: From / To station fields', () => {
-  test('typing a city name suggests matching stations', async ({ homePage }) => {
+  test('typing a city name suggests matching stations', { tag: '@STN-01' }, async ({ homePage }) => {
     const { from } = homePage.fareFinder;
 
     await from.search('Washington');
@@ -15,7 +15,7 @@ test.describe('Find trains: From / To station fields', () => {
     expect(options.filter((o) => /washington/i.test(o)).length, 'several Washington matches').toBeGreaterThan(1);
   });
 
-  test('typing an exact station code selects it without picking from the list', async ({ homePage }) => {
+  test('typing an exact station code selects it without picking from the list', { tag: '@STN-02' }, async ({ homePage }) => {
     const { to } = homePage.fareFinder;
 
     await to.type(Stations.BOSTON.code);
@@ -23,7 +23,7 @@ test.describe('Find trains: From / To station fields', () => {
     await to.expectSelected(Stations.BOSTON);
   });
 
-  test('station codes are matched case-insensitively', async ({ homePage }) => {
+  test('station codes are matched case-insensitively', { tag: '@STN-03' }, async ({ homePage }) => {
     const { from } = homePage.fareFinder;
 
     await from.search('nyp');
@@ -31,7 +31,7 @@ test.describe('Find trains: From / To station fields', () => {
     await expect(from.options.first()).toContainText('(NYP)');
   });
 
-  test('a suggestion can be chosen with the keyboard (ArrowDown + Enter)', async ({ homePage }) => {
+  test('a suggestion can be chosen with the keyboard (ArrowDown + Enter)', { tag: '@STN-04' }, async ({ homePage }) => {
     const { from } = homePage.fareFinder;
 
     await from.selectWithKeyboard(Stations.PHILADELPHIA);
@@ -39,7 +39,7 @@ test.describe('Find trains: From / To station fields', () => {
     await from.expectSelected(Stations.PHILADELPHIA);
   });
 
-  test('swap button exchanges the From and To stations', async ({ homePage }) => {
+  test('swap button exchanges the From and To stations', { tag: '@STN-05' }, async ({ homePage }) => {
     const form = homePage.fareFinder;
     await form.from.select(Stations.NEW_YORK);
     await form.to.select(Stations.CHICAGO);
@@ -52,7 +52,7 @@ test.describe('Find trains: From / To station fields', () => {
   });
 
   test('KNOWN BUG: swapping right after picking To shows the same station in both fields', {
-    tag: '@known-bug',
+    tag: ['@known-bug', '@STN-09'],
     annotation: {
       type: 'issue',
       description: 'Swap clicked <300ms after choosing To: UI shows CHI -> CHI, search sends CHI -> NYP. ' +
@@ -73,7 +73,7 @@ test.describe('Find trains: From / To station fields', () => {
   });
 
   test.describe('invalid input', { tag: '@negative' }, () => {
-    test('an unknown station shows "No stations found." and is not accepted', async ({ homePage }) => {
+    test('an unknown station shows "No stations found." and is not accepted', { tag: '@STN-06' }, async ({ homePage }) => {
       const form = homePage.fareFinder;
 
       await form.from.search('Zzqxj');
@@ -87,7 +87,7 @@ test.describe('Find trains: From / To station fields', () => {
       await form.expectSearchDisabled();
     });
 
-    test('HTML/script-like input is not executed or rendered', async ({ homePage, page }) => {
+    test('HTML/script-like input is not executed or rendered', { tag: '@STN-07' }, async ({ homePage, page }) => {
       const payload = '<img src=x id=injected onerror=alert(1)>';
       const dialogs: string[] = [];
       page.on('dialog', async (d) => {
@@ -112,7 +112,7 @@ test.describe('Find trains: From / To station fields', () => {
       await form.expectSearchDisabled();
     });
 
-    test('the same station for From and To is rejected', async ({ homePage, searchSpy }) => {
+    test('the same station for From and To is rejected', { tag: '@STN-08' }, async ({ homePage, searchSpy }) => {
       const form = homePage.fareFinder;
 
       await form.from.selectByCode(Stations.NEW_YORK);

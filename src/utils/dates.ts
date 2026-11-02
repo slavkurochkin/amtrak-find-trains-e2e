@@ -39,6 +39,18 @@ export function addDays(d: CalendarDate, days: number): CalendarDate {
   return fromUtc(u);
 }
 
+/** Same day `months` later, clamped to the month's last day (Jan 31 + 1 month = Feb 28/29). */
+export function addMonths(d: CalendarDate, months: number): CalendarDate {
+  const first = new Date(Date.UTC(d.year, d.month - 1 + months, 1));
+  const lastDay = new Date(Date.UTC(first.getUTCFullYear(), first.getUTCMonth() + 1, 0)).getUTCDate();
+  return { year: first.getUTCFullYear(), month: first.getUTCMonth() + 1, day: Math.min(d.day, lastDay) };
+}
+
+/** Last date Amtrak lets you book: 11 months from today (spec DATE-10). */
+export function lastBookableDate(): CalendarDate {
+  return addMonths(today(), 11);
+}
+
 export function daysFromToday(days: number): CalendarDate {
   return addDays(today(), days);
 }

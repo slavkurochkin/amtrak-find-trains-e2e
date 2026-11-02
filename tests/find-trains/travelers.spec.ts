@@ -5,7 +5,7 @@ import { TRAVELER_TYPES } from '@src/components/TravelersPanel';
 const MAX_ONLINE_TRAVELERS = 8;
 
 test.describe('Find trains: travelers', () => {
-  test('defaults to one adult', async ({ homePage }) => {
+  test('defaults to one adult', { tag: '@TRAV-01' }, async ({ homePage }) => {
     const { travelers } = homePage.fareFinder;
 
     await expect(travelers.toggle).toHaveText('1 Traveler', { useInnerText: true });
@@ -17,7 +17,7 @@ test.describe('Find trains: travelers', () => {
     }
   });
 
-  test('the summary shows the total across traveler types', async ({ homePage }) => {
+  test('the summary shows the total across traveler types', { tag: '@TRAV-02' }, async ({ homePage }) => {
     const { travelers } = homePage.fareFinder;
 
     await travelers.setTravelers({ adult: 2, child: 1, infant: 1 });
@@ -25,7 +25,7 @@ test.describe('Find trains: travelers', () => {
     await expect(travelers.toggle).toHaveText('4 Travelers', { useInnerText: true });
   });
 
-  test('Reset returns to one adult', async ({ homePage }) => {
+  test('Reset returns to one adult', { tag: '@TRAV-03' }, async ({ homePage }) => {
     const { travelers } = homePage.fareFinder;
     await travelers.open();
     await travelers.setCount('adult', 3);
@@ -37,7 +37,7 @@ test.describe('Find trains: travelers', () => {
     await expect(travelers.countLabel('senior')).toHaveText('0');
   });
 
-  test(`up to ${MAX_ONLINE_TRAVELERS} travelers can book online`, async ({ homePage }) => {
+  test(`up to ${MAX_ONLINE_TRAVELERS} travelers can book online`, { tag: '@TRAV-04' }, async ({ homePage }) => {
     const form = homePage.fareFinder;
     await form.travelers.open();
 
@@ -48,7 +48,7 @@ test.describe('Find trains: travelers', () => {
   });
 
   test.describe('invalid traveler combinations', { tag: '@negative' }, () => {
-    test(`more than ${MAX_ONLINE_TRAVELERS} travelers points to phone booking and blocks adding more`, async ({ homePage }) => {
+    test(`more than ${MAX_ONLINE_TRAVELERS} travelers points to phone booking and blocks adding more`, { tag: '@TRAV-05' }, async ({ homePage }) => {
       const form = homePage.fareFinder;
       await form.travelers.open();
 
@@ -60,7 +60,7 @@ test.describe('Find trains: travelers', () => {
       }
     });
 
-    test('removing the only adult asks for at least one adult and disables search', async ({ homePage }) => {
+    test('removing the only adult asks for at least one adult and disables search', { tag: '@TRAV-06' }, async ({ homePage }) => {
       const form = homePage.fareFinder;
       await form.travelers.open();
 
@@ -71,7 +71,7 @@ test.describe('Find trains: travelers', () => {
       await form.expectSearchDisabled();
     });
 
-    test('children without an adult are not enough to search', async ({ homePage }) => {
+    test('children without an adult are not enough to search', { tag: '@TRAV-07' }, async ({ homePage }) => {
       const form = homePage.fareFinder;
       await form.travelers.open();
 
@@ -82,7 +82,7 @@ test.describe('Find trains: travelers', () => {
       await form.expectSearchDisabled();
     });
 
-    test('the adult counter cannot go below zero', async ({ homePage }) => {
+    test('the adult counter cannot go below zero', { tag: '@TRAV-08' }, async ({ homePage }) => {
       const { travelers } = homePage.fareFinder;
       await travelers.open();
       await travelers.setCount('adult', 0);

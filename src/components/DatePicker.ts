@@ -46,6 +46,12 @@ export class DatePicker extends BaseComponent {
     await expect(this.day(date), `calendar should reach ${header}`).toBeVisible();
   }
 
+  /** Accessible name of the last enabled day on screen, e.g. "Saturday, October 2, 2027". */
+  async lastEnabledDay(): Promise<string | null> {
+    const enabled = this.root.locator('[role="gridcell"][aria-disabled="false"]').filter({ hasText: /\d/ });
+    return enabled.last().getAttribute('aria-label');
+  }
+
   async pick(date: CalendarDate): Promise<void> {
     await this.showMonth(date);
     await this.day(date).click();

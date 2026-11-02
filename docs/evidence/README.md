@@ -4,7 +4,7 @@ Captured on **2026-11-02** against production amtrak.com, Chromium headless, 144
 
 | File | What it shows |
 |---|---|
-| [`test-run.log`](test-run.log) | Full run: **37 passed** (36 tests + setup), 4 workers, ~1 min |
+| [`test-run.log`](test-run.log) | Full run: **44 passed** (42 requirement tests + seed + setup), 4 workers, ~2 min |
 | [`junit.xml`](junit.xml) | Same run in JUnit format |
 | [`search-requests/`](search-requests/) | Request bodies captured when FIND TRAINS was clicked (one-way, round-trip, all traveler types, swapped route) |
 | [`screenshots/`](screenshots/) | End-of-test screenshots of key happy and negative states (below) |

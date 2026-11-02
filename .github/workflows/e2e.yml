@@ -44,6 +44,9 @@ jobs:
       - name: Type-check
         run: npm run typecheck
 
+      - name: Spec coverage (every test maps to a requirement in specs/)
+        run: npm run spec:coverage
+
       - name: Install Playwright browser
         run: npx playwright install --with-deps chromium
 

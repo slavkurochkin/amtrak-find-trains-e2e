@@ -63,4 +63,5 @@ Read `CLAUDE.md` at the repo root before writing or changing code. In short:
 - Interact through page objects in `src/components/` (e.g. `homePage.fareFinder.from.select(Stations.BOSTON)`). If a locator you need isn't there, add it to the right component instead of writing it in the spec.
 - Build search data with `aSearch()` from `src/builders/SearchCriteriaBuilder.ts`; dates are relative (`daysFromToday`).
 - No `waitForTimeout` or literal timeouts in specs; wait on conditions. Timing knobs live in `playwright.config.ts` `use` (see `src/utils/timing.ts`).
+- Tag every test with the requirement ID it verifies (`@AREA-NN` from `specs/`), and run `npm run spec:coverage`.
 - Treat generated raw-locator code as a draft: refactor it onto the page objects, then run `npx playwright test <file>` and `npm run typecheck`.

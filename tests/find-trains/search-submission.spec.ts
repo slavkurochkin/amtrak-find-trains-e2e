@@ -8,7 +8,7 @@ import { expectRequestToMatch } from '@src/utils/SearchRequestSpy';
  * the page sends carries exactly what the user entered.
  */
 test.describe('Find trains: submitting a valid search', { tag: '@smoke' }, () => {
-  test('one-way search with default traveler sends the selected stations and date', async ({ homePage, searchSpy }) => {
+  test('one-way search with default traveler sends the selected stations and date', { tag: '@SUB-01' }, async ({ homePage, searchSpy }) => {
     const search = aSearch().from(Stations.NEW_YORK).to(Stations.WASHINGTON).departingInDays(14).build();
     const form = homePage.fareFinder;
 
@@ -19,7 +19,7 @@ test.describe('Find trains: submitting a valid search', { tag: '@smoke' }, () =>
     expectRequestToMatch(await searchSpy.waitForSearch(), search);
   });
 
-  test('round-trip search sends an outbound and a return leg', async ({ homePage, searchSpy }) => {
+  test('round-trip search sends an outbound and a return leg', { tag: '@SUB-02' }, async ({ homePage, searchSpy }) => {
     const search = aSearch().from(Stations.BOSTON).to(Stations.PHILADELPHIA).departingInDays(10).roundTrip(4).build();
     const form = homePage.fareFinder;
 
@@ -30,7 +30,7 @@ test.describe('Find trains: submitting a valid search', { tag: '@smoke' }, () =>
     expectRequestToMatch(await searchSpy.waitForSearch(), search);
   });
 
-  test('search with a mix of traveler types sends one passenger per traveler', async ({ homePage, searchSpy }) => {
+  test('search with a mix of traveler types sends one passenger per traveler', { tag: '@SUB-03' }, async ({ homePage, searchSpy }) => {
     const search = aSearch()
       .from(Stations.CHICAGO).to(Stations.WASHINGTON)
       .withTravelers({ adult: 2, senior: 1, youth: 1, child: 1, infant: 1 })
@@ -44,7 +44,7 @@ test.describe('Find trains: submitting a valid search', { tag: '@smoke' }, () =>
     expectRequestToMatch(await searchSpy.waitForSearch(), search);
   });
 
-  test('searching for a departure today is allowed', async ({ homePage, searchSpy }) => {
+  test('searching for a departure today is allowed', { tag: '@SUB-04' }, async ({ homePage, searchSpy }) => {
     const search = aSearch().departingInDays(0).build();
     const form = homePage.fareFinder;
 
@@ -54,7 +54,7 @@ test.describe('Find trains: submitting a valid search', { tag: '@smoke' }, () =>
     expectRequestToMatch(await searchSpy.waitForSearch(), search);
   });
 
-  test('swapping stations before searching sends the reversed route', async ({ homePage, searchSpy }) => {
+  test('swapping stations before searching sends the reversed route', { tag: '@SUB-05' }, async ({ homePage, searchSpy }) => {
     const entered = aSearch().from(Stations.NEW_YORK).to(Stations.BOSTON).build();
     const form = homePage.fareFinder;
 

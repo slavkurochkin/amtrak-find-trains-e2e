@@ -4,7 +4,7 @@ Playwright + TypeScript end-to-end tests for the **"Find trains" search form on 
 
 Scope: the homepage search form and its inputs, **up to the FIND TRAINS click**. Results and booking pages are out of scope.
 
-**Status:** 37 tests plus a one-time setup step, all passing against production on 2026-11-02 in two consecutive full runs. The station tests also passed 4 repeats under parallel load. A known-bug repro runs on demand with `npm run test:known-bugs`. Evidence is in [`docs/evidence/`](docs/evidence/README.md).
+**Status:** 42 requirement tests plus a seed test and a one-time setup step (44 in a run), all passing against production on 2026-11-02. The station tests also passed 4 repeats under parallel load. A known-bug repro runs on demand with `npm run test:known-bugs`. Evidence is in [`docs/evidence/`](docs/evidence/README.md).
 
 AI assistants: start with [`CLAUDE.md`](CLAUDE.md) (also linked as `AGENTS.md`).
 
@@ -32,6 +32,8 @@ Other ways to run:
 | `npx playwright test -g "swap"` | Run tests whose title matches |
 | `npm run report` | Open the last HTML report |
 | `npm run typecheck` | TypeScript check |
+| `npm run spec:coverage` | Check tests ↔ requirements in `specs/`; list open gaps |
+| `npx playwright test --grep @STN-08` | Run the tests for one requirement |
 
 ### Environment (all optional, see `.env.example`)
 
@@ -101,22 +103,22 @@ docs/evidence/      run log, JUnit, screenshots, captured requests, bug evidence
 
 ---
 
-## What is tested and why
+## What is tested and why (spec-driven)
 
 The form's job is to turn user input into a correct search, and to refuse input that can't be searched. Tests cover both, plus the edge cases most likely to break.
 
-| Area | Happy path / edge cases | Negative |
-|---|---|---|
-| **Submission** (`search-submission.spec.ts`, `@smoke`) | One-way; round-trip (2 legs); all 5 traveler types; departure **today**; swap then search. Each asserts the exact request payload. | – |
-| **Stations** (`stations.spec.ts`) | City-name suggestions; exact code auto-selects; lowercase code; keyboard-only (ArrowDown + Enter); swap | Unknown station → "No stations found." + "Enter a valid station"; HTML/script input not executed or rendered; same From/To → "Enter different origin and destination stations." and no request |
-| **Dates** (`dates.spec.ts`) | Today selectable; date 4 months out via "Next month"; round-trip range; same-day return (every date pick also checks the displayed value) | Past dates disabled; clicking a past date does nothing; can't go before the current month; return before departure isn't accepted; closing the calendar leaves the search disabled |
-| **Travelers** (`travelers.spec.ts`) | Defaults to 1 adult; summary total; Reset; 8 travelers allowed | 9+ → "Call 1-800-USA-RAIL…" and every "+" disabled; 0 adults → "Add at least one adult…" and search disabled; children without an adult; counter can't go below 0 |
-| **Trip type** (`trip-type.spec.ts`) | Round-trip switched back to one-way sends a one-way search without the stale return date | – |
-| **Required fields** (`form-validation.spec.ts`, `@negative`) | – | Empty form; From only; missing To; missing date; round trip without return date. Each checks FIND TRAINS is disabled **and** clicking it sends no request |
+**Requirements live in [`specs/find-trains/`](specs/README.md)**, one file per area. Each behaviour has an ID, a Given/When/Then and a status (`automated`, `gap`, `known-bug`, `out-of-scope`). Every test is tagged with the ID(s) it verifies, so `npx playwright test --grep @DATE-12` runs one requirement. `npm run spec:coverage` (also run in CI) fails if a test has no requirement, uses an unknown ID, or a status doesn't match the tests.
 
-Not covered on purpose: Multi-City, Group Travel, Rail Passes / Auto Train tabs, coupons, "Use Points" and the disability checkbox. They're secondary to the core search, and adding them is mostly new component classes on the same pattern.
+| Area | Spec | Positive / edge | Negative |
+|---|---|---|---|
+| Submission | [`SUB`](specs/find-trains/submission.md) | One-way, round-trip, all traveler types, today, swapped route. Each checks the exact request payload | – |
+| Stations | [`STN`](specs/find-trains/stations.md) | Suggestions, exact code, lowercase code, keyboard selection, swap | Unknown station, HTML injection, same From/To |
+| Dates | [`DATE`](specs/find-trains/dates.md) | Today, months ahead, round-trip range, same-day return, 11-month horizon, typed date | Past dates, previous month, return before departure, closed calendar, invalid / past / too-far typed dates |
+| Travelers | [`TRAV`](specs/find-trains/travelers.md) | Default, total, Reset, 8 allowed | 9+, no adult, children alone, counter floor |
+| Trip type | [`TRIP`](specs/find-trains/trip-type.md) | One-way default, round-trip back to one-way | – |
+| Required fields | [`REQ`](specs/find-trains/required-fields.md) | – | Empty form, From only, missing To, missing date, round trip without return. Each also checks no request is sent |
 
----
+Current coverage: **41 of 42 in-scope requirements automated or reproduced** (1 known bug). One open gap is listed on purpose: STN-10, popular stations on focus. Seven requirements are marked out of scope with reasons (results page, Multi-City, Group Travel, Nearby/geolocation, unaccompanied youth, discounts, keystroke-loss race).
 
 ## Findings on amtrak.com
 
@@ -144,7 +146,8 @@ Not covered on purpose: Multi-City, Group Travel, Rail Passes / Auto Train tabs,
 
 The repo is set up for AI assistants both to **write** tests and to **debug** them:
 
-- **`write-find-trains-test` skill** (`.claude/skills/`): Claude Code loads it automatically when asked to add a test. It walks through choosing the file and tag, reusing page objects, finding real locators on the live page (`scripts/inspect-form.mjs` lists the form's test ids, roles and states), a spec template, and verification (pass twice, typecheck). `trip-type.spec.ts` was written by following it.
+- **Spec-driven workflow**: requirement in `specs/` first, then a test tagged with its ID, then `npm run spec:coverage`. An AI (or a person) always knows what to test next: the gaps list.
+- **`write-find-trains-test` skill** (`.claude/skills/`): Claude Code loads it automatically when asked to add a test. It walks through writing the spec, choosing the file and tag, reusing page objects, finding real locators on the live page (`scripts/inspect-form.mjs` lists the form's test ids, roles and states), a spec template, and verification (pass twice, typecheck). `trip-type.spec.ts` was written by following it.
 - **[`CLAUDE.md`](CLAUDE.md)** (`AGENTS.md` links to it): commands, where things live, rules (page objects only, no fixed waits, retrying assertions, builder data), a recipe for adding a test, and the Amtrak quirks behind most past failures.
 - **Playwright test agents** (`npx playwright init-agents --loop=claude`, in `.claude/agents/` + `.mcp.json`):
   - **planner** explores the live page in a real browser and writes a test plan to `specs/`

@@ -68,6 +68,19 @@ export class FareFinderForm extends BaseComponent {
     });
   }
 
+  /**
+   * Types a date into Depart Date with the keyboard, then leaves the field so
+   * the site validates it. Focus is set without a click: clicking opens the
+   * calendar, which takes the keystrokes instead of the input.
+   */
+  async typeDepartDate(text: string): Promise<void> {
+    await step(`Type depart date "${text}"`, async () => {
+      await this.departInput.focus();
+      await this.departInput.pressSequentially(text, { delay: this.options.typingDelayMs });
+      await this.departInput.blur();
+    });
+  }
+
   /** Round trip: both dates are chosen in one calendar session (depart, then return). */
   async pickDateRange(depart: CalendarDate, ret: CalendarDate): Promise<void> {
     await step(`Pick dates ${toInputFormat(depart)} - ${toInputFormat(ret)}`, async () => {

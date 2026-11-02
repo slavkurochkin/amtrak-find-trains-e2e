@@ -11,12 +11,15 @@ npx playwright test tests/find-trains/stations.spec.ts -g "swap"   # one file / 
 npm run test:smoke | test:negative    # by tag
 npm run test:known-bugs               # Amtrak bug repros (expected to fail; not a gate)
 npm run typecheck                     # must pass before you're done
+npm run spec:coverage                 # tests <-> specs/ requirements
 ```
 
 If another Playwright run may be active (e.g. the VS Code extension), isolate yours:
 `PW_OUTPUT_DIR=/tmp/x/test-results PW_REPORTS_DIR=/tmp/x/reports npx playwright test`.
 
 ## Writing a new test
+
+**Spec first:** every test verifies a requirement in `specs/find-trains/*.md` and is tagged with its ID (`{ tag: ['@negative', '@STN-08'] }`). Add or update the requirement before the test; `npm run spec:coverage` (also in CI) checks the links. Format and workflow: `specs/README.md`.
 
 Use the **`write-find-trains-test`** skill (`.claude/skills/write-find-trains-test/SKILL.md`): step-by-step workflow, spec template, and `scripts/inspect-form.mjs` to list real locators on the live form.
 

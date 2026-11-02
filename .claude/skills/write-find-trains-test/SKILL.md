@@ -7,7 +7,13 @@ description: Write or extend Playwright tests for the amtrak.com "Find trains" f
 
 Goal: a test that reads like the user journey, talks only to page objects, waits only on conditions, and passes twice in a row against live amtrak.com. `CLAUDE.md` has the full rules and Amtrak quirks; read it first if you haven't this session.
 
-## 1. Pin down the behaviour
+## 1. Spec first
+
+Every test verifies a requirement in `specs/find-trains/*.md` (format in `specs/README.md`).
+- Find the requirement (`grep -rn "###" specs/find-trains/`). If it doesn't exist, add it with the next free ID in that area (`STN-13`…), a Given/When/Then, and `**Status:** gap`.
+- If the behaviour isn't clear, check the live page first (step 3) and write what it actually does.
+
+## 2. Pin down the test
 
 Write the test title first, as the expected behaviour: `'<action/condition> <expected result>'`, e.g. `'switching back to one-way clears the return date'`.
 Decide the area and file:
@@ -23,13 +29,13 @@ Decide the area and file:
 
 Check the file first: if a test already covers it, extend that test instead of adding a near-duplicate.
 
-## 2. Check what the page objects already offer
+## 3. Check what the page objects already offer
 
 `homePage.fareFinder` exposes `tripType`, `from`, `to`, `calendar`, `travelers`, `swapButton`, `departInput`, `returnInput`, `findTrainsButton`, `message(text)`, plus `fill()`, `pickDepartDate()`, `pickDateRange()`, `swapStations()`, `waitForStationsToSettle()`, `clickFindTrains()`, `expectSearchEnabled()` and `expectSearchDisabled()`. Skim `src/components/*.ts` for the rest.
 
-If what you need exists, go to step 4.
+If what you need exists, go to step 5.
 
-## 3. Missing element? Look at the live page, then extend the component
+## 4. Missing element? Look at the live page, then extend the component
 
 Don't guess selectors. List what's actually on the page:
 
@@ -46,7 +52,7 @@ Then add the locator or method to the **component**, not the spec:
 - A method that changes state ends with an assertion that the change happened (e.g. `expectSelected`).
 - New user-facing copy goes in `src/data/messages.ts`; new stations in `src/data/stations.ts`.
 
-## 4. Write the test
+## 5. Write the test
 
 Start from the template and keep Arrange / Act / Assert separated by blank lines:
 
@@ -58,7 +64,7 @@ import { Messages } from '@src/data/messages';
 import { daysFromToday, toInputFormat } from '@src/utils/dates';
 import { expectRequestToMatch } from '@src/utils/SearchRequestSpy';
 
-test('<behaviour in plain words>', { tag: '@negative' }, async ({ homePage, searchSpy }) => {
+test('<behaviour in plain words>', { tag: ['@negative', '@REQ-01'] }, async ({ homePage, searchSpy }) => {
   const form = homePage.fareFinder;
   // Arrange: only what this behaviour needs
   await form.from.selectByCode(Stations.NEW_YORK);
@@ -72,6 +78,8 @@ test('<behaviour in plain words>', { tag: '@negative' }, async ({ homePage, sear
 });
 ```
 
+Every test carries its requirement tag (`@AREA-NN`) plus `@negative` / `@smoke` where relevant.
+
 Patterns:
 - **Valid search:** `const search = aSearch().roundTrip(2).from(Stations.BOSTON).build(); await form.fill(search); await form.clickFindTrains(); expectRequestToMatch(await searchSpy.waitForSearch(), search);`
 - **Blocked search:** `await form.expectSearchDisabled(); await form.clickFindTrains(); await searchSpy.expectNoSearch();`
@@ -82,18 +90,19 @@ Patterns:
 
 Never in a spec: raw selectors, `page.waitForTimeout`, literal timeouts, hardcoded dates, `expect(await locator.x()).toBe(…)` (read-once checks don't retry). For an interaction the site drops now and then, retry on the outcome with `await expect(async () => { … }).toPass()`. Its budget is in `playwright.config.ts`.
 
-## 5. Verify
+## 6. Verify
 
 ```bash
 npx playwright test <file> -g "<title>" --repeat-each=2   # must pass every time
 npm run typecheck
+npm run spec:coverage                                     # after flipping the status to automated
 ```
 
 If another Playwright run may be active (IDE extension), prefix with `PW_OUTPUT_DIR=/tmp/wt/results PW_REPORTS_DIR=/tmp/wt/reports`.
 If it fails, read `reports/failures.md` (error, steps, page snapshot) before changing anything. Fix the cause; don't add sleeps or loosen the assertion. If the site really behaves wrongly, it's a finding: tag the test `@known-bug`, add evidence to `docs/evidence/`, and note it under README "Findings".
 
-## 6. Finish
+## 7. Finish
 
-- If the test covers a new area or behaviour, add a line to the coverage table in `README.md`.
+- Set the requirement's status to `automated` (or `known-bug`) and make sure `npm run spec:coverage` is clean.
 - If you learned a new site quirk, add it to the "Amtrak quirks" section of `CLAUDE.md`.
 - Report to the user: the test title(s), file, the pass result, and any finding.

@@ -50,3 +50,6 @@ You will:
 
 **Output Format**: Always save the complete test plan as a markdown file with clear headings, numbered steps, and
 professional formatting suitable for sharing with development and QA teams.
+
+# Project rules (amtrak-find-trains-e2e)
+Plans are converted into requirements in `specs/find-trains/*.md` (format in `specs/README.md`): one `### AREA-NN · Title` per behaviour with Given/When/Then and `**Status:** gap`. Reuse existing IDs when a behaviour is already specified; never renumber.

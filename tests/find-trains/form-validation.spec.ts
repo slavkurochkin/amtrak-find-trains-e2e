@@ -8,7 +8,7 @@ import { daysFromToday } from '@src/utils/dates';
  * it sends no search until every required field is valid.
  */
 test.describe('Find trains: required fields', { tag: '@negative' }, () => {
-  test('an empty form cannot be submitted', async ({ homePage, searchSpy }) => {
+  test('an empty form cannot be submitted', { tag: '@REQ-01' }, async ({ homePage, searchSpy }) => {
     const form = homePage.fareFinder;
 
     await form.expectSearchDisabled();
@@ -17,7 +17,7 @@ test.describe('Find trains: required fields', { tag: '@negative' }, () => {
     await searchSpy.expectNoSearch();
   });
 
-  test('From alone is not enough', async ({ homePage, searchSpy }) => {
+  test('From alone is not enough', { tag: '@REQ-02' }, async ({ homePage, searchSpy }) => {
     const form = homePage.fareFinder;
     await form.from.selectByCode(Stations.NEW_YORK);
 
@@ -27,7 +27,7 @@ test.describe('Find trains: required fields', { tag: '@negative' }, () => {
     await searchSpy.expectNoSearch();
   });
 
-  test('missing To station blocks the search', async ({ homePage, searchSpy }) => {
+  test('missing To station blocks the search', { tag: '@REQ-03' }, async ({ homePage, searchSpy }) => {
     const form = homePage.fareFinder;
     await form.from.selectByCode(Stations.NEW_YORK);
     await form.pickDepartDate(daysFromToday(5));
@@ -38,7 +38,7 @@ test.describe('Find trains: required fields', { tag: '@negative' }, () => {
     await searchSpy.expectNoSearch();
   });
 
-  test('missing depart date blocks the search', async ({ homePage, searchSpy }) => {
+  test('missing depart date blocks the search', { tag: '@REQ-04' }, async ({ homePage, searchSpy }) => {
     const form = homePage.fareFinder;
     await form.from.selectByCode(Stations.NEW_YORK);
     await form.to.selectByCode(Stations.WASHINGTON);
@@ -49,7 +49,7 @@ test.describe('Find trains: required fields', { tag: '@negative' }, () => {
     await searchSpy.expectNoSearch();
   });
 
-  test('round trip without a return date blocks the search', async ({ homePage, searchSpy }) => {
+  test('round trip without a return date blocks the search', { tag: '@REQ-05' }, async ({ homePage, searchSpy }) => {
     const form = homePage.fareFinder;
     await form.tripType.select(TripType.RoundTrip);
     await form.from.selectByCode(Stations.NEW_YORK);
