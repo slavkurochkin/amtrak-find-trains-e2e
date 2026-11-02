@@ -26,6 +26,8 @@ interface FailureRecord {
   lastSteps: string[];
   pageSnapshot?: string;
   attachments: Record<string, string>;
+  /** Final outcome after retries: 'unexpected' (failed) or 'flaky' (failed, then passed on retry). */
+  outcome: () => string;
 }
 
 // eslint-disable-next-line no-control-regex -- strips terminal colour codes from error messages
@@ -52,6 +54,7 @@ export default class AiFailureReporter implements Reporter {
     }
 
     this.failures.push({
+      outcome: () => test.outcome(),
       title: test.titlePath().filter(Boolean).slice(1).join(' › '),
       location: `${path.relative(this.rootDir, test.location.file)}:${test.location.line}`,
       project: test.parent.project()?.name ?? '',
@@ -135,8 +138,10 @@ export default class AiFailureReporter implements Reporter {
 
   private toMarkdown(result: FullResult): string {
     if (!this.failures.length) return `# Test run: ${result.status}\n\nNo failures.\n`;
+    const flaky = this.failures.filter((f) => f.outcome() === 'flaky').length;
+    const failed = this.failures.length - flaky;
     const out: string[] = [
-      `# ❌ ${this.failures.length} failing test(s)`,
+      `# ❌ ${failed} failed attempt(s) · ⚠️ ${flaky} flaky attempt(s) (test passed on retry)`,
       '',
       '> Paste this file into an AI assistant (or point it at it) and ask: ' +
         '"Explain why each test failed and propose a fix. The app under test is amtrak.com/home; ' +
@@ -145,7 +150,7 @@ export default class AiFailureReporter implements Reporter {
     ];
     this.failures.forEach((f, i) => {
       out.push(
-        `## ${i + 1}. ${f.title}`,
+        `## ${i + 1}. ${f.outcome() === 'flaky' ? '[FLAKY - passed on retry] ' : ''}${f.title}`,
         '',
         `- **Spec:** \`${f.location}\`  •  **Project:** ${f.project}  •  **Retry:** ${f.retry}  •  **Status:** ${f.status}  •  **Duration:** ${(f.durationMs / 1000).toFixed(1)}s`,
         '',

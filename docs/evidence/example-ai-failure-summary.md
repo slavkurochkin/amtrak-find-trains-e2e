@@ -1,10 +1,10 @@
-# ❌ 1 failing test(s)
+# ❌ 1 failed attempt(s) · ⚠️ 0 flaky attempt(s) (test passed on retry)
 
 > Paste this file into an AI assistant (or point it at it) and ask: "Explain why each test failed and propose a fix. The app under test is amtrak.com/home; page objects live in src/, specs in tests/."
 
 ## 1. zz-demo-failure.spec.ts › DEMO deliberate failure: request destination mismatch
 
-- **Spec:** `tests/zz-demo-failure.spec.ts:7`  •  **Project:** chromium-desktop  •  **Retry:** 0  •  **Status:** failed  •  **Duration:** 6.4s
+- **Spec:** `tests/zz-demo-failure.spec.ts:7`  •  **Project:** chromium-desktop  •  **Retry:** 0  •  **Status:** failed  •  **Duration:** 4.6s
 
 **Error**
 ```
@@ -17,27 +17,30 @@ Received: "WAS"
 ```
 **Code frame**
 ```ts
-at ../src/utils/SearchRequestSpy.ts:96
+at ../src/utils/SearchRequestSpy.ts:113
 
-  94 |   const [outbound, inbound] = journeyRequest.journeyLegRequests;
-  95 |   expect(outbound.origin.code, 'outbound origin station').toBe(criteria.from.code);
-> 96 |   expect(outbound.destination.code, 'outbound destination station').toBe(criteria.to.code);
-     |                                                                     ^
-  97 |   expect(outbound.origin.schedule.departureDateTime, 'outbound date').toBe(toApiFormat(criteria.departDate));
-  98 |
-  99 |   if (isRoundTrip) {
+  111 |   const [outbound, inbound] = journeyRequest.journeyLegRequests;
+  112 |   expect(outbound.origin.code, 'outbound origin station').toBe(criteria.from.code);
+> 113 |   expect(outbound.destination.code, 'outbound destination station').toBe(criteria.to.code);
+      |                                                                     ^
+  114 |   expect(outbound.origin.schedule.departureDateTime, 'outbound date').toBe(toApiFormat(criteria.departDate));
+  115 |
+  116 |   if (isRoundTrip) {
 ```
 **Last steps**
 ```
+✓ Launch browser
+✓ Create context
+✓ Create page
 ✓ Open /home (BasePage.ts:21)
-✓ Fill search form: One-Way NYP -> WAS (FareFinderForm.ts:89)
-✓ Click FIND TRAINS (FareFinderForm.ts:125)
-✓ FIND TRAINS should send a search request (SearchRequestSpy.ts:64)
+✓ Fill search form: One-Way NYP -> WAS (FareFinderForm.ts:160)
+✓ Click FIND TRAINS (FareFinderForm.ts:195)
+✓ FIND TRAINS should send a search request (SearchRequestSpy.ts:79)
   ✓ FIND TRAINS should send a search request
-✓ trip type (SearchRequestSpy.ts:91)
-✓ number of legs (SearchRequestSpy.ts:92)
-✓ outbound origin station (SearchRequestSpy.ts:95)
-✗ outbound destination station (SearchRequestSpy.ts:96)
+✓ trip type (SearchRequestSpy.ts:108)
+✓ number of legs (SearchRequestSpy.ts:109)
+✓ outbound origin station (SearchRequestSpy.ts:112)
+✗ outbound destination station (SearchRequestSpy.ts:113)
 ```
 <details><summary><b>Page accessibility snapshot at failure</b></summary>
 
@@ -162,11 +165,12 @@ at ../src/utils/SearchRequestSpy.ts:96
         - generic [ref=e174]:
           - heading "Book Flex Fares & Travel With Ease" [level=1] [ref=e175]
           - paragraph [ref=e176]: Fully refundable and no cancellation fees before departure.
-… (230 more lines in ../../../../../.../test-results/zz-demo-failure-DEMO-delib-01867-equest-destination-mismatch-chromium-desktop/error-context.md)
+… (226 more lines in test-results/zz-demo-failure-DEMO-delib-01867-equest-destination-mismatch-chromium-desktop/error-context.md)
 ```
 </details>
 
 **Artifacts** (open a trace with `npx playwright show-trace <path>`)
+  - search-request-1.json: `test-results/zz-demo-failure-DEMO-delib-01867-equest-destination-mismatch-chromium-desktop/attachments/search-request-1-json-3f96134c5f7e1526934fad51f7621e3f4039dd7d.json`
   - screenshot: `test-results/zz-demo-failure-DEMO-delib-01867-equest-destination-mismatch-chromium-desktop/test-failed-1.png`
   - video: `test-results/zz-demo-failure-DEMO-delib-01867-equest-destination-mismatch-chromium-desktop/video.webm`
   - error-context: `test-results/zz-demo-failure-DEMO-delib-01867-equest-destination-mismatch-chromium-desktop/error-context.md`

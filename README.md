@@ -4,7 +4,7 @@ Playwright + TypeScript end-to-end tests for the **"Find trains" search form on 
 
 Scope: the homepage search form and its inputs, **up to the FIND TRAINS click**. Results and booking pages are out of scope.
 
-**Status:** 57 requirement tests plus a seed test and a one-time setup step (59 in a run), all passing on desktop Chromium against production on 2026-11-02; the `@smoke` subset also passes on Firefox, WebKit and mobile Chrome. The station tests also passed 4 repeats under parallel load. A known-bug repro runs on demand with `npm run test:known-bugs`. Evidence is in [`docs/evidence/`](docs/evidence/README.md).
+**Status:** 63 requirement tests plus a seed test and a one-time setup step (65 in a run), all passing on desktop Chromium against production on 2026-11-02. The `@smoke` subset passes on Firefox, WebKit and mobile Chrome (2 of 40 needed a retry: live-site flakiness, reported as flaky). The station tests also passed 4 repeats under parallel load. A known-bug repro runs on demand with `npm run test:known-bugs`. Evidence is in [`docs/evidence/`](docs/evidence/README.md).
 
 AI assistants: start with [`CLAUDE.md`](CLAUDE.md) (also linked as `AGENTS.md`).
 
@@ -78,27 +78,33 @@ Most tests run against the live site. Failure modes the live site can't produce 
 ## Project structure
 
 ```
+specs/find-trains/  requirements: ID, Given/When/Then, status (the source of truth)
 src/
-  pages/            BasePage (navigation, cookie banner), HomePage
+  pages/            BasePage (navigation, readiness by data), HomePage
   components/       One class per form widget, composed by FareFinderForm
-    FareFinderForm.ts   the whole "Find trains" form + FIND TRAINS button
-    StationField.ts     From / To autocomplete
-    DatePicker.ts       two-month calendar
+    BaseComponent.ts    visible-only locators, animation wait, finger-like taps on mobile
+    FareFinderForm.ts   the whole form: legs, dates, coupon, assistance, FIND TRAINS
+    StationField.ts     From / To autocomplete (per Multi-City leg)
+    DatePicker.ts       calendar
     TravelersPanel.ts   traveler-type steppers
-    TripTypeMenu.ts     One-Way / Round-Trip / Multi-City
-  builders/         SearchCriteriaBuilder – fluent test data with defaults
-  data/             Stations, user-facing messages (one place to update copy)
+    TripTypeMenu.ts     One-Way / Round-Trip / Multi-City / Group Travel
+  builders/         SearchCriteriaBuilder: fluent test data with defaults
+  data/             stations, user-facing messages, accessibility baseline
   fixtures/         Playwright fixtures: homePage, searchSpy, timing options
-  utils/            SearchRequestSpy (network contract), dates, timing, step()
-  reporters/        ai-failure-reporter.ts
-tests/setup/        one-time cookie-consent setup (saved browser state)
-tests/find-trains/  specs grouped by form area
-tests/seed.spec.ts  starting point for Playwright's AI test agents
+  utils/            SearchRequestSpy, StationLookupMock, a11y scan, dates, timing, step()
+  reporters/        ai-failure-reporter.ts (reports/failures.md)
+tests/
+  find-trains/      specs by area, each test tagged with its requirement ID
+  setup/            one-time cookie-consent setup (saved browser state)
+  seed.spec.ts      starting point for Playwright's AI test agents
+scripts/            spec-coverage.mjs (tests <-> requirements check)
+docs/
+  findings.md       bug reports for Amtrak
+  evidence/         run log, JUnit, screenshots, captured requests, bug evidence
 CLAUDE.md           rules and quirks for AI assistants (AGENTS.md links to it)
-.claude/agents/     Playwright planner / generator / healer agents (+ .mcp.json)
-specs/              test plans written by the planner agent
-.github/workflows/  CI
-docs/evidence/      run log, JUnit, screenshots, captured requests, bug evidence
+.claude/            write-find-trains-test skill; Playwright planner / generator / healer agents
+.githooks/          pre-commit: lint, format, typecheck, spec coverage
+.github/workflows/  CI (PR gate on Chromium in the Playwright Docker image; nightly all browsers)
 ```
 
 ### Design patterns and why
@@ -135,27 +141,19 @@ Current coverage is printed by `npm run spec:coverage`: 56 of 58 in-scope requir
 
 ## Findings on amtrak.com
 
-1. **Bug – Swap shows the wrong route.** Clicking Swap within ~300 ms of choosing the To station leaves **both fields showing the To station** (e.g. CHI → CHI), with no "same station" error. The search that's sent uses the correctly swapped route (CHI → NYP). The user sees one route and searches another. Reproduced 3/3 at 0 ms and 300 ms delay, 0/2 at 800 ms or more. Covered by a `@known-bug` test that asserts the correct behaviour, so it fails while the bug exists. It's a race and can't reproduce every time, so it isn't a CI gate: run it with `npm run test:known-bugs`. Evidence: [`docs/evidence/bug-swap-race-ui-shows-CHI-CHI.png`](docs/evidence/bug-swap-race-ui-shows-CHI-CHI.png).
-2. **Copy inconsistency – adult age.** The travelers panel labels Adult as **16+**, but the validation message says *"Add at least one adult **18** years old or older."*
-3. **Copy inconsistency – date format.** The date field hint says `MM/DD/YYYY`, but values display without leading zeros (`11/6/2026`).
-4. **UX – firewall-blocked queries fail silently.** HTML-like station queries get **403** from the autocomplete API. The dropdown shows "Loading", then goes blank with no message. That's safe, since nothing executes, but the user gets no feedback.
-5. **Accessibility note – keyboard.** In the station dropdown the first ArrowDown keeps focus on the input, and focus enters the list only on the second press. Enter on the input triggers the "Nearby" geolocation lookup ("Location blocked…" when location access is denied).
-6. **Bug – typed keys land in the wrong field.** Focus jumps between the station fields on its own. After clicking From/To it sometimes moves to the suggestion header, so the first keys are lost (typing `BOS` searched `OS`). Shortly after a station is picked it moves back to that station field, so a date typed next ends up there: **"WAS/2026" in To** ([evidence](docs/evidence/bug-focus-jump-date-typed-into-to-field.png)). It's timing-dependent and more frequent under load, so it's documented (spec STN-11) rather than gated. Page objects verify every entry and retry with `expect(...).toPass()`, and tests type dates before picking stations.
+Full bug reports with steps, expected vs actual, frequency and evidence: **[`docs/findings.md`](docs/findings.md)**.
 
----
-
-7. **Accessibility (WCAG 2.1 A/AA, axe-core).** The form at rest has 2 critical and 3 serious violation types:
-   - unsupported ARIA attributes on the dropdown buttons,
-   - incomplete trip-type tabs,
-   - low-contrast field labels,
-   - the "1 Traveler" button's name not matching its text,
-   - a nested interactive Use Points switch.
-
-   The station list nests group headers inside the listbox. In the travelers panel the **five count inputs have no labels** (critical: a screen reader can't tell Adult from Infant). The calendar is clean. These are baselined in `src/data/a11yBaseline.ts`, so tests fail only on new violations (specs `A11Y-*`).
-
-8. **Resilience (mocked backend).** When the station-lookup API fails, the app retries 3 times and then falls back to a built-in station list, so the search still works. In that fallback the best match isn't first (Back Bay before South Station for "Boston").
-
-9. **UX – coupon rejected silently.** With coupon `X000` entered, FIND TRAINS stays disabled and nothing says why (spec CPN-02, a gap until a real coupon is available to pin down the valid format).
+| # | Finding | Severity |
+|---|---|---|
+| F-01 | Swap clicked quickly shows the same station in both fields, while a different route is searched | Medium |
+| F-02 | Focus jumps back to a station field after it's picked: a typed date landed in To ("WAS/2026") | Medium |
+| F-03 | Travelers panel: the five count inputs have no labels (critical WCAG) | High (a11y) |
+| F-04 | Booking form: 2 critical and 3 serious WCAG violation types at rest | High (a11y) |
+| F-05 | Adult labelled 16+, but the error says 18 or older | Low |
+| F-06 | Date hint says MM/DD/YYYY, values show as M/D/YYYY | Low |
+| F-07 | Invalid station, date or coupon rejected silently, with no message | Low |
+| F-08 | Station-lookup failure fallback lists Back Bay before South Station | Low |
+| F-09 | Enter right after typing in a station field triggers "Nearby" geolocation | Low |
 
 ## Assumptions
 
@@ -208,10 +206,11 @@ CI uses 2 workers and 2 retries. Flaky-then-passing tests show up as **flaky** i
 
 ## With more time
 
-- **Mobile and cross-browser projects.** Locators already filter for the visible layout. Add `devices['iPhone 14']` plus Firefox/WebKit and fix what differs.
-- **Remaining form features:** Multi-City (repeatable legs make a good component), Group Travel, coupons, "Use Points", the disability flow, and unaccompanied youth ("Traveling Alone?").
-- **Mocked-backend layer.** Fulfil the station autocomplete and search endpoints with fixtures, for deterministic, fast, firewall-independent tests (e.g. autocomplete error states, slow responses), while keeping a thin live smoke suite.
-- **Accessibility checks** with `@axe-core/playwright` on the form and its open states, and visual comparisons of the open calendar and travelers panel.
-- **Data-driven matrices** for traveler combinations and date boundaries (the furthest bookable date, month/year rollover).
-- **Lint/format** (ESLint + Prettier) and a pre-commit hook.
-- **Report the findings** above to Amtrak with the evidence.
+Most of the original list is now done: lint/format, data-driven matrices, accessibility and visual checks, mocked-backend tests, cross-browser and mobile, and the remaining form features. What's left:
+
+- **A staging environment and test accounts.** That would allow end-to-end searches past the 403, signed-in "Use Points" with a real balance, and a real coupon to pin down CPN-02.
+- **Schema contract for the search request** (e.g. zod), validated on every captured payload, so an API change fails with a precise diff.
+- **Close the open gaps:** STN-10 (popular stations on focus) and CPN-02 (coupon feedback).
+- **Performance budget:** Web Vitals / Lighthouse on `/home`, tracked over time.
+- **Scale-out:** sharding across CI machines, and running only the tests affected by a change, once the suite covers more pages.
+- **Report the findings:** `docs/findings.md` is ready to send to Amtrak.
