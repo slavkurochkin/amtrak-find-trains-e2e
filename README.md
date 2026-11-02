@@ -4,7 +4,7 @@ Playwright + TypeScript end-to-end tests for the **"Find trains" search form on 
 
 Scope: the homepage search form and its inputs, **up to the FIND TRAINS click**. Results and booking pages are out of scope.
 
-**Status:** 36 tests plus a one-time setup step, all passing against production on 2026-11-02 in two consecutive full runs. The station tests also passed 4 repeats under parallel load. A known-bug repro runs on demand with `npm run test:known-bugs`. Evidence is in [`docs/evidence/`](docs/evidence/README.md).
+**Status:** 37 tests plus a one-time setup step, all passing against production on 2026-11-02 in two consecutive full runs. The station tests also passed 4 repeats under parallel load. A known-bug repro runs on demand with `npm run test:known-bugs`. Evidence is in [`docs/evidence/`](docs/evidence/README.md).
 
 AI assistants: start with [`CLAUDE.md`](CLAUDE.md) (also linked as `AGENTS.md`).
 
@@ -111,6 +111,7 @@ The form's job is to turn user input into a correct search, and to refuse input 
 | **Stations** (`stations.spec.ts`) | City-name suggestions; exact code auto-selects; lowercase code; keyboard-only (ArrowDown + Enter); swap | Unknown station → "No stations found." + "Enter a valid station"; HTML/script input not executed or rendered; same From/To → "Enter different origin and destination stations." and no request |
 | **Dates** (`dates.spec.ts`) | Today selectable; date 4 months out via "Next month"; round-trip range; same-day return (every date pick also checks the displayed value) | Past dates disabled; clicking a past date does nothing; can't go before the current month; return before departure isn't accepted; closing the calendar leaves the search disabled |
 | **Travelers** (`travelers.spec.ts`) | Defaults to 1 adult; summary total; Reset; 8 travelers allowed | 9+ → "Call 1-800-USA-RAIL…" and every "+" disabled; 0 adults → "Add at least one adult…" and search disabled; children without an adult; counter can't go below 0 |
+| **Trip type** (`trip-type.spec.ts`) | Round-trip switched back to one-way sends a one-way search without the stale return date | – |
 | **Required fields** (`form-validation.spec.ts`, `@negative`) | – | Empty form; From only; missing To; missing date; round trip without return date. Each checks FIND TRAINS is disabled **and** clicking it sends no request |
 
 Not covered on purpose: Multi-City, Group Travel, Rail Passes / Auto Train tabs, coupons, "Use Points" and the disability checkbox. They're secondary to the core search, and adding them is mostly new component classes on the same pattern.
@@ -143,6 +144,7 @@ Not covered on purpose: Multi-City, Group Travel, Rail Passes / Auto Train tabs,
 
 The repo is set up for AI assistants both to **write** tests and to **debug** them:
 
+- **`write-find-trains-test` skill** (`.claude/skills/`): Claude Code loads it automatically when asked to add a test. It walks through choosing the file and tag, reusing page objects, finding real locators on the live page (`scripts/inspect-form.mjs` lists the form's test ids, roles and states), a spec template, and verification (pass twice, typecheck). `trip-type.spec.ts` was written by following it.
 - **[`CLAUDE.md`](CLAUDE.md)** (`AGENTS.md` links to it): commands, where things live, rules (page objects only, no fixed waits, retrying assertions, builder data), a recipe for adding a test, and the Amtrak quirks behind most past failures.
 - **Playwright test agents** (`npx playwright init-agents --loop=claude`, in `.claude/agents/` + `.mcp.json`):
   - **planner** explores the live page in a real browser and writes a test plan to `specs/`
@@ -153,7 +155,7 @@ The repo is set up for AI assistants both to **write** tests and to **debug** th
 - **Named steps and typed page objects** give an AI a small vocabulary that reads like the UI ("Select to station: WAS").
 - **`reports/failures.md`** gives an AI everything needed to debug a failure in one file (next section).
 
-Example: *"Use the playwright-test-planner agent to plan tests for the Add Coupon dropdown, then implement them following CLAUDE.md."*
+Example: *"Add a test that the Add Coupon dropdown opens"* triggers the skill. Or: *"Use the playwright-test-planner agent to plan tests for the Add Coupon dropdown, then implement them following CLAUDE.md."*
 
 ---
 

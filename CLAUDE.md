@@ -16,6 +16,10 @@ npm run typecheck                     # must pass before you're done
 If another Playwright run may be active (e.g. the VS Code extension), isolate yours:
 `PW_OUTPUT_DIR=/tmp/x/test-results PW_REPORTS_DIR=/tmp/x/reports npx playwright test`.
 
+## Writing a new test
+
+Use the **`write-find-trains-test`** skill (`.claude/skills/write-find-trains-test/SKILL.md`): step-by-step workflow, spec template, and `scripts/inspect-form.mjs` to list real locators on the live form.
+
 ## Where things are
 
 | Need | Go to |
