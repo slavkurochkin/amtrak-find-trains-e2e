@@ -13,6 +13,20 @@ export class StationLookupMock {
 
   private constructor(private readonly page: Page) {}
 
+  /**
+   * Every lookup answers "no matches", exactly as Amtrak's service does for an
+   * unknown query. Used so a test about the form doesn't depend on the service
+   * being up (on CI it sometimes answers 503 instead).
+   */
+  static async answerNoMatches(page: Page): Promise<StationLookupMock> {
+    const mock = new StationLookupMock(page);
+    await page.route(STATION_LOOKUP, (route) => {
+      mock.calls++;
+      return route.fulfill({ json: { autoCompleterResponse: { autoCompleteList: [] }, responseCode: 0 } });
+    });
+    return mock;
+  }
+
   /** Every lookup answers with this HTTP status (e.g. 500). */
   static async failWith(page: Page, status: number): Promise<StationLookupMock> {
     const mock = new StationLookupMock(page);

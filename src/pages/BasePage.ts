@@ -1,4 +1,4 @@
-import { test, type Page } from '@playwright/test';
+import { test, type Page, type Response } from '@playwright/test';
 
 /**
  * Behaviour every amtrak.com page shares.
@@ -14,6 +14,9 @@ export abstract class BasePage {
    */
   protected readonly requiredData: RegExp[] = [];
 
+  /** The replies to `requiredData`, kept so tests can check their contents. */
+  protected dataReplies: Response[] = [];
+
   constructor(readonly page: Page) {}
 
   async goto(): Promise<void> {
@@ -25,7 +28,7 @@ export abstract class BasePage {
         this.requiredData.map((url) => this.page.waitForResponse((r) => url.test(r.url()) && r.ok(), { timeout })),
       );
       await this.page.goto(this.path, { waitUntil: 'domcontentloaded' });
-      await dataLoaded;
+      this.dataReplies = await dataLoaded;
       await this.waitUntilReady();
     });
   }

@@ -60,6 +60,7 @@ The calendar has no violations.
 - HTML-like station queries get a 403 from the lookup API; the list shows "Loading", then goes blank with no message.
 - Impossible, past or too-far typed dates (`13/45/2026`, yesterday, beyond 11 months) are silently cleared on blur.
 - A coupon such as `X000` keeps FIND TRAINS disabled with no message.
+- When the station search service fails (seen on GitHub's servers: **503** three times for "Zzqxj") and nothing matches the built-in list, the dropdown stays blank: no "No stations found." and no error.
 
 ## F-08 · Fallback station list loses the best match — Low
 **Spec:** STN-13 (mocked lookup failure)

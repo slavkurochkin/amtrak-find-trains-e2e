@@ -85,8 +85,11 @@ test.describe('Find trains: From / To station fields', () => {
   test.describe('invalid input', { tag: '@negative' }, () => {
     test(
       'an unknown station shows "No stations found." and is not accepted',
-      { tag: '@STN-06' },
-      async ({ homePage }) => {
+      { tag: ['@STN-06', '@mocked'] },
+      async ({ homePage, page }) => {
+        // Amtrak's real "no matches" reply, so the test doesn't depend on the
+        // lookup service being up (on GitHub's servers it sometimes answers 503).
+        await StationLookupMock.answerNoMatches(page);
         const form = homePage.fareFinder;
 
         await form.from.search('Zzqxj');
@@ -179,5 +182,40 @@ test.describe('Find trains: station lookup failures (mocked)', { tag: '@mocked' 
 
     await expect(from.loading).toBeHidden();
     await expect(from.options.filter({ hasText: '(BOS)' })).toBeVisible();
+  });
+});
+
+/**
+ * Checks on the replies of Amtrak's station services, read from what the page
+ * itself receives during normal use (no extra requests are made).
+ */
+test.describe("Find trains: station data from Amtrak's services", () => {
+  test('the station list contains the stations the suite relies on', { tag: '@STN-15' }, async ({ homePage }) => {
+    const stations = await homePage.stationList();
+
+    expect(stations.length, 'number of stations').toBeGreaterThan(500);
+    expect(
+      stations.filter((s) => !s.code || !s.name),
+      'stations without a code or name',
+    ).toEqual([]);
+    for (const expected of Object.values(Stations)) {
+      const record = stations.find((s) => s.code === expected.code);
+      expect(record, `${expected.code} is in the station list`).toBeDefined();
+      expect(record!.name, `${expected.code} name`).toBe(expected.cityLabel);
+    }
+  });
+
+  test('the station search reply and the dropdown agree', { tag: '@STN-16' }, async ({ homePage }) => {
+    const { from } = homePage.fareFinder;
+
+    const reply = await from.searchWithReply('Washington');
+
+    const entries = reply.autoCompleterResponse.autoCompleteList;
+    expect(entries[0].stationCode, 'best match in the reply').toBe(Stations.WASHINGTON.code);
+    await expect(from.options.first()).toHaveText(entries[0].displayName);
+    const shown = await from.optionTexts();
+    for (const entry of entries) {
+      expect(shown, `dropdown shows "${entry.displayName}"`).toContain(entry.displayName);
+    }
   });
 });

@@ -28,7 +28,7 @@ Note: the first ArrowDown keeps focus on the input; Enter on the input triggers 
 
 ### STN-06 · Unknown station is not accepted
 **Status:** automated · **Type:** negative
-**When** the user types "Zzqxj" **Then** the list shows "No stations found." with no options; on blur "Enter a valid station" is shown, the text stays unconverted and FIND TRAINS stays disabled.
+**Given** the station search answers "no matches" (Amtrak's real reply, replayed so the test doesn't depend on the service being up) **When** the user types "Zzqxj" **Then** the list shows "No stations found." with no options; on blur "Enter a valid station" is shown, the text stays unconverted and FIND TRAINS stays disabled.
 
 ### STN-07 · HTML/script-like input is treated as text
 **Status:** automated · **Type:** negative
@@ -66,6 +66,15 @@ Note: in the fallback Back Bay is listed before South Station, so the best match
 ### STN-14 · A slow location lookup shows "Loading" until results arrive (mocked)
 **Status:** automated · **Type:** edge
 **Given** the location lookup is held back **When** the user searches "Boston" **Then** the list shows "Loading"; once the response is released, the station results replace it.
+
+### STN-15 · The station list the page loads contains the stations the suite relies on
+**Status:** automated · **Type:** positive
+**When** the home page loads its station list (`/services/data.stations.json`) **Then** it contains hundreds of stations, each with a code and a name, and NYP, WAS, BOS, CHI and PHL are present with the same names the form shows (e.g. NYP is "New York, NY").
+Checked from the reply the page itself receives; no extra calls are made to Amtrak.
+
+### STN-16 · The station search reply and the dropdown agree
+**Status:** automated · **Type:** positive
+**When** the user types "Washington" **Then** the station-search reply (`/AutoCompleterArcgis/`) ranks Washington Union Station (WAS) first, and every entry in the reply appears in the dropdown, with the first one at the top.
 
 ### STN-12 · "Nearby" uses the browser location
 **Status:** out-of-scope · **Type:** positive

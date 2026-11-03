@@ -1,6 +1,7 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { BaseComponent } from './BaseComponent';
 import type { Station } from '../data/stations';
+import { STATION_SEARCH_URL, type StationSearchReply } from '../data/stationServices';
 import { timing } from '../utils/timing';
 
 export type StationFieldKind = 'from' | 'to';
@@ -87,6 +88,18 @@ export class StationField extends BaseComponent {
       await expect(this.listbox).toContainText(new RegExp(`${escapeRegExp(text)}|No stations found`, 'i'));
       await expect(this.listbox).not.toContainText(POPULAR_STATIONS_PANEL);
     }).toPass();
+  }
+
+  /**
+   * Like search(), and also returns the reply the page got from the station
+   * search service for this query, so a test can compare it with the dropdown.
+   */
+  async searchWithReply(text: string): Promise<StationSearchReply> {
+    const reply = this.page.waitForResponse(
+      (r) => r.url().includes(STATION_SEARCH_URL) && r.url().includes(encodeURIComponent(text)) && r.ok(),
+    );
+    await this.search(text);
+    return (await (await reply).json()) as StationSearchReply;
   }
 
   async chooseOption(option: string | RegExp): Promise<void> {
