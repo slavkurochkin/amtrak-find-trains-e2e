@@ -13,7 +13,7 @@ Automated tests (Playwright + TypeScript) for the **"Find trains" search form on
 | **Edge cases** | Leaving today, the 11-month booking limit, trips across month-end and New Year, several traveler combinations, typing a date instead of picking it | `dates`, `submission` tests |
 | **Accessibility** | Automated WCAG checks of the form, station suggestions, calendar and travelers panel. Known problems are recorded; any new one fails the test | `accessibility.spec.ts` |
 | **Visual** | The travelers panel is compared with an approved screenshot (with separate approved images for Mac and Linux, which draw fonts differently) | `visual.spec.ts` |
-| **Mobile and other browsers** | The 12 key search tests also run in Firefox, Safari's engine (WebKit) and mobile Chrome on a phone-sized screen. Mobile differences are handled: dates can only be picked from the calendar, and buttons are tapped like a finger | `npm run test:cross-browser`, nightly on GitHub |
+| **Mobile and other browsers** | The 12 key search tests also run in Firefox, Safari's engine (WebKit) and mobile Chrome on a phone-sized screen. Mobile differences are handled: dates can only be picked from the calendar, and buttons are tapped like a finger | `npm run test:cross-browser`, or "all browsers" on GitHub |
 | **Amtrak's station data** | The replies the page gets from Amtrak's station services: the station list contains the stations the tests rely on, with the right names, and the station-search reply matches what the dropdown shows. Read from the page's own traffic, with no extra requests | `stations.spec.ts` |
 | **Server problems (simulated)** | What users see when Amtrak's station search is slow (a "Loading" message) or failing (a built-in station list), and when the train search itself fails (an error message, with their search kept) | `stations.spec.ts` (`@mocked`), `submission.spec.ts` |
 | **Known bugs** | A test that reproduces Amtrak's Swap bug (F-01). It fails until Amtrak fixes it, so it runs only on demand | `npm run test:known-bugs` |
@@ -21,7 +21,7 @@ Automated tests (Playwright + TypeScript) for the **"Find trains" search form on
 Around the tests:
 - **Requirements:** 62 numbered requirements in scope, each linked to its tests, with an automatic check that the two stay in sync (see [Requirements first](#approach)).
 - **Code checks on every commit:** lint (which also blocks fixed waits and missing `await`s), formatting and type checking.
-- **Automated runs on GitHub:** every push and pull request runs all tests in Chrome, and the other browsers run nightly. When a test fails, a one-page summary is posted to the run and to the pull request: the error, the steps leading to it, and what the page looked like. It's ready to paste into an AI assistant.
+- **Runs on GitHub, started by hand** (Actions → "E2E - Find trains" → Run workflow): all tests in Chrome, or all browsers. They deliberately don't run on every push or on a schedule, to keep automated traffic to amtrak.com to a minimum. When a test fails, the run's summary page shows a one-page report: the error, the steps leading to it, and what the page looked like. It's ready to paste into an AI assistant.
 - **Bug reports for Amtrak:** [`docs/findings.md`](docs/findings.md).
 - **Support for AI coding assistants:** instructions in [`.claude/CLAUDE.md`](.claude/CLAUDE.md), plus a step-by-step guide for writing new tests.
 
@@ -97,8 +97,9 @@ Writing the tests surfaced real issues. Full bug reports, with steps and evidenc
 ## Assumptions
 
 - **The tests run against the real amtrak.com.** No test environment was available, so the tests only read and never complete a booking or search.
+- **Minimal, respectful traffic.** Amtrak's terms of use restrict automated access, so the suite keeps its footprint small. Every search request is stopped in the browser before it reaches Amtrak, nothing tries to get past the bot protection, and the GitHub runs only happen when someone starts them.
 - **The search the page sends is the result we check.** Amtrak's servers block automated searches (an error banner appears on the page), which is expected and doesn't affect the tests.
-- **Browsers:** every test runs in Chrome on a desktop-sized screen, and must pass before a change is merged. A smaller set of key tests also runs nightly in Firefox, Safari's engine (WebKit) and mobile Chrome.
+- **Browsers:** every test runs in Chrome on a desktop-sized screen. A smaller set of key tests also runs in Firefox, Safari's engine (WebKit) and mobile Chrome.
 - **Station data stays the same:** e.g. NYP is New York Penn Station.
 - **"Today" is New York time**, for both the browser and the tests.
 - **Cookies:** the banner is dismissed with "Reject All", as a privacy-minded user would.

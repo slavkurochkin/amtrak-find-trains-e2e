@@ -6,12 +6,12 @@ Reference for working on the suite. Start with the [README](../README.md); this 
 
 | Command | What it does |
 |---|---|
-| `npm test` | Full suite on desktop Chromium (the PR gate) |
+| `npm test` | Full suite on desktop Chromium |
 | `npm run test:smoke` / `test:negative` | Only `@smoke` (happy-path searches) / `@negative` tests |
 | `npx playwright test --grep @STN-08` | The tests for one requirement |
 | `npx playwright test -g "swap"` | Tests whose title matches |
 | `npm run test:headed` / `test:ui` | Watch the browser / Playwright UI mode (time-travel debugging) |
-| `npm run test:cross-browser` | `@smoke` on Firefox, WebKit and mobile Chrome (nightly in CI) |
+| `npm run test:cross-browser` | `@smoke` on Firefox, WebKit and mobile Chrome |
 | `npm run test:all` | Every project |
 | `npm run test:known-bugs` | Repro of the Amtrak swap bug F-01 (fails while the bug exists; not in the default run) |
 | `npm run report` | Open the last HTML report |
@@ -58,19 +58,19 @@ Most tests run against the live site. Failure modes it can't produce on demand a
 
 ## Browsers
 
-- **PR gate:** the full suite on desktop Chromium (1440×900).
-- **Nightly:** Firefox, WebKit (Safari engine) and mobile Chrome (Pixel 7) run the `@smoke` subset, with 2 workers and 1 retry.
+- **Chrome:** the full suite on desktop Chromium (1440×900). This is the default, locally and on GitHub.
+- **Other browsers:** Firefox, WebKit (Safari engine) and mobile Chrome (Pixel 7) run the `@smoke` subset, with 2 workers and 1 retry (`npm run test:cross-browser`, or "all" on GitHub).
 - **Mobile differences:**
   - The date field is read-only (calendar only), so typed-date tests skip there.
   - Done and FIND TRAINS are tapped like a finger (`BaseComponent.pressPinnedButton`). Playwright's own click scrolls first, which puts other content under these pinned buttons.
 
 ## CI and AI-assisted debugging
 
-`.github/workflows/e2e.yml` runs inside the official Playwright Docker image. It runs on push to `main`, on every PR, nightly (Amtrak changes even when this repo doesn't), and on demand with an optional `grep` input. Lint, format, typecheck and spec coverage run before the tests.
+`.github/workflows/e2e.yml` runs inside the official Playwright Docker image, **only when started by hand**: Actions → "E2E - Find trains" → Run workflow. You choose Chrome only or all browsers, and can optionally give a `grep` filter. Since the tests drive the live amtrak.com, whose terms restrict automated access, it deliberately doesn't run on every push, on pull requests or on a schedule. Lint, format, typecheck and spec coverage run before the tests.
 
 When a test fails you get, in increasing depth:
-1. **Inline annotations** on the PR diff (Playwright `github` reporter).
-2. **`reports/failures.md`** in the job summary and as a sticky PR comment. Per failure it has:
+1. **Annotations** on the run, pointing at the failing lines (Playwright `github` reporter).
+2. **`reports/failures.md`** on the run's summary page. Per failure it has:
    - the spec `file:line`;
    - the clean error with expected vs received, and the code frame;
    - the named steps leading to the failure;
