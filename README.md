@@ -82,9 +82,18 @@ The form has two jobs: turn what the user enters into a correct search, and refu
 
 **Coverage:** 59 of the 62 requirements in scope have tests. One of those tests reproduces a known Amtrak bug (see F-01 below). Three requirements are listed as open gaps: SUB-10 (moving on to the results page, blocked as explained above), STN-10 (popular stations shown when a field is clicked) and CPN-02 (feedback for an invalid coupon). Things deliberately not tested are listed with reasons in the requirement files.
 
+## Testing ethically
+
+These tests run against a live website we don't own, and Amtrak's [terms of use](https://www.amtrak.com/planning-booking/policies/web-notices-terms-of-use) restrict automated access. We aimed to stay within the spirit of those terms:
+- the tests use the form like a visitor would, and scrape nothing;
+- they never try to get past Amtrak's bot protection, and stop when it blocks them;
+- every search request is stopped in the browser, so nothing reaches Amtrak's booking systems;
+- runs happen only when someone starts them;
+- findings are written as constructive bug reports. Any security issue would have been reported to Amtrak privately, not published here.
+
 ## Findings on amtrak.com
 
-Writing the tests surfaced real issues. Full bug reports, with steps and evidence, are in **[`docs/findings.md`](docs/findings.md)**.
+Writing the tests surfaced real issues, found through normal use of the form (see [Testing ethically](#testing-ethically)). Full bug reports, with steps and evidence, are in **[`docs/findings.md`](docs/findings.md)**.
 
 | # | Finding | Severity |
 |---|---|---|
@@ -97,7 +106,6 @@ Writing the tests surfaced real issues. Full bug reports, with steps and evidenc
 ## Assumptions
 
 - **The tests run against the real amtrak.com.** No test environment was available, so the tests only read and never complete a booking or search.
-- **Minimal, respectful traffic.** Amtrak's terms of use restrict automated access, so the suite keeps its footprint small. Every search request is stopped in the browser before it reaches Amtrak, nothing tries to get past the bot protection, and the GitHub runs only happen when someone starts them.
 - **The search the page sends is the result we check.** Amtrak's servers block automated searches (an error banner appears on the page), which is expected and doesn't affect the tests.
 - **Browsers:** every test runs in Chrome on a desktop-sized screen. A smaller set of key tests also runs in Firefox, Safari's engine (WebKit) and mobile Chrome.
 - **Station data stays the same:** e.g. NYP is New York Penn Station.

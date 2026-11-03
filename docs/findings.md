@@ -6,6 +6,16 @@ Severity: **High** blocks or misleads a user; **Medium** wrong behaviour with a 
 
 Each finding links to its requirement in `specs/find-trains/` and to evidence in `docs/evidence/`.
 
+## How these were found, and our approach to Amtrak's terms
+
+Amtrak's [Web Notices & Terms of Use](https://www.amtrak.com/planning-booking/policies/web-notices-terms-of-use) restrict using automated tools on the site (Code of Conduct: no "robot, spider, site search/retrieval application or other manual or automatic device or process to retrieve, index…"). We wanted to test the form ethically, within the spirit of those terms:
+
+- **Normal use only.** Every finding comes from using the form the way a visitor would: typing, clicking and reading what the page shows. Nothing was scraped, harvested or stored beyond what a test needs to check one result.
+- **No bypassing.** When Amtrak's bot protection blocked automated searches, we recorded it as a limitation and stopped there. We never tried to get past it, or past CAPTCHAs or rate limits.
+- **No load on Amtrak's booking systems.** Every search request is stopped in the browser before it reaches Amtrak. No accounts, bookings or personal data were used.
+- **Minimal traffic.** The suite runs only when someone starts it, never on a schedule.
+- **Responsible reporting.** These are usability and accessibility issues, not security vulnerabilities, so sharing them openly harms no one, and they are written to help Amtrak fix them. If we had found a security issue, we would have reported it to Amtrak privately and left it out of this repository.
+
 ---
 
 ## F-01 · Swap shows the wrong route when clicked quickly — Medium
