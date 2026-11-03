@@ -1,6 +1,6 @@
 # Amtrak "Find trains" – automated test suite
 
-Automated tests (Playwright + TypeScript) for the **"Find trains" search form on [amtrak.com/home](https://www.amtrak.com/home)**. They cover everything from filling in the form **up to clicking FIND TRAINS**; the results and booking pages aren't tested.
+Automated tests (Playwright + TypeScript, built with the **Page Object pattern**) for the **"Find trains" search form on [amtrak.com/home](https://www.amtrak.com/home)**. They cover everything from filling in the form **up to clicking FIND TRAINS**; the results and booking pages aren't tested.
 
 **Status (run against the live site):** all 66 tests pass in Chrome. A smaller set of key tests also passes in Firefox, Safari's engine (WebKit) and mobile Chrome. Run logs and screenshots: [`docs/evidence/`](docs/evidence/README.md).
 
@@ -52,8 +52,37 @@ This proves the form built the right search without relying on the results page.
 
 **Why not check that the page moves on to the results?** Amtrak's bot protection blocks every automated search, even from a real Chrome browser driven by a tool. The page shows an error and never moves on, so a redirect check would always fail for reasons unrelated to the form. Instead, a test gives the page a simulated server error and checks the user sees a clear message and keeps what they typed. The success path (results page) stays an open gap, SUB-10, until a real reply can be captured from a manual search or a test environment is available.
 
-**How the code is organised**
-- **One class per part of the form.** Each part has its own class in `src/components/`: the From/To fields, the calendar, the travelers panel and the trip-type menu. A class for the whole form combines them. Tests use these classes and never touch page elements directly, so when Amtrak changes the page only one class needs updating (the Page Object pattern).
+**Page Objects.** Tests never touch the web page directly. Every part of the page is represented by a class that knows how to find its elements and how to use them, and the tests only call those classes:
+
+```
+HomePage                  amtrak.com/home: opens it and waits until it's ready     src/pages/
+└── FareFinderForm        the whole "Find trains" form, FIND TRAINS, messages       src/components/
+    ├── TripTypeMenu      One-Way / Round-Trip / Multi-City / Group Travel
+    ├── StationField ×2   From and To (one pair per leg for Multi-City)
+    ├── DatePicker        the calendar
+    └── TravelersPanel    traveler counts
+```
+
+So a test reads like the steps a person would take. This is the real test for "the same station twice is refused":
+
+```ts
+const form = homePage.fareFinder;
+
+await form.from.selectByCode(Stations.NEW_YORK);
+await form.to.selectByCode(Stations.NEW_YORK);
+
+await expect(form.message(Messages.SAME_STATIONS)).toBeVisible();
+await form.expectSearchDisabled();
+await form.clickFindTrains();
+await searchSpy.expectNoSearch();
+```
+
+Why it's built this way:
+- **One place to fix.** When Amtrak changes the page, only the class for that part needs updating, not every test that uses it.
+- **Reusable parts.** The form is split into small parts (`StationField`, `DatePicker`…), and the same station search and calendar appear elsewhere on amtrak.com, e.g. the Schedules page. A new page can reuse them instead of starting over.
+- **Shared basics in one place.** `BasePage` and `BaseComponent` hold what every page and part needs, such as waiting for the page to be ready and always picking the visible copy of an element.
+
+**How the rest of the code is organised**
 - **Test data with sensible defaults.** A small helper builds a valid search: New York → Washington, two weeks from today, one adult. Each test changes only what it's about, for example `aSearch().roundTrip(3).from(Stations.BOSTON)`. Dates are always relative to today, so tests never go out of date (the Builder pattern).
 - **Ready-made setup.** Every test starts with the page already open and ready, so its body contains only the steps that matter (Playwright fixtures).
 - **Reliable element lookup.** Elements are found by the test IDs Amtrak put in its own page, or by their accessible names, the labels a screen reader would use. Amtrak draws the form twice, a desktop and a mobile version with one of them hidden, so lookups always pick the visible one.
