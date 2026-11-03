@@ -4,6 +4,26 @@ Automated tests (Playwright + TypeScript) for the **"Find trains" search form on
 
 **Status (2 Nov 2026, run against the live site):** all 63 tests pass in Chrome. A smaller set of key tests also passes in Firefox, Safari's engine (WebKit) and mobile Chrome. Run logs and screenshots: [`docs/evidence/`](docs/evidence/README.md).
 
+## What's in this suite
+
+| Kind of testing | What it covers | Where |
+|---|---|---|
+| **Functional** | Filling in the form and checking the search FIND TRAINS sends: stations, dates, travelers, trip types, paying with points | `submission`, `stations`, `dates`, `travelers`, `trip-type` tests |
+| **Validation** | 25 tests that the form refuses bad input (missing fields, the same station twice, past dates, too many travelers, invalid coupon characters) and that nothing is sent | tests marked `@negative` |
+| **Edge cases** | Leaving today, the 11-month booking limit, trips across month-end and New Year, several traveler combinations, typing a date instead of picking it | `dates`, `submission` tests |
+| **Accessibility** | Automated WCAG checks of the form, station suggestions, calendar and travelers panel. Known problems are recorded; any new one fails the test | `accessibility.spec.ts` |
+| **Visual** | The travelers panel is compared with an approved screenshot (with separate approved images for Mac and Linux, which draw fonts differently) | `visual.spec.ts` |
+| **Mobile and other browsers** | The 12 key search tests also run in Firefox, Safari's engine (WebKit) and mobile Chrome on a phone-sized screen. Mobile differences are handled: dates can only be picked from the calendar, and buttons are tapped like a finger | `npm run test:cross-browser`, nightly on GitHub |
+| **Server problems (simulated)** | What users see when Amtrak's station search is slow (a "Loading" message) or failing (a built-in station list) | `stations.spec.ts`, marked `@mocked` |
+| **Known bugs** | A test that reproduces Amtrak's Swap bug (F-01). It fails until Amtrak fixes it, so it runs only on demand | `npm run test:known-bugs` |
+
+Around the tests:
+- **Requirements:** 58 numbered requirements, each linked to its tests, with an automatic check that the two stay in sync (see [Requirements first](#approach)).
+- **Code checks on every commit:** lint (which also blocks fixed waits and missing `await`s), formatting and type checking.
+- **Automated runs on GitHub:** every push and pull request runs all tests in Chrome, and the other browsers run nightly. When a test fails, a one-page summary is posted to the run and to the pull request: the error, the steps leading to it, and what the page looked like. It's ready to paste into an AI assistant.
+- **Bug reports for Amtrak:** [`docs/findings.md`](docs/findings.md).
+- **Support for AI coding assistants:** instructions in [`.claude/CLAUDE.md`](.claude/CLAUDE.md), plus a step-by-step guide for writing new tests.
+
 ## Quick start
 
 Requires **Node.js 18+** and an internet connection (the tests run against the live site).
