@@ -4,7 +4,7 @@ Captured on **2026-11-02** against production amtrak.com, Chromium headless, 144
 
 | File | What it shows |
 |---|---|
-| [`test-run.log`](test-run.log) | Full PR-gate run on desktop Chromium: **65 passed** (63 tests + seed + setup), ~2 min. Cross-browser `@smoke` (Firefox, WebKit, mobile Chrome): 39 passed, 1 skipped by design (typed date on mobile) |
+| [`test-run.log`](test-run.log) | Full PR-gate run on desktop Chromium: **66 passed** (64 tests + seed + setup), ~2 min. Cross-browser `@smoke` (Firefox, WebKit, mobile Chrome): 39 passed, 1 skipped by design (typed date on mobile) |
 | [`junit.xml`](junit.xml) | Same run in JUnit format |
 | [`search-requests/`](search-requests/) | Request bodies captured when FIND TRAINS was clicked (one-way, round-trip, all traveler types, swapped route) |
 | [`screenshots/`](screenshots/) | End-of-test screenshots of key happy and negative states (below) |

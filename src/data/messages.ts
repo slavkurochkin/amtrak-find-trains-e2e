@@ -4,5 +4,6 @@ export const Messages = {
   NO_STATIONS_FOUND: 'No stations found.',
   INVALID_STATION: 'Enter a valid station',
   NEED_ADULT: 'Add at least one adult 18 years old or older.',
+  SEARCH_FAILED: "We've experienced an unknown error. Try again later or call us at 1-800-USA-RAIL.",
   TOO_MANY_TRAVELERS: /Call 1-800-USA-RAIL to make reservations for 9 to 14 travelers/,
 } as const;

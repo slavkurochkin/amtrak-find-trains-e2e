@@ -2,23 +2,23 @@
 
 Automated tests (Playwright + TypeScript) for the **"Find trains" search form on [amtrak.com/home](https://www.amtrak.com/home)**. They cover everything from filling in the form **up to clicking FIND TRAINS**; the results and booking pages aren't tested.
 
-**Status (2 Nov 2026, run against the live site):** all 63 tests pass in Chrome. A smaller set of key tests also passes in Firefox, Safari's engine (WebKit) and mobile Chrome. Run logs and screenshots: [`docs/evidence/`](docs/evidence/README.md).
+**Status (run against the live site):** all 64 tests pass in Chrome. A smaller set of key tests also passes in Firefox, Safari's engine (WebKit) and mobile Chrome. Run logs and screenshots: [`docs/evidence/`](docs/evidence/README.md).
 
 ## What's in this suite
 
 | Kind of testing | What it covers | Where |
 |---|---|---|
 | **Functional** | Filling in the form and checking the search FIND TRAINS sends: stations, dates, travelers, trip types, paying with points | `submission`, `stations`, `dates`, `travelers`, `trip-type` tests |
-| **Validation** | 25 tests that the form refuses bad input (missing fields, the same station twice, past dates, too many travelers, invalid coupon characters) and that nothing is sent | tests marked `@negative` |
+| **Validation** | 26 tests that the form refuses bad input (missing fields, the same station twice, past dates, too many travelers, invalid coupon characters) and that nothing is sent | tests marked `@negative` |
 | **Edge cases** | Leaving today, the 11-month booking limit, trips across month-end and New Year, several traveler combinations, typing a date instead of picking it | `dates`, `submission` tests |
 | **Accessibility** | Automated WCAG checks of the form, station suggestions, calendar and travelers panel. Known problems are recorded; any new one fails the test | `accessibility.spec.ts` |
 | **Visual** | The travelers panel is compared with an approved screenshot (with separate approved images for Mac and Linux, which draw fonts differently) | `visual.spec.ts` |
 | **Mobile and other browsers** | The 12 key search tests also run in Firefox, Safari's engine (WebKit) and mobile Chrome on a phone-sized screen. Mobile differences are handled: dates can only be picked from the calendar, and buttons are tapped like a finger | `npm run test:cross-browser`, nightly on GitHub |
-| **Server problems (simulated)** | What users see when Amtrak's station search is slow (a "Loading" message) or failing (a built-in station list) | `stations.spec.ts`, marked `@mocked` |
+| **Server problems (simulated)** | What users see when Amtrak's station search is slow (a "Loading" message) or failing (a built-in station list), and when the train search itself fails (an error message, with their search kept) | `stations.spec.ts` (`@mocked`), `submission.spec.ts` |
 | **Known bugs** | A test that reproduces Amtrak's Swap bug (F-01). It fails until Amtrak fixes it, so it runs only on demand | `npm run test:known-bugs` |
 
 Around the tests:
-- **Requirements:** 58 numbered requirements, each linked to its tests, with an automatic check that the two stay in sync (see [Requirements first](#approach)).
+- **Requirements:** 60 numbered requirements in scope, each linked to its tests, with an automatic check that the two stay in sync (see [Requirements first](#approach)).
 - **Code checks on every commit:** lint (which also blocks fixed waits and missing `await`s), formatting and type checking.
 - **Automated runs on GitHub:** every push and pull request runs all tests in Chrome, and the other browsers run nightly. When a test fails, a one-page summary is posted to the run and to the pull request: the error, the steps leading to it, and what the page looked like. It's ready to paste into an AI assistant.
 - **Bug reports for Amtrak:** [`docs/findings.md`](docs/findings.md).
@@ -49,6 +49,8 @@ Nothing else needs setting up. Optional settings (such as the website address), 
 
 This proves the form built the right search without relying on the results page. It also means no automated searches reach Amtrak, whose servers reject them anyway.
 
+**Why not check that the page moves on to the results?** Amtrak's bot protection blocks every automated search, even from a real Chrome browser driven by a tool. The page shows an error and never moves on, so a redirect check would always fail for reasons unrelated to the form. Instead, a test gives the page a simulated server error and checks the user sees a clear message and keeps what they typed. The success path (results page) stays an open gap, SUB-10, until a real reply can be captured from a manual search or a test environment is available.
+
 **How the code is organised**
 - **One class per part of the form.** Each part has its own class in `src/components/`: the From/To fields, the calendar, the travelers panel and the trip-type menu. A class for the whole form combines them. Tests use these classes and never touch page elements directly, so when Amtrak changes the page only one class needs updating (the Page Object pattern).
 - **Test data with sensible defaults.** A small helper builds a valid search: New York → Washington, two weeks from today, one adult. Each test changes only what it's about, for example `aSearch().roundTrip(3).from(Stations.BOSTON)`. Dates are always relative to today, so tests never go out of date (the Builder pattern).
@@ -68,7 +70,7 @@ The form has two jobs: turn what the user enters into a correct search, and refu
 
 | Area | What should work | What should be refused |
 |---|---|---|
-| [Submitting a search](specs/find-trains/submission.md) | One-way and round trips, every traveler type, leaving today, swapped stations, several traveler combinations, paying with points. Each test checks the exact search that's sent | – |
+| [Submitting a search](specs/find-trains/submission.md) | One-way and round trips, every traveler type, leaving today, swapped stations, several traveler combinations, paying with points. Each test checks the exact search that's sent | If the search server fails, an error is shown and the user's search is kept |
 | [Stations](specs/find-trains/stations.md) | Suggestions while typing, typing a station code (e.g. BOS), lowercase codes, keyboard-only use, the Swap button. With a simulated slow server, a "Loading" message shows | Unknown stations, code-like input such as `<img …>`, the same station for From and To. With a simulated server failure, a built-in station list is offered instead |
 | [Dates](specs/find-trains/dates.md) | Today, dates months ahead, return dates, same-day return, the 11-month booking limit, typing a date, trips across month-end and New Year | Past dates, returning before departing, closing the calendar without a date, typed dates that are impossible, past or too far ahead |
 | [Travelers](specs/find-trains/travelers.md) | One adult by default, the total shown, Reset, up to 8 travelers, the "Traveling Alone?" policy | 9 or more travelers, no adult, children alone, counts below zero |
@@ -77,7 +79,7 @@ The form has two jobs: turn what the user enters into a correct search, and refu
 | [Coupons](specs/find-trains/coupons.md) | – | Coupon codes accept only letters and digits, up to 14 |
 | [Accessibility](specs/find-trains/accessibility.md), [Visual](specs/find-trains/visual.md) | The travelers panel still looks like its approved screenshot | No new accessibility problems (WCAG) in the form, suggestions, calendar or travelers panel |
 
-**Coverage:** 56 of the 58 requirements in scope have tests. One of those tests reproduces a known Amtrak bug (see F-01 below). Two requirements are left untested on purpose and listed as open gaps: STN-10 (popular stations shown when a field is clicked) and CPN-02 (feedback for an invalid coupon). Things deliberately not tested are listed with reasons in the requirement files.
+**Coverage:** 57 of the 60 requirements in scope have tests. One of those tests reproduces a known Amtrak bug (see F-01 below). Three requirements are listed as open gaps: SUB-10 (moving on to the results page, blocked as explained above), STN-10 (popular stations shown when a field is clicked) and CPN-02 (feedback for an invalid coupon). Things deliberately not tested are listed with reasons in the requirement files.
 
 ## Findings on amtrak.com
 
@@ -102,9 +104,9 @@ Writing the tests surfaced real issues. Full bug reports, with steps and evidenc
 
 ## With more time
 
-- **A test environment and test accounts**, to run full searches, use points with a real balance, and try a real coupon (closing gap CPN-02).
+- **A test environment and test accounts**, to run full searches through to the results page (gap SUB-10), use points with a real balance, and try a real coupon (gap CPN-02).
 - **A formal description of the search message**, so that if Amtrak changes its format, the failure says exactly what changed.
-- **Close the open gaps** STN-10 and CPN-02.
+- **Close the open gaps** SUB-10, STN-10 and CPN-02. SUB-10 can be done without a test environment by saving one real reply from a manual search and replaying it.
 - **Page-speed checks** on the home page, tracked over time.
 - **Faster runs as the suite grows:** split tests across machines, and run only the tests affected by a change.
 - **Send the findings** to Amtrak (the reports in [`docs/findings.md`](docs/findings.md) are ready).

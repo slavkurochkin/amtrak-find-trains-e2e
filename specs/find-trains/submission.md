@@ -37,6 +37,16 @@ Tests: `tests/find-trains/submission.spec.ts`
 **Status:** automated · **Type:** positive
 **Given** a valid search **When** the user turns on Use Points and clicks FIND TRAINS **Then** the request asks for `pricingUnit: "POINTS"` instead of `"DOLLARS"`.
 
+### SUB-09 · If the search server fails, the user is told and keeps their search
+**Status:** automated · **Type:** negative
+**Given** a valid search **When** FIND TRAINS is clicked and the server answers with an error (simulated 500)
+**Then** "We've experienced an unknown error. Try again later or call us at 1-800-USA-RAIL." is shown, the page stays on the home page, and the stations and date the user entered are still filled in.
+
+### SUB-10 · A successful search takes the user to the results
+**Status:** gap · **Type:** positive
+**Given** a valid search **When** the server answers with train results **Then** the page moves on to the results page.
+Not automated yet: Amtrak's bot protection rejects every automated search (403), including from a real Chrome driven by tools, so no genuine successful reply could be captured to replay. Needs one reply saved from a manual search, or a test environment.
+
 ### SUB-06 · Results page and booking flow
 **Status:** out-of-scope · **Type:** positive
 Out of scope (the suite stops at the FIND TRAINS click); also blocked by bot protection (403) under automation.

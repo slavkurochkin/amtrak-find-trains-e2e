@@ -1,6 +1,6 @@
-<testsuites id="" name="" tests="65" failures="0" skipped="0" errors="0" time="100.38843">
-<testsuite name="setup/consent.setup.ts" timestamp="2026-11-02T23:39:15.389Z" hostname="setup" tests="1" failures="0" skipped="0" time="2.739" errors="0">
-<testcase name="save cookie-consent state" classname="setup/consent.setup.ts" time="2.739">
+<testsuites id="" name="" tests="66" failures="0" skipped="0" errors="0" time="105.17787">
+<testsuite name="setup/consent.setup.ts" timestamp="2026-11-03T13:27:08.271Z" hostname="setup" tests="1" failures="0" skipped="0" time="2.853" errors="0">
+<testcase name="save cookie-consent state" classname="setup/consent.setup.ts" time="2.853">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../test-results/setup-consent.setup.ts-save-cookie-consent-state-setup/test-finished-1.png]]
@@ -8,29 +8,29 @@
 </system-out>
 </testcase>
 </testsuite>
-<testsuite name="find-trains/accessibility.spec.ts" timestamp="2026-11-02T23:39:15.389Z" hostname="chromium-desktop" tests="4" failures="0" skipped="0" time="21.322" errors="0">
-<testcase name="Find trains: accessibility › the form at rest has no new WCAG violations" classname="find-trains/accessibility.spec.ts" time="5.002">
+<testsuite name="find-trains/accessibility.spec.ts" timestamp="2026-11-03T13:27:08.271Z" hostname="chromium-desktop" tests="4" failures="0" skipped="0" time="19.721" errors="0">
+<testcase name="Find trains: accessibility › the form at rest has no new WCAG violations" classname="find-trains/accessibility.spec.ts" time="5.87">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../test-results/find-trains-accessibility--21d1a--has-no-new-WCAG-violations-chromium-desktop/test-finished-1.png]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Find trains: accessibility › station suggestions have no new WCAG violations" classname="find-trains/accessibility.spec.ts" time="7.984">
+<testcase name="Find trains: accessibility › station suggestions have no new WCAG violations" classname="find-trains/accessibility.spec.ts" time="4.489">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../test-results/find-trains-accessibility--95497-have-no-new-WCAG-violations-chromium-desktop/test-finished-1.png]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Find trains: accessibility › the calendar has no WCAG violations" classname="find-trains/accessibility.spec.ts" time="4.109">
+<testcase name="Find trains: accessibility › the calendar has no WCAG violations" classname="find-trains/accessibility.spec.ts" time="4.664">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../test-results/find-trains-accessibility--0421e-ndar-has-no-WCAG-violations-chromium-desktop/test-finished-1.png]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Find trains: accessibility › the travelers panel has no new WCAG violations" classname="find-trains/accessibility.spec.ts" time="4.227">
+<testcase name="Find trains: accessibility › the travelers panel has no new WCAG violations" classname="find-trains/accessibility.spec.ts" time="4.698">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../test-results/find-trains-accessibility--c6766--has-no-new-WCAG-violations-chromium-desktop/test-finished-1.png]]
@@ -38,8 +38,8 @@
 </system-out>
 </testcase>
 </testsuite>
-<testsuite name="find-trains/coupons.spec.ts" timestamp="2026-11-02T23:39:15.389Z" hostname="chromium-desktop" tests="1" failures="0" skipped="0" time="3.787" errors="0">
-<testcase name="Find trains: coupons › the coupon field keeps only letters and digits, up to 14" classname="find-trains/coupons.spec.ts" time="3.787">
+<testsuite name="find-trains/coupons.spec.ts" timestamp="2026-11-03T13:27:08.271Z" hostname="chromium-desktop" tests="1" failures="0" skipped="0" time="5.028" errors="0">
+<testcase name="Find trains: coupons › the coupon field keeps only letters and digits, up to 14" classname="find-trains/coupons.spec.ts" time="5.028">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../test-results/find-trains-coupons-Find-t-b9a4e-letters-and-digits-up-to-14-chromium-desktop/test-finished-1.png]]
@@ -47,163 +47,163 @@
 </system-out>
 </testcase>
 </testsuite>
-<testsuite name="find-trains/dates.spec.ts" timestamp="2026-11-02T23:39:15.389Z" hostname="chromium-desktop" tests="16" failures="0" skipped="0" time="77.597" errors="0">
-<testcase name="Find trains: depart and return dates › the calendar opens on the current month with today selectable" classname="find-trains/dates.spec.ts" time="3.387">
+<testsuite name="find-trains/dates.spec.ts" timestamp="2026-11-03T13:27:08.271Z" hostname="chromium-desktop" tests="16" failures="0" skipped="0" time="84.665" errors="0">
+<testcase name="Find trains: depart and return dates › the calendar opens on the current month with today selectable" classname="find-trains/dates.spec.ts" time="3.577">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../test-results/find-trains-dates-Find-tra-c99ca-month-with-today-selectable-chromium-desktop/test-finished-1.png]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Find trains: depart and return dates › dates several months ahead can be reached with &quot;Next month&quot;" classname="find-trains/dates.spec.ts" time="4.317">
+<testcase name="Find trains: depart and return dates › dates several months ahead can be reached with &quot;Next month&quot;" classname="find-trains/dates.spec.ts" time="3.639">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../test-results/find-trains-dates-Find-tra-f0e25-be-reached-with-Next-month--chromium-desktop/test-finished-1.png]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Find trains: depart and return dates › round trip: depart and return are chosen as a range" classname="find-trains/dates.spec.ts" time="4.236">
+<testcase name="Find trains: depart and return dates › round trip: depart and return are chosen as a range" classname="find-trains/dates.spec.ts" time="4.381">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../test-results/find-trains-dates-Find-tra-d610e-eturn-are-chosen-as-a-range-chromium-desktop/test-finished-1.png]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Find trains: depart and return dates › round trip: return on the same day as departure is allowed" classname="find-trains/dates.spec.ts" time="3.581">
+<testcase name="Find trains: depart and return dates › round trip: return on the same day as departure is allowed" classname="find-trains/dates.spec.ts" time="4.043">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../test-results/find-trains-dates-Find-tra-f1bef-day-as-departure-is-allowed-chromium-desktop/test-finished-1.png]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Find trains: depart and return dates › invalid dates › past dates are disabled in the calendar" classname="find-trains/dates.spec.ts" time="3.831">
+<testcase name="Find trains: depart and return dates › invalid dates › past dates are disabled in the calendar" classname="find-trains/dates.spec.ts" time="3.937">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../test-results/find-trains-dates-Find-tra-162a6-re-disabled-in-the-calendar-chromium-desktop/test-finished-1.png]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Find trains: depart and return dates › invalid dates › clicking a past date does not select it" classname="find-trains/dates.spec.ts" time="4.829">
+<testcase name="Find trains: depart and return dates › invalid dates › clicking a past date does not select it" classname="find-trains/dates.spec.ts" time="4.571">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../test-results/find-trains-dates-Find-tra-44f2e-ast-date-does-not-select-it-chromium-desktop/test-finished-1.png]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Find trains: depart and return dates › invalid dates › the calendar cannot go back before the current month" classname="find-trains/dates.spec.ts" time="2.894">
+<testcase name="Find trains: depart and return dates › invalid dates › the calendar cannot go back before the current month" classname="find-trains/dates.spec.ts" time="8.662">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../test-results/find-trains-dates-Find-tra-71d22-ck-before-the-current-month-chromium-desktop/test-finished-1.png]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Find trains: depart and return dates › invalid dates › round trip: a return date before departure is not accepted as the return" classname="find-trains/dates.spec.ts" time="3.987">
+<testcase name="Find trains: depart and return dates › invalid dates › round trip: a return date before departure is not accepted as the return" classname="find-trains/dates.spec.ts" time="4.537">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../test-results/find-trains-dates-Find-tra-6d940--not-accepted-as-the-return-chromium-desktop/test-finished-1.png]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Find trains: depart and return dates › invalid dates › closing the calendar without choosing leaves the date empty and search disabled" classname="find-trains/dates.spec.ts" time="5.816">
+<testcase name="Find trains: depart and return dates › invalid dates › closing the calendar without choosing leaves the date empty and search disabled" classname="find-trains/dates.spec.ts" time="4.66">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../test-results/find-trains-dates-Find-tra-48a33-e-empty-and-search-disabled-chromium-desktop/test-finished-1.png]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Find trains: booking horizon and typed dates › bookings open 11 months ahead" classname="find-trains/dates.spec.ts" time="4.013">
+<testcase name="Find trains: booking horizon and typed dates › bookings open 11 months ahead" classname="find-trains/dates.spec.ts" time="5.402">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../test-results/find-trains-dates-Find-tra-33136-okings-open-11-months-ahead-chromium-desktop/test-finished-1.png]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Find trains: booking horizon and typed dates › a valid date can be typed into the depart field and is used in the search" classname="find-trains/dates.spec.ts" time="5.756">
+<testcase name="Find trains: booking horizon and typed dates › a valid date can be typed into the depart field and is used in the search" classname="find-trains/dates.spec.ts" time="5.773">
 <system-out>
 <![CDATA[
-[[ATTACHMENT|../test-results/find-trains-dates-Find-tra-7b642-d-and-is-used-in-the-search-chromium-desktop/attachments/search-request-1-json-eee8251ce9ef30c624dd5c08100f49e093c9eecd.json]]
+[[ATTACHMENT|../test-results/find-trains-dates-Find-tra-7b642-d-and-is-used-in-the-search-chromium-desktop/attachments/search-request-1-json-e43a3cdaefc4978a1ecc7273b600b04ad620e11b.json]]
 
 [[ATTACHMENT|../test-results/find-trains-dates-Find-tra-7b642-d-and-is-used-in-the-search-chromium-desktop/test-finished-1.png]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Find trains: booking horizon and typed dates › typing an impossible date clears the field and keeps search disabled" classname="find-trains/dates.spec.ts" time="7.145">
+<testcase name="Find trains: booking horizon and typed dates › typing an impossible date clears the field and keeps search disabled" classname="find-trains/dates.spec.ts" time="6.608">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../test-results/find-trains-dates-Find-tra-a46d1-d-and-keeps-search-disabled-chromium-desktop/test-finished-1.png]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Find trains: booking horizon and typed dates › typing a past date clears the field and keeps search disabled" classname="find-trains/dates.spec.ts" time="5.698">
+<testcase name="Find trains: booking horizon and typed dates › typing a past date clears the field and keeps search disabled" classname="find-trains/dates.spec.ts" time="5.283">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../test-results/find-trains-dates-Find-tra-537fe-d-and-keeps-search-disabled-chromium-desktop/test-finished-1.png]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Find trains: booking horizon and typed dates › typing a date beyond the 11-month horizon clears the field and keeps search disabled" classname="find-trains/dates.spec.ts" time="5.801">
+<testcase name="Find trains: booking horizon and typed dates › typing a date beyond the 11-month horizon clears the field and keeps search disabled" classname="find-trains/dates.spec.ts" time="6.26">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../test-results/find-trains-dates-Find-tra-48548-d-and-keeps-search-disabled-chromium-desktop/test-finished-1.png]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Find trains: booking horizon and typed dates › round trip across a month end into the 1st of the next month sends both dates" classname="find-trains/dates.spec.ts" time="6.426">
+<testcase name="Find trains: booking horizon and typed dates › round trip across a month end into the 1st of the next month sends both dates" classname="find-trains/dates.spec.ts" time="7.731">
 <system-out>
 <![CDATA[
-[[ATTACHMENT|../test-results/find-trains-dates-Find-tra-3f190-next-month-sends-both-dates-chromium-desktop/attachments/search-request-1-json-f148a29453eb07b14db9c867e4271a0cd23e6102.json]]
+[[ATTACHMENT|../test-results/find-trains-dates-Find-tra-3f190-next-month-sends-both-dates-chromium-desktop/attachments/search-request-1-json-8e6a38b65f9554da6f42bd7116f7c012aeb2328c.json]]
 
 [[ATTACHMENT|../test-results/find-trains-dates-Find-tra-3f190-next-month-sends-both-dates-chromium-desktop/test-finished-1.png]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Find trains: booking horizon and typed dates › round trip across New Year (Dec 31 into Jan 1) sends both dates" classname="find-trains/dates.spec.ts" time="5.88">
+<testcase name="Find trains: booking horizon and typed dates › round trip across New Year (Dec 31 into Jan 1) sends both dates" classname="find-trains/dates.spec.ts" time="5.601">
 <system-out>
 <![CDATA[
-[[ATTACHMENT|../test-results/find-trains-dates-Find-tra-fd4bc-into-Jan-1-sends-both-dates-chromium-desktop/attachments/search-request-1-json-7cc0f7566273fd5d3cc8313b17b9039dd37a7908.json]]
+[[ATTACHMENT|../test-results/find-trains-dates-Find-tra-fd4bc-into-Jan-1-sends-both-dates-chromium-desktop/attachments/search-request-1-json-2c1729e1ddebce2b44fcb2ad7095d8aec7439cdb.json]]
 
 [[ATTACHMENT|../test-results/find-trains-dates-Find-tra-fd4bc-into-Jan-1-sends-both-dates-chromium-desktop/test-finished-1.png]]
 ]]>
 </system-out>
 </testcase>
 </testsuite>
-<testsuite name="find-trains/required-fields.spec.ts" timestamp="2026-11-02T23:39:15.389Z" hostname="chromium-desktop" tests="6" failures="0" skipped="0" time="52.947" errors="0">
-<testcase name="Find trains: required fields › an empty form cannot be submitted" classname="find-trains/required-fields.spec.ts" time="6.032">
+<testsuite name="find-trains/required-fields.spec.ts" timestamp="2026-11-03T13:27:08.271Z" hostname="chromium-desktop" tests="6" failures="0" skipped="0" time="59.69" errors="0">
+<testcase name="Find trains: required fields › an empty form cannot be submitted" classname="find-trains/required-fields.spec.ts" time="5.835">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../test-results/find-trains-required-field-64718-ty-form-cannot-be-submitted-chromium-desktop/test-finished-1.png]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Find trains: required fields › From alone is not enough" classname="find-trains/required-fields.spec.ts" time="7.755">
+<testcase name="Find trains: required fields › From alone is not enough" classname="find-trains/required-fields.spec.ts" time="22.636">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../test-results/find-trains-required-field-01b1d-ds-From-alone-is-not-enough-chromium-desktop/test-finished-1.png]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Find trains: required fields › missing To station blocks the search" classname="find-trains/required-fields.spec.ts" time="8.741">
+<testcase name="Find trains: required fields › missing To station blocks the search" classname="find-trains/required-fields.spec.ts" time="5.951">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../test-results/find-trains-required-field-3e922-o-station-blocks-the-search-chromium-desktop/test-finished-1.png]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Find trains: required fields › missing depart date blocks the search" classname="find-trains/required-fields.spec.ts" time="14.38">
+<testcase name="Find trains: required fields › missing depart date blocks the search" classname="find-trains/required-fields.spec.ts" time="6.497">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../test-results/find-trains-required-field-8d633-part-date-blocks-the-search-chromium-desktop/test-finished-1.png]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Find trains: required fields › round trip without a return date blocks the search" classname="find-trains/required-fields.spec.ts" time="7.232">
+<testcase name="Find trains: required fields › round trip without a return date blocks the search" classname="find-trains/required-fields.spec.ts" time="8.877">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../test-results/find-trains-required-field-00d69-turn-date-blocks-the-search-chromium-desktop/test-finished-1.png]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Find trains: required fields › with assistance needed, FIND TRAINS asks for accessibility details before searching" classname="find-trains/required-fields.spec.ts" time="8.807">
+<testcase name="Find trains: required fields › with assistance needed, FIND TRAINS asks for accessibility details before searching" classname="find-trains/required-fields.spec.ts" time="9.894">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../test-results/find-trains-required-field-3ca4c-ty-details-before-searching-chromium-desktop/test-finished-1.png]]
@@ -211,71 +211,71 @@
 </system-out>
 </testcase>
 </testsuite>
-<testsuite name="find-trains/stations.spec.ts" timestamp="2026-11-02T23:39:15.389Z" hostname="chromium-desktop" tests="10" failures="0" skipped="0" time="82.913" errors="0">
-<testcase name="Find trains: From / To station fields › typing a city name suggests matching stations" classname="find-trains/stations.spec.ts" time="4.01">
+<testsuite name="find-trains/stations.spec.ts" timestamp="2026-11-03T13:27:08.271Z" hostname="chromium-desktop" tests="10" failures="0" skipped="0" time="51.604" errors="0">
+<testcase name="Find trains: From / To station fields › typing a city name suggests matching stations" classname="find-trains/stations.spec.ts" time="4.468">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../test-results/find-trains-stations-Find--92ce0--suggests-matching-stations-chromium-desktop/test-finished-1.png]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Find trains: From / To station fields › typing an exact station code selects it without picking from the list" classname="find-trains/stations.spec.ts" time="4.927">
+<testcase name="Find trains: From / To station fields › typing an exact station code selects it without picking from the list" classname="find-trains/stations.spec.ts" time="4.109">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../test-results/find-trains-stations-Find--b83db-thout-picking-from-the-list-chromium-desktop/test-finished-1.png]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Find trains: From / To station fields › station codes are matched case-insensitively" classname="find-trains/stations.spec.ts" time="3.86">
+<testcase name="Find trains: From / To station fields › station codes are matched case-insensitively" classname="find-trains/stations.spec.ts" time="3.368">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../test-results/find-trains-stations-Find--8cb02--matched-case-insensitively-chromium-desktop/test-finished-1.png]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Find trains: From / To station fields › a suggestion can be chosen with the keyboard (ArrowDown + Enter)" classname="find-trains/stations.spec.ts" time="5.876">
+<testcase name="Find trains: From / To station fields › a suggestion can be chosen with the keyboard (ArrowDown + Enter)" classname="find-trains/stations.spec.ts" time="5.594">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../test-results/find-trains-stations-Find--7d6f0-e-keyboard-ArrowDown-Enter--chromium-desktop/test-finished-1.png]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Find trains: From / To station fields › swap button exchanges the From and To stations" classname="find-trains/stations.spec.ts" time="36.429">
+<testcase name="Find trains: From / To station fields › swap button exchanges the From and To stations" classname="find-trains/stations.spec.ts" time="7.96">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../test-results/find-trains-stations-Find--af77e-es-the-From-and-To-stations-chromium-desktop/test-finished-1.png]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Find trains: From / To station fields › invalid input › an unknown station shows &quot;No stations found.&quot; and is not accepted" classname="find-trains/stations.spec.ts" time="5.164">
+<testcase name="Find trains: From / To station fields › invalid input › an unknown station shows &quot;No stations found.&quot; and is not accepted" classname="find-trains/stations.spec.ts" time="4.657">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../test-results/find-trains-stations-Find--e9f7f-s-found-and-is-not-accepted-chromium-desktop/test-finished-1.png]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Find trains: From / To station fields › invalid input › HTML/script-like input is not executed or rendered" classname="find-trains/stations.spec.ts" time="4.623">
+<testcase name="Find trains: From / To station fields › invalid input › HTML/script-like input is not executed or rendered" classname="find-trains/stations.spec.ts" time="4.38">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../test-results/find-trains-stations-Find--17ab9-is-not-executed-or-rendered-chromium-desktop/test-finished-1.png]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Find trains: From / To station fields › invalid input › the same station for From and To is rejected" classname="find-trains/stations.spec.ts" time="6.524">
+<testcase name="Find trains: From / To station fields › invalid input › the same station for From and To is rejected" classname="find-trains/stations.spec.ts" time="6.601">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../test-results/find-trains-stations-Find--5256f-for-From-and-To-is-rejected-chromium-desktop/test-finished-1.png]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Find trains: station lookup failures (mocked) › station search falls back to the built-in list when the lookup fails" classname="find-trains/stations.spec.ts" time="7.122">
+<testcase name="Find trains: station lookup failures (mocked) › station search falls back to the built-in list when the lookup fails" classname="find-trains/stations.spec.ts" time="6.228">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../test-results/find-trains-stations-Find--da155--list-when-the-lookup-fails-chromium-desktop/test-finished-1.png]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Find trains: station lookup failures (mocked) › a slow lookup shows &quot;Loading&quot; until the results arrive" classname="find-trains/stations.spec.ts" time="4.378">
+<testcase name="Find trains: station lookup failures (mocked) › a slow lookup shows &quot;Loading&quot; until the results arrive" classname="find-trains/stations.spec.ts" time="4.239">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../test-results/find-trains-stations-Find--f0f98-ng-until-the-results-arrive-chromium-desktop/test-finished-1.png]]
@@ -283,170 +283,179 @@
 </system-out>
 </testcase>
 </testsuite>
-<testsuite name="find-trains/submission.spec.ts" timestamp="2026-11-02T23:39:15.389Z" hostname="chromium-desktop" tests="10" failures="0" skipped="0" time="66.478" errors="0">
-<testcase name="Find trains: submitting a valid search › one-way search with default traveler sends the selected stations and date" classname="find-trains/submission.spec.ts" time="4.69">
+<testsuite name="find-trains/submission.spec.ts" timestamp="2026-11-03T13:27:08.271Z" hostname="chromium-desktop" tests="11" failures="0" skipped="0" time="91.153" errors="0">
+<testcase name="Find trains: submitting a valid search › one-way search with default traveler sends the selected stations and date" classname="find-trains/submission.spec.ts" time="6.463">
 <system-out>
 <![CDATA[
-[[ATTACHMENT|../test-results/find-trains-submission-Fin-beb55--selected-stations-and-date-chromium-desktop/attachments/search-request-1-json-b34050cb5863d2c4bf99c5b952bb07aff90776bc.json]]
+[[ATTACHMENT|../test-results/find-trains-submission-Fin-beb55--selected-stations-and-date-chromium-desktop/attachments/search-request-1-json-52822525151de3ee1a4f60b22400549f7dc2a967.json]]
 
 [[ATTACHMENT|../test-results/find-trains-submission-Fin-beb55--selected-stations-and-date-chromium-desktop/test-finished-1.png]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Find trains: submitting a valid search › round-trip search sends an outbound and a return leg" classname="find-trains/submission.spec.ts" time="5.353">
+<testcase name="Find trains: submitting a valid search › round-trip search sends an outbound and a return leg" classname="find-trains/submission.spec.ts" time="6.286">
 <system-out>
 <![CDATA[
-[[ATTACHMENT|../test-results/find-trains-submission-Fin-870ed-n-outbound-and-a-return-leg-chromium-desktop/attachments/search-request-1-json-f1a760141d74b5c1d186d6d4711357db202ce2e7.json]]
+[[ATTACHMENT|../test-results/find-trains-submission-Fin-870ed-n-outbound-and-a-return-leg-chromium-desktop/attachments/search-request-1-json-78dc88b72a457c6999031ef53359b55926a2e1c4.json]]
 
 [[ATTACHMENT|../test-results/find-trains-submission-Fin-870ed-n-outbound-and-a-return-leg-chromium-desktop/test-finished-1.png]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Find trains: submitting a valid search › search with a mix of traveler types sends one passenger per traveler" classname="find-trains/submission.spec.ts" time="6.133">
+<testcase name="Find trains: submitting a valid search › search with a mix of traveler types sends one passenger per traveler" classname="find-trains/submission.spec.ts" time="7.482">
 <system-out>
 <![CDATA[
-[[ATTACHMENT|../test-results/find-trains-submission-Fin-428ae--one-passenger-per-traveler-chromium-desktop/attachments/search-request-1-json-f99a470a49b6e7ef116277eef1561c6a1a139c28.json]]
+[[ATTACHMENT|../test-results/find-trains-submission-Fin-428ae--one-passenger-per-traveler-chromium-desktop/attachments/search-request-1-json-070b3ed75dde745e9215badbbdf64ed6b58752fb.json]]
 
 [[ATTACHMENT|../test-results/find-trains-submission-Fin-428ae--one-passenger-per-traveler-chromium-desktop/test-finished-1.png]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Find trains: submitting a valid search › searching for a departure today is allowed" classname="find-trains/submission.spec.ts" time="5.533">
+<testcase name="Find trains: submitting a valid search › searching for a departure today is allowed" classname="find-trains/submission.spec.ts" time="6.205">
 <system-out>
 <![CDATA[
-[[ATTACHMENT|../test-results/find-trains-submission-Fin-dc1c8--departure-today-is-allowed-chromium-desktop/attachments/search-request-1-json-ac3fbdfb70c028ce7c75f14d0ad89355d6988605.json]]
+[[ATTACHMENT|../test-results/find-trains-submission-Fin-dc1c8--departure-today-is-allowed-chromium-desktop/attachments/search-request-1-json-99379a94838a6153db67ec2f0feb4017d86bfab5.json]]
 
 [[ATTACHMENT|../test-results/find-trains-submission-Fin-dc1c8--departure-today-is-allowed-chromium-desktop/test-finished-1.png]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Find trains: submitting a valid search › swapping stations before searching sends the reversed route" classname="find-trains/submission.spec.ts" time="6.485">
+<testcase name="Find trains: submitting a valid search › swapping stations before searching sends the reversed route" classname="find-trains/submission.spec.ts" time="9.455">
 <system-out>
 <![CDATA[
-[[ATTACHMENT|../test-results/find-trains-submission-Fin-aa0ee-ng-sends-the-reversed-route-chromium-desktop/attachments/search-request-1-json-67c2ee85ecc6989cc836e13e866e0fc1937cd053.json]]
+[[ATTACHMENT|../test-results/find-trains-submission-Fin-aa0ee-ng-sends-the-reversed-route-chromium-desktop/attachments/search-request-1-json-43583abad66970ca82e0e4c883c11f480550c4aa.json]]
 
 [[ATTACHMENT|../test-results/find-trains-submission-Fin-aa0ee-ng-sends-the-reversed-route-chromium-desktop/test-finished-1.png]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Find trains: submitting a valid search › party of 1 senior alone (seniors count as adults) is sent as passengers" classname="find-trains/submission.spec.ts" time="5.981">
+<testcase name="Find trains: submitting a valid search › party of 1 senior alone (seniors count as adults) is sent as passengers" classname="find-trains/submission.spec.ts" time="8.629">
 <system-out>
 <![CDATA[
-[[ATTACHMENT|../test-results/find-trains-submission-Fin-07fb1-dults-is-sent-as-passengers-chromium-desktop/attachments/search-request-1-json-f5b5b928529ad92db0fdbe351873030e708f93ef.json]]
+[[ATTACHMENT|../test-results/find-trains-submission-Fin-07fb1-dults-is-sent-as-passengers-chromium-desktop/attachments/search-request-1-json-8fc64715f11ca5802834618cb96aceb65c77f334.json]]
 
 [[ATTACHMENT|../test-results/find-trains-submission-Fin-07fb1-dults-is-sent-as-passengers-chromium-desktop/test-finished-1.png]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Find trains: submitting a valid search › party of 1 senior with 1 child is sent as passengers" classname="find-trains/submission.spec.ts" time="6.52">
+<testcase name="Find trains: submitting a valid search › party of 1 senior with 1 child is sent as passengers" classname="find-trains/submission.spec.ts" time="7.24">
 <system-out>
 <![CDATA[
-[[ATTACHMENT|../test-results/find-trains-submission-Fin-060e8-child-is-sent-as-passengers-chromium-desktop/attachments/search-request-1-json-27a05002d327cc92f4e3c461debc540c7770d496.json]]
+[[ATTACHMENT|../test-results/find-trains-submission-Fin-060e8-child-is-sent-as-passengers-chromium-desktop/attachments/search-request-1-json-a9d8fac5212a2b5dfab43fdaa5279b1f30b8499b.json]]
 
 [[ATTACHMENT|../test-results/find-trains-submission-Fin-060e8-child-is-sent-as-passengers-chromium-desktop/test-finished-1.png]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Find trains: submitting a valid search › party of 1 adult with 2 infants is sent as passengers" classname="find-trains/submission.spec.ts" time="5.751">
+<testcase name="Find trains: submitting a valid search › party of 1 adult with 2 infants is sent as passengers" classname="find-trains/submission.spec.ts" time="7.551">
 <system-out>
 <![CDATA[
-[[ATTACHMENT|../test-results/find-trains-submission-Fin-ad174-fants-is-sent-as-passengers-chromium-desktop/attachments/search-request-1-json-4eb17c09c9b905c51e7ff340ed7a5769c64f61bc.json]]
+[[ATTACHMENT|../test-results/find-trains-submission-Fin-ad174-fants-is-sent-as-passengers-chromium-desktop/attachments/search-request-1-json-6095018ef12c10926588a5dcaffcb84cc8436e19.json]]
 
 [[ATTACHMENT|../test-results/find-trains-submission-Fin-ad174-fants-is-sent-as-passengers-chromium-desktop/test-finished-1.png]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Find trains: submitting a valid search › party of 1 adult with 7 children (8 total) is sent as passengers" classname="find-trains/submission.spec.ts" time="7.031">
+<testcase name="Find trains: submitting a valid search › party of 1 adult with 7 children (8 total) is sent as passengers" classname="find-trains/submission.spec.ts" time="8.966">
 <system-out>
 <![CDATA[
-[[ATTACHMENT|../test-results/find-trains-submission-Fin-60b21-total-is-sent-as-passengers-chromium-desktop/attachments/search-request-1-json-def8cddfb38af8c0bb7f92e9e543dbdcdea86ad1.json]]
+[[ATTACHMENT|../test-results/find-trains-submission-Fin-60b21-total-is-sent-as-passengers-chromium-desktop/attachments/search-request-1-json-3fe5ebba2e9d24bcded165fe57e194b71919689a.json]]
 
 [[ATTACHMENT|../test-results/find-trains-submission-Fin-60b21-total-is-sent-as-passengers-chromium-desktop/test-finished-1.png]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Find trains: submitting a valid search › &quot;Use Points&quot; searches in points instead of dollars" classname="find-trains/submission.spec.ts" time="13.001">
+<testcase name="Find trains: submitting a valid search › &quot;Use Points&quot; searches in points instead of dollars" classname="find-trains/submission.spec.ts" time="14.631">
 <system-out>
 <![CDATA[
-[[ATTACHMENT|../test-results/find-trains-submission-Fin-8d151-n-points-instead-of-dollars-chromium-desktop/attachments/search-request-1-json-3d282f020dd2bcf4037100b5d49a58bba83ea5a0.json]]
+[[ATTACHMENT|../test-results/find-trains-submission-Fin-8d151-n-points-instead-of-dollars-chromium-desktop/attachments/search-request-1-json-f408296d318736faf029e869ef560f49f1526f48.json]]
 
 [[ATTACHMENT|../test-results/find-trains-submission-Fin-8d151-n-points-instead-of-dollars-chromium-desktop/test-finished-1.png]]
 ]]>
 </system-out>
 </testcase>
+<testcase name="Find trains: submitting a valid search › if the search server fails, the user sees an error and keeps their search" classname="find-trains/submission.spec.ts" time="8.245">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../test-results/find-trains-submission-Fin-f182b-rror-and-keeps-their-search-chromium-desktop/attachments/search-request-1-json-b8499554013ea395117b737d4873b5b40eb4a46b.json]]
+
+[[ATTACHMENT|../test-results/find-trains-submission-Fin-f182b-rror-and-keeps-their-search-chromium-desktop/test-finished-1.png]]
+]]>
+</system-out>
+</testcase>
 </testsuite>
-<testsuite name="find-trains/travelers.spec.ts" timestamp="2026-11-02T23:39:15.389Z" hostname="chromium-desktop" tests="11" failures="0" skipped="0" time="44.572" errors="0">
-<testcase name="Find trains: travelers › defaults to one adult" classname="find-trains/travelers.spec.ts" time="5.976">
+<testsuite name="find-trains/travelers.spec.ts" timestamp="2026-11-03T13:27:08.271Z" hostname="chromium-desktop" tests="11" failures="0" skipped="0" time="58.064" errors="0">
+<testcase name="Find trains: travelers › defaults to one adult" classname="find-trains/travelers.spec.ts" time="5.267">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../test-results/find-trains-travelers-Find-aa382-elers-defaults-to-one-adult-chromium-desktop/test-finished-1.png]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Find trains: travelers › the summary shows the total across traveler types" classname="find-trains/travelers.spec.ts" time="3.829">
+<testcase name="Find trains: travelers › the summary shows the total across traveler types" classname="find-trains/travelers.spec.ts" time="4.176">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../test-results/find-trains-travelers-Find-d20ca-total-across-traveler-types-chromium-desktop/test-finished-1.png]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Find trains: travelers › Reset returns to one adult" classname="find-trains/travelers.spec.ts" time="3.521">
+<testcase name="Find trains: travelers › Reset returns to one adult" classname="find-trains/travelers.spec.ts" time="4.079">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../test-results/find-trains-travelers-Find-72d04--Reset-returns-to-one-adult-chromium-desktop/test-finished-1.png]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Find trains: travelers › up to 8 travelers can book online" classname="find-trains/travelers.spec.ts" time="4.206">
+<testcase name="Find trains: travelers › up to 8 travelers can book online" classname="find-trains/travelers.spec.ts" time="3.845">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../test-results/find-trains-travelers-Find-fcb22-8-travelers-can-book-online-chromium-desktop/test-finished-1.png]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Find trains: travelers › invalid traveler combinations › more than 8 travelers points to phone booking and blocks adding more" classname="find-trains/travelers.spec.ts" time="4.347">
+<testcase name="Find trains: travelers › invalid traveler combinations › more than 8 travelers points to phone booking and blocks adding more" classname="find-trains/travelers.spec.ts" time="4.141">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../test-results/find-trains-travelers-Find-1f318-king-and-blocks-adding-more-chromium-desktop/test-finished-1.png]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Find trains: travelers › invalid traveler combinations › removing the only adult asks for at least one adult and disables search" classname="find-trains/travelers.spec.ts" time="3.067">
+<testcase name="Find trains: travelers › invalid traveler combinations › removing the only adult asks for at least one adult and disables search" classname="find-trains/travelers.spec.ts" time="3.815">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../test-results/find-trains-travelers-Find-9229b-e-adult-and-disables-search-chromium-desktop/test-finished-1.png]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Find trains: travelers › invalid traveler combinations › 2 children without an adult can&apos;t search" classname="find-trains/travelers.spec.ts" time="3.548">
+<testcase name="Find trains: travelers › invalid traveler combinations › 2 children without an adult can&apos;t search" classname="find-trains/travelers.spec.ts" time="4.157">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../test-results/find-trains-travelers-Find-b56b8-thout-an-adult-can-t-search-chromium-desktop/test-finished-1.png]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Find trains: travelers › invalid traveler combinations › 1 youth without an adult can&apos;t search" classname="find-trains/travelers.spec.ts" time="4.454">
+<testcase name="Find trains: travelers › invalid traveler combinations › 1 youth without an adult can&apos;t search" classname="find-trains/travelers.spec.ts" time="4.231">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../test-results/find-trains-travelers-Find-7747f-thout-an-adult-can-t-search-chromium-desktop/test-finished-1.png]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Find trains: travelers › invalid traveler combinations › 1 infant without an adult can&apos;t search" classname="find-trains/travelers.spec.ts" time="4.781">
+<testcase name="Find trains: travelers › invalid traveler combinations › 1 infant without an adult can&apos;t search" classname="find-trains/travelers.spec.ts" time="4.404">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../test-results/find-trains-travelers-Find-dba96-thout-an-adult-can-t-search-chromium-desktop/test-finished-1.png]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Find trains: travelers › invalid traveler combinations › the adult counter cannot go below zero" classname="find-trains/travelers.spec.ts" time="3.872">
+<testcase name="Find trains: travelers › invalid traveler combinations › the adult counter cannot go below zero" classname="find-trains/travelers.spec.ts" time="15.959">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../test-results/find-trains-travelers-Find-ee4d8-ounter-cannot-go-below-zero-chromium-desktop/test-finished-1.png]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Find trains: travelers › &quot;Traveling Alone?&quot; opens the unaccompanied-youth policy" classname="find-trains/travelers.spec.ts" time="2.971">
+<testcase name="Find trains: travelers › &quot;Traveling Alone?&quot; opens the unaccompanied-youth policy" classname="find-trains/travelers.spec.ts" time="3.99">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../test-results/find-trains-travelers-Find-bb1fa--unaccompanied-youth-policy-chromium-desktop/test-finished-1.png]]
@@ -454,33 +463,33 @@
 </system-out>
 </testcase>
 </testsuite>
-<testsuite name="find-trains/trip-type.spec.ts" timestamp="2026-11-02T23:39:15.389Z" hostname="chromium-desktop" tests="4" failures="0" skipped="0" time="22.97" errors="0">
-<testcase name="Find trains: trip type › one-way is the default and asks for a depart date only" classname="find-trains/trip-type.spec.ts" time="3.93">
+<testsuite name="find-trains/trip-type.spec.ts" timestamp="2026-11-03T13:27:08.271Z" hostname="chromium-desktop" tests="4" failures="0" skipped="0" time="21.385" errors="0">
+<testcase name="Find trains: trip type › one-way is the default and asks for a depart date only" classname="find-trains/trip-type.spec.ts" time="3.25">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../test-results/find-trains-trip-type-Find-524d7-asks-for-a-depart-date-only-chromium-desktop/test-finished-1.png]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Find trains: trip type › switching from round-trip back to one-way searches without the return date" classname="find-trains/trip-type.spec.ts" time="6.339">
+<testcase name="Find trains: trip type › switching from round-trip back to one-way searches without the return date" classname="find-trains/trip-type.spec.ts" time="6.274">
 <system-out>
 <![CDATA[
-[[ATTACHMENT|../test-results/find-trains-trip-type-Find-44a8e-hes-without-the-return-date-chromium-desktop/attachments/search-request-1-json-f86a3711471ed78addc950b850c001fb34989f5d.json]]
+[[ATTACHMENT|../test-results/find-trains-trip-type-Find-44a8e-hes-without-the-return-date-chromium-desktop/attachments/search-request-1-json-b04126d3814271417393529ca0e0e80dd0d636bf.json]]
 
 [[ATTACHMENT|../test-results/find-trains-trip-type-Find-44a8e-hes-without-the-return-date-chromium-desktop/test-finished-1.png]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Find trains: trip type › multi-city search sends each leg in order" classname="find-trains/trip-type.spec.ts" time="7.736">
+<testcase name="Find trains: trip type › multi-city search sends each leg in order" classname="find-trains/trip-type.spec.ts" time="6.347">
 <system-out>
 <![CDATA[
-[[ATTACHMENT|../test-results/find-trains-trip-type-Find-ee827-rch-sends-each-leg-in-order-chromium-desktop/attachments/search-request-1-json-04088f7ffec99ac97cf503cdb83485c1bb62e557.json]]
+[[ATTACHMENT|../test-results/find-trains-trip-type-Find-ee827-rch-sends-each-leg-in-order-chromium-desktop/attachments/search-request-1-json-e724456fc07089a1e0c9908927b2504760421daf.json]]
 
 [[ATTACHMENT|../test-results/find-trains-trip-type-Find-ee827-rch-sends-each-leg-in-order-chromium-desktop/test-finished-1.png]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Find trains: trip type › Group Travel opens the group request page" classname="find-trains/trip-type.spec.ts" time="4.965">
+<testcase name="Find trains: trip type › Group Travel opens the group request page" classname="find-trains/trip-type.spec.ts" time="5.514">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../test-results/find-trains-trip-type-Find-c15fd-pens-the-group-request-page-chromium-desktop/test-finished-1.png]]
@@ -488,8 +497,8 @@
 </system-out>
 </testcase>
 </testsuite>
-<testsuite name="find-trains/visual.spec.ts" timestamp="2026-11-02T23:39:15.389Z" hostname="chromium-desktop" tests="1" failures="0" skipped="0" time="4.208" errors="0">
-<testcase name="Find trains: visual › the travelers panel matches the approved screenshot" classname="find-trains/visual.spec.ts" time="4.208">
+<testsuite name="find-trains/visual.spec.ts" timestamp="2026-11-03T13:27:08.271Z" hostname="chromium-desktop" tests="1" failures="0" skipped="0" time="3.629" errors="0">
+<testcase name="Find trains: visual › the travelers panel matches the approved screenshot" classname="find-trains/visual.spec.ts" time="3.629">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../test-results/find-trains-visual-Find-tr-0bf02-hes-the-approved-screenshot-chromium-desktop/test-finished-1.png]]
@@ -497,8 +506,8 @@
 </system-out>
 </testcase>
 </testsuite>
-<testsuite name="seed.spec.ts" timestamp="2026-11-02T23:39:15.389Z" hostname="chromium-desktop" tests="1" failures="0" skipped="0" time="3.33" errors="0">
-<testcase name="seed: home page loads with the Find trains form ready" classname="seed.spec.ts" time="3.33">
+<testsuite name="seed.spec.ts" timestamp="2026-11-03T13:27:08.271Z" hostname="chromium-desktop" tests="1" failures="0" skipped="0" time="3.461" errors="0">
+<testcase name="seed: home page loads with the Find trains form ready" classname="seed.spec.ts" time="3.461">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../test-results/seed-seed-home-page-loads-with-the-Find-trains-form-ready-chromium-desktop/test-finished-1.png]]

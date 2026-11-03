@@ -2,6 +2,8 @@ import { test, expect } from '@src/fixtures/test';
 import { aSearch } from '@src/builders/SearchCriteriaBuilder';
 import type { TravelerCounts } from '@src/components/TravelersPanel';
 import { Stations } from '@src/data/stations';
+import { toInputFormat } from '@src/utils/dates';
+import { Messages } from '@src/data/messages';
 import { expectRequestToMatch } from '@src/utils/SearchRequestSpy';
 
 /**
@@ -114,4 +116,24 @@ test.describe('Find trains: submitting a valid search', { tag: '@smoke' }, () =>
     expect(request.journeyRequest.fare?.pricingUnit).toBe('POINTS');
     expectRequestToMatch(request, search);
   });
+
+  test(
+    'if the search server fails, the user sees an error and keeps their search',
+    { tag: ['@negative', '@SUB-09'] },
+    async ({ homePage, page, searchSpy }) => {
+      const search = aSearch().build();
+      const form = homePage.fareFinder;
+      searchSpy.replyWith(500);
+      await form.fill(search);
+
+      await form.clickFindTrains();
+
+      await expect(form.message(Messages.SEARCH_FAILED)).toBeVisible();
+      await expect(page).toHaveURL(/\/home/);
+      await form.from.expectSelected(search.from);
+      await form.to.expectSelected(search.to);
+      await expect(form.departInput).toHaveValue(toInputFormat(search.departDate));
+      expectRequestToMatch(await searchSpy.waitForSearch(), search);
+    },
+  );
 });

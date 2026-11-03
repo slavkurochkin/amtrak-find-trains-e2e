@@ -36,6 +36,8 @@ export class SearchRequestSpy {
   readonly requests: JourneySearchRequest[] = [];
 
   private consumed = 0;
+  /** When set, the search gets this HTTP status as its reply instead of being blocked. */
+  private replyStatus?: number;
 
   private constructor(
     private readonly page: Page,
@@ -58,7 +60,16 @@ export class SearchRequestSpy {
     fs.mkdirSync(path.dirname(file), { recursive: true });
     fs.writeFileSync(file, JSON.stringify(body, null, 2));
     await this.testInfo.attach(path.basename(file), { path: file, contentType: 'application/json' });
+    if (this.replyStatus) return route.fulfill({ status: this.replyStatus, body: 'simulated server reply' });
     return route.abort('aborted');
+  }
+
+  /**
+   * Makes the search get a reply with this HTTP status (e.g. 500) instead of
+   * being blocked, to test how the page handles the server's answer.
+   */
+  replyWith(status: number): void {
+    this.replyStatus = status;
   }
 
   /**
