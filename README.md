@@ -42,6 +42,17 @@ npm test                          # run all tests in Chrome (no browser window o
 | `npm run report` | Open the HTML report of the last run |
 | `npm run spec:coverage` | Show which requirements are tested, and the open gaps |
 
+What a run produces:
+
+```mermaid
+flowchart LR
+    S["<b>Setup</b><br/>dismiss the cookie<br/>banner once"] --> T["<b>Tests</b><br/>Chrome<br/>(+ Firefox, WebKit,<br/>mobile Chrome)"]
+    T --> H["<b>HTML report</b><br/>steps, screenshots,<br/>captured searches"]
+    T --> J["<b>JUnit XML</b><br/>for CI dashboards"]
+    T --> F["<b>failures.md</b><br/>one-page summary,<br/>ready for an AI assistant"]
+    T --> R["<b>test-results/</b><br/>traces and videos<br/>of failures"]
+```
+
 Nothing else needs setting up. Optional settings (such as the website address), every command, and how the automated runs on GitHub work are in **[`docs/FRAMEWORK.md`](docs/FRAMEWORK.md)**.
 
 ## Approach
@@ -50,18 +61,45 @@ Nothing else needs setting up. Optional settings (such as the website address), 
 
 This proves the form built the right search without relying on the results page. It also means no automated searches reach Amtrak, whose servers reject them anyway.
 
+```mermaid
+sequenceDiagram
+    autonumber
+    participant Test
+    participant PO as Page Objects
+    participant Page as amtrak.com page
+    participant Spy as Search spy
+    participant Amtrak as Amtrak servers
+    Test->>PO: fill in the search
+    PO->>Page: pick stations, date, travelers
+    Test->>PO: click FIND TRAINS
+    PO->>Page: click the button
+    Page->>Spy: search message (trip type, stations, dates, travelers)
+    Spy-->>Test: the message, checked against what was entered
+    Spy--xAmtrak: stopped here, never sent
+```
+
 **Why not check that the page moves on to the results?** Amtrak's bot protection blocks every automated search, even from a real Chrome browser driven by a tool. The page shows an error and never moves on, so a redirect check would always fail for reasons unrelated to the form. Instead, a test gives the page a simulated server error and checks the user sees a clear message and keeps what they typed. The success path (results page) stays an open gap, SUB-10, until a real reply can be captured from a manual search or a test environment is available.
 
 **Page Objects.** Tests never touch the web page directly. Every part of the page is represented by a class that knows how to find its elements and how to use them, and the tests only call those classes:
 
+```mermaid
+flowchart TD
+    HP["<b>HomePage</b><br/>opens amtrak.com/home<br/>and waits until it's ready"]
+    FF["<b>FareFinderForm</b><br/>the whole form,<br/>FIND TRAINS, messages"]
+    TT["<b>TripTypeMenu</b><br/>One-Way, Round-Trip,<br/>Multi-City, Group"]
+    SF["<b>StationField</b> ×2<br/>From and To"]
+    DP["<b>DatePicker</b><br/>the calendar"]
+    TP["<b>TravelersPanel</b><br/>traveler counts"]
+    HP --> FF
+    FF --> TT
+    FF --> SF
+    FF --> DP
+    FF --> TP
+    BP(["BasePage: shared page basics"]) -.-> HP
+    BC(["BaseComponent: shared basics for every part"]) -.-> FF
 ```
-HomePage                  amtrak.com/home: opens it and waits until it's ready     src/pages/
-└── FareFinderForm        the whole "Find trains" form, FIND TRAINS, messages       src/components/
-    ├── TripTypeMenu      One-Way / Round-Trip / Multi-City / Group Travel
-    ├── StationField ×2   From and To (one pair per leg for Multi-City)
-    ├── DatePicker        the calendar
-    └── TravelersPanel    traveler counts
-```
+
+The page classes live in `src/pages/`, the form parts in `src/components/`.
 
 So a test reads like the steps a person would take. This is the real test for "the same station twice is refused":
 
@@ -93,6 +131,15 @@ Why it's built this way:
 - Tests never "wait two seconds and hope"; they wait for something specific to happen. The three places where a fixed pause is unavoidable are named and explained in `playwright.config.ts`, and a lint rule blocks any new ones.
 
 **Requirements first.** Every behaviour the form should have is written down as a numbered requirement in [`specs/find-trains/`](specs/README.md). For example, STN-08 is "the same station for From and To is rejected". Every test is labelled with the requirement it checks. An automatic check (`npm run spec:coverage`, run on every commit and in CI) fails if a test isn't linked to a requirement, or if the record of what's tested falls out of date.
+
+```mermaid
+flowchart LR
+    A["<b>1. Requirement</b><br/>STN-08 in stations.md<br/>status: gap"] --> B["<b>2. Test</b><br/>tagged @STN-08"]
+    B --> C["<b>3. Status</b><br/>changed to automated"]
+    C --> D{"npm run spec:coverage<br/>(every commit and CI run)"}
+    D -->|"tests and specs match"| E["✅ commit goes through"]
+    D -->|"untagged test, unknown ID<br/>or out-of-date status"| F["❌ commit is blocked"]
+```
 
 ## What is tested and why
 
