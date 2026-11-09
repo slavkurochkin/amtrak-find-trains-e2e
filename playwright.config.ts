@@ -1,3 +1,4 @@
+import './src/utils/env'; // must stay first: loads .env before anything reads process.env
 import { defineConfig, devices } from '@playwright/test';
 import { CONSENT_STATE_FILE } from './src/utils/consentState';
 import type { TimingOptions } from './src/utils/timing';

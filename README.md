@@ -27,7 +27,7 @@ Around the tests:
 
 ## Quick start
 
-Requires **Node.js 18+** and an internet connection (the tests run against the live site).
+Requires **Node.js 20.12+** and an internet connection (the tests run against the live site).
 
 ```bash
 npm ci                            # install the exact dependency versions from package-lock.json

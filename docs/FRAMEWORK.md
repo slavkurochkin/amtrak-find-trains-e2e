@@ -22,6 +22,8 @@ Reference for working on the suite. Start with the [README](../README.md); this 
 
 ## Environment (all optional, see `.env.example`)
 
+Set them in the shell (`BASE_URL=… npm test`) or copy `.env.example` to `.env`; the shell wins over the file. `.env` is loaded by `src/utils/env.ts`, the first import in `playwright.config.ts`, and is git-ignored.
+
 | Variable | Default | Purpose |
 |---|---|---|
 | `BASE_URL` | `https://www.amtrak.com` | Point at another environment (e.g. staging) |
@@ -107,7 +109,7 @@ src/components/      BaseComponent, FareFinderForm, StationField, DatePicker, Tr
 src/builders/        SearchCriteriaBuilder
 src/data/            stations, user-facing messages, accessibility baseline
 src/fixtures/        homePage, searchSpy
-src/utils/           SearchRequestSpy, StationLookupMock, a11y, dates, timing, consent state
+src/utils/           SearchRequestSpy, StationLookupMock, a11y, dates, timing, consent state, .env loading
 src/reporters/       ai-failure-reporter.ts
 scripts/             spec-coverage.mjs
 docs/                findings.md, FRAMEWORK.md, evidence/
