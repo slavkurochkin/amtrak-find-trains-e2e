@@ -53,7 +53,20 @@ flowchart LR
     T --> R["<b>test-results/</b><br/>traces and videos<br/>of failures"]
 ```
 
-Nothing else needs setting up. Optional settings (such as the website address), every command, and how the automated runs on GitHub work are in **[`docs/FRAMEWORK.md`](docs/FRAMEWORK.md)**.
+Nothing else needs setting up: every setting has a default.
+
+**Settings (optional).** To change one, such as the environment or time zone, set it in the shell for one run, or copy `.env.example` to `.env` to keep it:
+
+```bash
+TEST_ENV=qa QA_BASE_URL=https://qa.example.com npm test   # this run only
+cp .env.example .env                                       # or keep settings in .env (not committed)
+```
+
+The `.env` file is read when Playwright loads its config (`src/utils/env.ts`), before any setting is used. A value set in the shell wins over the file.
+
+**Environments.** `TEST_ENV` (default `production`) picks a profile in `src/environments/` with that environment's address, the tests that don't apply there, and only the test data that differs from production. Tests don't change: `Stations.NEW_YORK` simply resolves to the right values.
+
+Every setting and command, and how the automated runs on GitHub work, are in **[`docs/FRAMEWORK.md`](docs/FRAMEWORK.md)**.
 
 ## Approach
 

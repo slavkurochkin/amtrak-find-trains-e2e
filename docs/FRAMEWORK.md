@@ -26,9 +26,20 @@ Set them in the shell (`BASE_URL=… npm test`) or copy `.env.example` to `.env`
 
 | Variable | Default | Purpose |
 |---|---|---|
-| `BASE_URL` | `https://www.amtrak.com` | Point at another environment (e.g. staging) |
+| `TEST_ENV` | `production` | Which environment to test: `production` or `qa` (see below) |
+| `QA_BASE_URL` | – | The QA site's address, used when `TEST_ENV=qa` |
+| `BASE_URL` | the environment's address | Overrides the address for any environment |
 | `TEST_TZ` | `America/New_York` | Time zone of the browser **and** of "today" in tests (the calendar disables past dates by the browser clock) |
 | `PW_OUTPUT_DIR` / `PW_REPORTS_DIR` | `test-results` / `reports` | Separate output folders, e.g. when an IDE runner and a terminal run at the same time |
+
+### Environments
+
+`TEST_ENV` picks a profile in `src/environments/`. A profile holds what changes between environments:
+- `baseURL`: the site's address (`BASE_URL` still wins);
+- `skip`: tests that don't apply there, e.g. `qa` skips the visual tests until QA's own screenshots are approved;
+- `data`: the test data that differs, e.g. a station or a message. Anything not listed keeps production's value.
+
+Tests don't change: they keep using `Stations.NEW_YORK` and `Messages.SAME_STATIONS`, which pick up the overrides. The HTML report shows the environment and address at the top. To add an environment, copy `qa.ts`, then list it in `src/environments/index.ts`. On GitHub, choose the environment when starting a run; `qa` needs the repository variable `QA_BASE_URL`.
 
 ## Outputs
 
@@ -109,6 +120,7 @@ src/components/      BaseComponent, FareFinderForm, StationField, DatePicker, Tr
 src/builders/        SearchCriteriaBuilder
 src/data/            stations, user-facing messages, accessibility baseline
 src/fixtures/        homePage, searchSpy
+src/environments/    production / qa profiles: address, skipped tests, data overrides
 src/utils/           SearchRequestSpy, StationLookupMock, a11y, dates, timing, consent state, .env loading
 src/reporters/       ai-failure-reporter.ts
 scripts/             spec-coverage.mjs

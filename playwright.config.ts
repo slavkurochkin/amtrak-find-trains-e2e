@@ -3,6 +3,7 @@ import { defineConfig, devices } from '@playwright/test';
 import { CONSENT_STATE_FILE } from './src/utils/consentState';
 import type { TimingOptions } from './src/utils/timing';
 import { TEST_TIMEZONE } from './src/utils/dates';
+import { baseURL, environment } from './src/environments';
 
 const isCI = !!process.env.CI;
 // Both are overridable so parallel runs (IDE extension + terminal) don't clobber each other.
@@ -21,9 +22,11 @@ export default defineConfig<TimingOptions>({
   // chance of being challenged by the bot-protection layer.
   workers: isCI ? 2 : 4,
   timeout: 60_000,
-  // Known-bug repros are timing races on Amtrak's side: run on demand only
-  // (`npm run test:known-bugs`), never as a gate.
-  grepInvert: process.env.KNOWN_BUGS ? undefined : /@known-bug/,
+  // Not run: known-bug repros (timing races on Amtrak's side, run on demand with
+  // `npm run test:known-bugs`, never as a gate) and tests the environment doesn't support.
+  grepInvert: [...(process.env.KNOWN_BUGS ? [] : [/@known-bug/]), ...(environment.skip ?? [])],
+  // Shown at the top of the HTML report.
+  metadata: { environment: environment.name, baseURL: baseURL() },
   // toPass: retry budget for actions the site occasionally drops under load (StationField).
   expect: {
     timeout: 10_000,
@@ -38,7 +41,7 @@ export default defineConfig<TimingOptions>({
     ['./src/reporters/ai-failure-reporter.ts', { outputDir: reportsDir }],
   ],
   use: {
-    baseURL: process.env.BASE_URL ?? 'https://www.amtrak.com',
+    baseURL: baseURL(), // TEST_ENV's address, or BASE_URL if set (src/environments/)
     locale: 'en-US',
     // The calendar decides which dates are "past" from the browser clock, so the
     // browser and our date helpers must agree on a time zone.

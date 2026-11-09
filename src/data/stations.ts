@@ -3,6 +3,8 @@
  * `optionText` is a fragment of the autocomplete option, and `cityLabel` is
  * what the selected-station chip shows.
  */
+import { environment } from '../environments';
+
 export interface Station {
   code: string;
   name: string; // what a user would type to search by name
@@ -10,7 +12,8 @@ export interface Station {
   cityLabel: string;
 }
 
-export const Stations = {
+/** Production's stations. Other environments override only what differs (src/environments/). */
+const PRODUCTION_STATIONS = {
   NEW_YORK: {
     code: 'NYP',
     name: 'New York',
@@ -42,3 +45,7 @@ export const Stations = {
     cityLabel: 'Philadelphia, PA',
   },
 } as const satisfies Record<string, Station>;
+
+export type StationKey = keyof typeof PRODUCTION_STATIONS;
+
+export const Stations: Record<StationKey, Station> = { ...PRODUCTION_STATIONS, ...environment.data?.stations };

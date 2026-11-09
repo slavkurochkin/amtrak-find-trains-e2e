@@ -1,5 +1,10 @@
-/** User-facing copy the tests assert on. Kept in one place so copy changes are a one-line fix. */
-export const Messages = {
+import { environment } from '../environments';
+
+/**
+ * User-facing copy the tests assert on. Kept in one place so copy changes are a one-line fix.
+ * These are production's; other environments override only what differs (src/environments/).
+ */
+const PRODUCTION_MESSAGES = {
   SAME_STATIONS: 'Enter different origin and destination stations.',
   NO_STATIONS_FOUND: 'No stations found.',
   INVALID_STATION: 'Enter a valid station',
@@ -7,3 +12,7 @@ export const Messages = {
   SEARCH_FAILED: "We've experienced an unknown error. Try again later or call us at 1-800-USA-RAIL.",
   TOO_MANY_TRAVELERS: /Call 1-800-USA-RAIL to make reservations for 9 to 14 travelers/,
 } as const;
+
+export type MessageKey = keyof typeof PRODUCTION_MESSAGES;
+
+export const Messages: Record<MessageKey, string | RegExp> = { ...PRODUCTION_MESSAGES, ...environment.data?.messages };

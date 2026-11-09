@@ -34,7 +34,7 @@ Use the **`write-find-trains-test`** skill (`.claude/skills/write-find-trains-te
 | Assert what FIND TRAINS sent | `expectRequestToMatch(await searchSpy.waitForSearch(), criteria)` |
 | Assert nothing was sent | `await searchSpy.expectNoSearch()` |
 | Get to the results page | `searchSpy.replyWithResults(savedSearchReply(date).body)`, then `new ResultsPage(page)` |
-| Stations / copy text | `src/data/stations.ts`, `src/data/messages.ts` |
+| Stations / copy text | `src/data/stations.ts`, `src/data/messages.ts` (production values; per-environment overrides in `src/environments/`) |
 | Dates | `src/utils/dates.ts` (`daysFromToday`, `toInputFormat`) – never hardcode a date |
 | Timings | `src/utils/timing.ts`, values in `playwright.config.ts` `use` |
 

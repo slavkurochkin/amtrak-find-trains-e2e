@@ -43,10 +43,11 @@ for (const file of walk(SPECS_DIR)) {
   });
 }
 
-// 2. Tests and their tags (known bugs included so their links are checked too).
+// 2. Tests and their tags: the whole suite, so known bugs and tests skipped in
+//    other environments are listed and their links checked too.
 const json = execFileSync('npx', ['playwright', 'test', '--list', '--reporter=json', '--project=chromium-desktop'], {
   encoding: 'utf8',
-  env: { ...process.env, KNOWN_BUGS: '1', FORCE_COLOR: '0' },
+  env: { ...process.env, KNOWN_BUGS: '1', TEST_ENV: 'production', FORCE_COLOR: '0' },
   maxBuffer: 32 * 1024 * 1024,
 });
 const report = JSON.parse(json.slice(json.indexOf('{')));

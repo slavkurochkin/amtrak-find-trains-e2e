@@ -6,6 +6,11 @@ name: E2E - Find trains
 on:
   workflow_dispatch:
     inputs:
+      environment:
+        description: 'Site to test (qa needs the repository variable QA_BASE_URL)'
+        type: choice
+        options: [production, qa]
+        default: production
       browsers:
         description: 'Chrome only (full suite), or all browsers (adds Firefox, WebKit and mobile Chrome with the key tests)'
         type: choice
@@ -36,6 +41,8 @@ jobs:
       options: --user 1001
     env:
       CI: 'true'
+      TEST_ENV: ${{ inputs.environment }}
+      QA_BASE_URL: ${{ vars.QA_BASE_URL }}
       TEST_TZ: America/New_York
     steps:
       - uses: actions/checkout@v4
