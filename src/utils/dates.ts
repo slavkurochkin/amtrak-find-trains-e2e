@@ -96,3 +96,10 @@ export function toAriaLabel(d: CalendarDate): string {
 export function toMonthHeader(d: CalendarDate): string {
   return new Intl.DateTimeFormat('en-US', { timeZone: 'UTC', month: 'long', year: 'numeric' }).format(toUtc(d));
 }
+
+/** "Monday, November 23", the date heading on the results page. */
+export function toResultsHeading(d: CalendarDate): string {
+  return new Intl.DateTimeFormat('en-US', { timeZone: 'UTC', weekday: 'long', month: 'long', day: 'numeric' }).format(
+    toUtc(d),
+  );
+}

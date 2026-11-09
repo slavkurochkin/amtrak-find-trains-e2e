@@ -51,6 +51,18 @@ export class StationField extends BaseComponent {
   }
 
   /**
+   * The panel an empty field shows when clicked: a heading ("Top depart stations",
+   * or "Top destinations from NYP" for To) and suggested stations. Which stations
+   * are listed is Amtrak's editorial choice and changes, so only their presence is checked.
+   */
+  async expectPopularStations(heading: string, { withNearby }: { withNearby: boolean }): Promise<void> {
+    await expect(this.listbox.getByText(heading, { exact: true })).toBeVisible();
+    await expect(this.options.filter({ hasText: /\([A-Z]{3}\)/ }).first()).toBeVisible();
+    const nearby = this.listbox.getByRole('button', { name: 'Nearby' });
+    await (withNearby ? expect(nearby).toBeVisible() : expect(nearby).toBeHidden());
+  }
+
+  /**
    * Enters the query in one input event. The autocomplete reacts to it just
    * like typing, and there is no window between keystrokes for the page to
    * move focus (seen under load: the tail of a To query landed in From).

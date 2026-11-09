@@ -82,6 +82,27 @@ test.describe('Find trains: From / To station fields', () => {
     },
   );
 
+  test('clicking an empty From field suggests popular departure stations', { tag: '@STN-10' }, async ({ homePage }) => {
+    const { from } = homePage.fareFinder;
+
+    await from.focus();
+
+    await from.expectPopularStations('Top depart stations', { withNearby: true });
+  });
+
+  test(
+    'once From is set, clicking To suggests popular destinations from that station',
+    { tag: '@STN-10' },
+    async ({ homePage }) => {
+      const { from, to } = homePage.fareFinder;
+      await from.select(Stations.NEW_YORK);
+
+      await to.focus();
+
+      await to.expectPopularStations(`Top destinations from ${Stations.NEW_YORK.code}`, { withNearby: false });
+    },
+  );
+
   test.describe('invalid input', { tag: '@negative' }, () => {
     test(
       'an unknown station shows "No stations found." and is not accepted',

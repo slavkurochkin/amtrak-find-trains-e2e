@@ -47,9 +47,9 @@ Note: the autocomplete API answers such queries with 403 (firewall) and the list
 **Actual:** both show CHI while the search uses CHI → NYP. Evidence: `docs/evidence/bug-swap-race-ui-shows-CHI-CHI.png`. Run: `npm run test:known-bugs`.
 
 ### STN-10 · Focusing an empty From field shows popular stations
-**Status:** gap · **Type:** positive
+**Status:** automated · **Type:** positive
 **When** the user focuses an empty From field **Then** "Top depart stations" with a "Nearby" option and popular stations (NYP, WAS, CHI, PHL…) is shown; after From is set, focusing To shows "Top destinations from <From>".
-Low priority: the list content is editorial and changes over time; test the panel and heading, not the stations.
+The list content is editorial and changes over time, so the tests check the panel, its heading and the "Nearby" option, not which stations are listed.
 
 ### STN-11 · Keystrokes go to the field the user is typing in
 **Status:** out-of-scope · **Type:** edge

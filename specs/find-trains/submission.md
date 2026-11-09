@@ -43,9 +43,9 @@ Tests: `tests/find-trains/submission.spec.ts`
 **Then** "We've experienced an unknown error. Try again later or call us at 1-800-USA-RAIL." is shown, the page stays on the home page, and the stations and date the user entered are still filled in.
 
 ### SUB-10 · A successful search takes the user to the results
-**Status:** gap · **Type:** positive
-**Given** a valid search **When** the server answers with train results **Then** the page moves on to the results page.
-Not automated yet: Amtrak's bot protection rejects every automated search (403), including from a real Chrome driven by tools, so no genuine successful reply could be captured to replay. Needs one reply saved from a manual search, or a test environment.
+**Status:** automated · **Type:** positive
+**Given** a valid search **When** the server answers with train results **Then** the page moves on to the results page, which repeats the search (stations, date) and lists the trains from the reply with their departure times and lowest fares.
+Amtrak's bot protection rejects every automated search (403), so the reply is a real one saved from a single manual search in a normal browser (`src/data/search-replies/`, trimmed to 3 trains). The test feeds it to the page in place of the live service, with its dates moved to the test's date. No search reaches Amtrak.
 
 ### SUB-06 · Results page and booking flow
 **Status:** out-of-scope · **Type:** positive

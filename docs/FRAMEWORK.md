@@ -56,6 +56,12 @@ Most tests run against the live site. Failure modes it can't produce on demand a
 - STN-13: the lookup returns 500, and the app falls back to its built-in station list.
 - STN-14: the lookup is held until the test releases it, which makes the "Loading" state deterministic without timers.
 
+The train search itself is answered by the search spy (`src/utils/SearchRequestSpy.ts`), so it never reaches Amtrak:
+- SUB-09: `searchSpy.replyWith(500)`, a server error.
+- SUB-10: `searchSpy.replyWithResults(savedSearchReply(date).body)`, a real reply saved from one manual search (`src/data/search-replies/`, trimmed to 3 trains). `savedSearchReply` moves its dates to the test's date and lists the trains the results page should show; `ResultsPage` checks them.
+
+To add another saved reply: run the search by hand in a normal browser with DevTools open, copy the `journey-solution-option` response (Network tab → right-click → Copy → Copy response), and save it next to the existing one.
+
 ## Browsers
 
 - **Chrome:** the full suite on desktop Chromium (1440×900). This is the default, locally and on GitHub.

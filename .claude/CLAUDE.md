@@ -33,6 +33,7 @@ Use the **`write-find-trains-test`** skill (`.claude/skills/write-find-trains-te
 | Fill a whole valid search | `form.fill(aSearch()....build())` |
 | Assert what FIND TRAINS sent | `expectRequestToMatch(await searchSpy.waitForSearch(), criteria)` |
 | Assert nothing was sent | `await searchSpy.expectNoSearch()` |
+| Get to the results page | `searchSpy.replyWithResults(savedSearchReply(date).body)`, then `new ResultsPage(page)` |
 | Stations / copy text | `src/data/stations.ts`, `src/data/messages.ts` |
 | Dates | `src/utils/dates.ts` (`daysFromToday`, `toInputFormat`) – never hardcode a date |
 | Timings | `src/utils/timing.ts`, values in `playwright.config.ts` `use` |
@@ -58,7 +59,8 @@ Use the **`write-find-trains-test`** skill (`.claude/skills/write-find-trains-te
 - **Date inputs** are covered by a floating label: open with `form.openDepartCalendar()` (force click). Values show as `11/6/2026` (no zero padding). Round-trip: **Done is disabled until a return date is picked**.
 - **FIND TRAINS** is `aria-disabled`, not HTML-disabled; `clickFindTrains()` force-clicks so negative tests can click it.
 - **Swap bug:** swapping <~300ms after picking To shows the same station in both fields. Call `form.waitForStationsToSettle()` before swapping unless you're testing that bug. The repro is tagged `@known-bug`, excluded by default, run with `npm run test:known-bugs`.
-- **Search request** `POST /dotcom/journey-solution-option` is aborted by the spy (it would get a bot-protection 403 anyway). Seniors are `"seniors"` in the payload.
+- **Search request** `POST /dotcom/journey-solution-option` is aborted by the spy (it would get a bot-protection 403 anyway). Seniors are `"seniors"` in the payload. To test the results page, the spy answers with a real reply saved from a manual search (`src/data/searchReplies.ts`). Never try to get a live search past the bot protection.
+- **Results page** (`/tickets/departure.html`): on mobile the search summary is folded behind "Revise Search"; check the date heading and train cards instead (`ResultsPage`). Times show as `4:50a`.
 - **Overlays fade in:** wait for `waitForAnimations()` (BaseComponent) before scanning or screenshotting, or axe reports false colour-contrast hits.
 - **Accessibility:** `scanAccessibility(page, component.scanScope, A11Y_BASELINE.x)`. Known violations live in `src/data/a11yBaseline.ts`; never add to it without recording a finding.
 - **Mocking:** to test a backend failure or slow response, route only that endpoint (see `src/utils/StationLookupMock.ts`); hold responses with a promise the test releases instead of delaying with timers. Tag `@mocked`.

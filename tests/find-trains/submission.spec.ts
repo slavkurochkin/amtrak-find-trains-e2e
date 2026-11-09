@@ -5,6 +5,8 @@ import { Stations } from '@src/data/stations';
 import { toInputFormat } from '@src/utils/dates';
 import { Messages } from '@src/data/messages';
 import { expectRequestToMatch } from '@src/utils/SearchRequestSpy';
+import { savedSearchReply } from '@src/data/searchReplies';
+import { ResultsPage } from '@src/pages/ResultsPage';
 
 /**
  * Happy paths: fill the form, click FIND TRAINS, and check the search request
@@ -133,6 +135,25 @@ test.describe('Find trains: submitting a valid search', { tag: '@smoke' }, () =>
       await form.from.expectSelected(search.from);
       await form.to.expectSelected(search.to);
       await expect(form.departInput).toHaveValue(toInputFormat(search.departDate));
+      expectRequestToMatch(await searchSpy.waitForSearch(), search);
+    },
+  );
+
+  test(
+    'when the server returns trains, the user is taken to the results and sees them',
+    { tag: ['@mocked', '@SUB-10'] },
+    async ({ homePage, page, searchSpy }) => {
+      const search = aSearch().from(Stations.NEW_YORK).to(Stations.WASHINGTON).build();
+      const reply = savedSearchReply(search.departDate);
+      searchSpy.replyWithResults(reply.body);
+      await homePage.fareFinder.fill(search);
+
+      await homePage.fareFinder.clickFindTrains();
+
+      const results = new ResultsPage(page);
+      await results.expectLoaded();
+      await results.expectResultsFor(search.from, search.to, search.departDate);
+      await results.expectTrains(reply.trains);
       expectRequestToMatch(await searchSpy.waitForSearch(), search);
     },
   );

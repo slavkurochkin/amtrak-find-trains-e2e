@@ -36,8 +36,8 @@ export class SearchRequestSpy {
   readonly requests: JourneySearchRequest[] = [];
 
   private consumed = 0;
-  /** When set, the search gets this HTTP status as its reply instead of being blocked. */
-  private replyStatus?: number;
+  /** When set, the search gets this reply instead of being blocked. */
+  private reply?: { status: number; body: string; contentType?: string };
 
   private constructor(
     private readonly page: Page,
@@ -60,7 +60,7 @@ export class SearchRequestSpy {
     fs.mkdirSync(path.dirname(file), { recursive: true });
     fs.writeFileSync(file, JSON.stringify(body, null, 2));
     await this.testInfo.attach(path.basename(file), { path: file, contentType: 'application/json' });
-    if (this.replyStatus) return route.fulfill({ status: this.replyStatus, body: 'simulated server reply' });
+    if (this.reply) return route.fulfill(this.reply);
     return route.abort('aborted');
   }
 
@@ -69,7 +69,15 @@ export class SearchRequestSpy {
    * being blocked, to test how the page handles the server's answer.
    */
   replyWith(status: number): void {
-    this.replyStatus = status;
+    this.reply = { status, body: 'simulated server reply' };
+  }
+
+  /**
+   * Answers the search with train results (e.g. `savedSearchReply(...).body`),
+   * so the page moves on to its results page. The search still never reaches Amtrak.
+   */
+  replyWithResults(body: string): void {
+    this.reply = { status: 200, body, contentType: 'application/json' };
   }
 
   /**

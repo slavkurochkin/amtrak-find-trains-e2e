@@ -16,9 +16,11 @@ export class HomePage extends BasePage {
   }
 
   protected async waitUntilReady(): Promise<void> {
-    // The form is an Angular app that hydrates after the HTML loads.
+    // The form is an Angular app that hydrates after the HTML loads. While it
+    // does, both layouts (desktop and mobile) can briefly be visible (seen in
+    // Firefox), so "ready" means exactly one FIND TRAINS button is showing.
+    await expect(this.fareFinder.findTrainsButton).toHaveCount(1);
     await expect(this.fareFinder.from.input).toBeVisible();
-    await expect(this.fareFinder.findTrainsButton).toBeVisible();
   }
 
   /** The station list the page loaded (the reply it already received; no extra request). */

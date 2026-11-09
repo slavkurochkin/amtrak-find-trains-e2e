@@ -12,7 +12,7 @@ Amtrak's [Web Notices & Terms of Use](https://www.amtrak.com/planning-booking/po
 
 - **Normal use only.** Every finding comes from using the form the way a visitor would: typing, clicking and reading what the page shows. Nothing was scraped, harvested or stored beyond what a test needs to check one result.
 - **No bypassing.** When Amtrak's bot protection blocked automated searches, we recorded it as a limitation and stopped there. We never tried to get past it, or past CAPTCHAs or rate limits.
-- **No load on Amtrak's booking systems.** Every search request is stopped in the browser before it reaches Amtrak. No accounts, bookings or personal data were used.
+- **No load on Amtrak's booking systems.** Every search request is stopped in the browser before it reaches Amtrak. The results page is tested with one reply saved from a single search done by hand. No accounts, bookings or personal data were used.
 - **Minimal traffic.** The suite runs only when someone starts it, never on a schedule.
 - **Responsible reporting.** These are usability and accessibility issues, not security vulnerabilities, so sharing them openly harms no one, and they are written to help Amtrak fix them. If we had found a security issue, we would have reported it to Amtrak privately and left it out of this repository.
 
@@ -83,5 +83,5 @@ The calendar has no violations.
 ---
 
 ### Not bugs, but worth knowing
-- Under automation the search API returns 403 (bot protection), and the page shows "We've experienced an unknown error". Tests stop at the request.
+- Under automation the search API returns 403 (bot protection), and the page shows "We've experienced an unknown error". Tests check the request, and test the results page with a real reply saved from one manual search instead of a live one.
 - On mobile the date field is read-only by design (calendar only).
