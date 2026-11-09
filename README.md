@@ -1,6 +1,6 @@
 # Amtrak "Find trains" – automated test suite
 
-Automated tests (Playwright + TypeScript, built with the **Page Object pattern**) for the **"Find trains" search form on [amtrak.com/home](https://www.amtrak.com/home)**. They cover everything from filling in the form **up to clicking FIND TRAINS**; the results and booking pages aren't tested.
+Automated tests (Playwright + TypeScript, built with the **Page Object pattern**) for the **"Find trains" search form on [amtrak.com/home](https://www.amtrak.com/home)**. They cover everything from filling in the form **up to clicking FIND TRAINS**, plus the results page, fed a saved real reply from Amtrak; booking isn't tested.
 
 **Status (run against the live site):** all 70 tests pass in Chrome. A smaller set of key tests also passes in Firefox, Safari's engine (WebKit) and mobile Chrome. Run logs and screenshots: [`docs/evidence/`](docs/evidence/README.md).
 
@@ -9,7 +9,7 @@ Automated tests (Playwright + TypeScript, built with the **Page Object pattern**
 | Kind of testing | What it covers | Where |
 |---|---|---|
 | **Functional** | Filling in the form and checking the search FIND TRAINS sends: stations, dates, travelers, trip types, paying with points | `submission`, `stations`, `dates`, `travelers`, `trip-type` tests |
-| **Validation** | 26 tests that the form refuses bad input (missing fields, the same station twice, past dates, too many travelers, invalid coupon characters) and that nothing is sent | tests marked `@negative` |
+| **Validation** | 24 tests that the form refuses bad input (missing fields, the same station twice, past dates, too many travelers, invalid coupon characters) and that nothing is sent | tests marked `@negative` |
 | **Edge cases** | Leaving today, the 11-month booking limit, trips across month-end and New Year, several traveler combinations, typing a date instead of picking it | `dates`, `submission` tests |
 | **Accessibility** | Automated WCAG checks of the form, station suggestions, calendar and travelers panel. Known problems are recorded; any new one fails the test | `accessibility.spec.ts` |
 | **Visual** | The travelers panel is compared with an approved screenshot (with separate approved images for Mac and Linux, which draw fonts differently) | `visual.spec.ts` |
